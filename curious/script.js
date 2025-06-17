@@ -699,3 +699,17 @@ if (/Mobile|Android|iPhone/i.test(navigator.userAgent)) {
         'font-size: 20px; color: #ff6b9d; font-weight: bold;');
     console.log('Pro tip: Try the Konami code for a surprise! ⬆️⬆️⬇️⬇️⬅️➡️⬅️➡️BA');
 }
+function goHome() {
+    // Clean up before leaving
+    if (typeof soundEnabled !== 'undefined') {
+        // Stop all audio
+        const allAudio = document.querySelectorAll('audio');
+        allAudio.forEach(audio => {
+            audio.pause();
+            audio.src = '';
+        });
+    }
+    
+    // Navigate to home
+    window.location.href = '../index.html';
+}

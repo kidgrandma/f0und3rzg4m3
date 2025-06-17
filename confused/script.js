@@ -378,3 +378,17 @@ document.head.appendChild(orbStyle);
 
 // Audio controls helper (for debugging/testing)
 console.log('Audio Controls: audio.mainTracks[0].pause() to pause music');
+function goHome() {
+    // Clean up before leaving
+    if (typeof soundEnabled !== 'undefined') {
+        // Stop all audio
+        const allAudio = document.querySelectorAll('audio');
+        allAudio.forEach(audio => {
+            audio.pause();
+            audio.src = '';
+        });
+    }
+    
+    // Navigate to home
+    window.location.href = '../index.html';
+}

@@ -510,3 +510,18 @@ function closeCreatorNote() {
 // Make functions globally available
 window.showCreatorNote = showCreatorNote;
 window.closeCreatorNote = closeCreatorNote;
+
+function goHome() {
+    // Clean up before leaving
+    if (typeof soundEnabled !== 'undefined') {
+        // Stop all audio
+        const allAudio = document.querySelectorAll('audio');
+        allAudio.forEach(audio => {
+            audio.pause();
+            audio.src = '';
+        });
+    }
+    
+    // Navigate to home
+    window.location.href = '../index.html';
+}
