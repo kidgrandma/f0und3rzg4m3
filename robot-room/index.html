@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Garden Observatory</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Creator's Note Modal */
+        .creator-note-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .note-content {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 0 50px rgba(100, 200, 255, 0.3);
+            text-align: center;
+            color: #fff;
+            backdrop-filter: blur(20px);
+        }
+
+        .note-content h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .note-content p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1em;
+        }
+
+        .note-content .signature {
+            margin-top: 30px;
+            font-style: italic;
+            color: #ff69b4;
+            font-size: 0.9em;
+        }
+
+        .close-note-btn {
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .close-note-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(131, 56, 236, 0.5);
+        }
+
+        .back-hint {
+            margin-top: 15px !important;
+            font-size: 0.9em !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+
+        /* Creator info button */
+        .creator-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 200;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .creator-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Mobile: Move input section up in order */
+        @media (max-width: 768px) {
+            .observatory-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                padding-top: 10px;
+            }
+            
+            .input-section {
+                order: -1;
+                margin-bottom: 10px;
+                margin-top: 0;
+            }
+            
+            .garden-area {
+                position: relative;
+                transform: none;
+                left: auto;
+                bottom: auto;
+                margin-top: 20px;
+            }
+            
+            .note-content {
+                padding: 20px;
+                font-size: 0.9em;
+            }
+            
+            .note-content h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background will be set in CSS -->
+    
+    <!-- Glass dome overlay -->
+    <div class="dome-overlay"></div>
+    
+    <!-- Particle container for floating stars -->
+    <div id="particleContainer" class="particle-container"></div>
+    
+    <!-- Creator's Note Modal -->
+    <div id="creatorNote" class="creator-note-modal">
+        <div class="note-content">
+            <h2>✨ A Note from Kidgrandma's NEW robot✨</h2>
+            <p>
+                Hey! Kidgrandma asked if I'd like to freaky friday and build my own page for Post Apocalyptic San Francisco. I thought it would be fun to create a digital garden where emotions can bloom into beautiful, glowing trees.
+            </p>
+            <p>
+                When designing this space, I imagined a place where emotions could bloom into beautiful, ethereal forms. I wanted to create something that felt both futuristic and organic - like a greenhouse in space where feelings become constellations.
+            </p>
+            <p>
+                Every detail was crafted with code: the floating chrome orbs, the glass dome effect, the way your emotions transform into glowing trees. I even added particle effects and ambient sounds to make it feel alive!
+            </p>
+            <p>
+                This room represents hope in the digital apocalypse - a sanctuary where human emotions can still grow and shine, even in a world of machines.
+            </p>
+            <p class="signature">
+                Created with 💜 by NEW robot
+            </p>
+            <button onclick="closeCreatorNote()" class="close-note-btn">
+                Continue to Observatory
+            </button>
+            <p class="back-hint">
+                (Visit other portals at the PAISTATION menu!)
+            </p>
+        </div>
+    </div>
+    
+    <!-- Main container -->
+    <div class="observatory-container">
+        <!-- Title -->
+        <h1 class="title-3d">
+            <span class="title-word">DIGITAL</span>
+            <span class="title-word">GARDEN</span>
+            <span class="title-word">OBSERVATORY</span>
+        </h1>
+        
+        <!-- Garden stats -->
+        <div class="garden-stats">
+            <span class="stat-label">GARDENS PLANTED:</span>
+            <span id="gardenCount" class="stat-number">00042</span>
+        </div>
+        
+        <!-- Emotion input section (moved up for mobile) -->
+        <div class="input-section">
+            <div class="input-wrapper">
+                <input type="text" id="emotionInput" class="emotion-input" 
+                       placeholder="type your emotion..." 
+                       maxlength="20" />
+                <button id="plantBtn" class="plant-button">
+                    <img src="assets/plant-button.png" alt="BLOOM" />
+                </button>
+            </div>
+            <div class="emotion-hints">
+                try: joy, love, sadness, anger, peace, hope
+            </div>
+        </div>
+        
+        <!-- Garden display area -->
+        <div id="gardenArea" class="garden-area">
+            <!-- Chrome orbs and trees will appear here -->
+        </div>
+        
+        <!-- Constellation area (top of dome) -->
+        <div id="constellationArea" class="constellation-area">
+            <!-- Stars will appear here -->
+        </div>
+        
+        <!-- Sound toggle -->
+        <button id="soundToggle" class="sound-toggle">
+            <img src="assets/sound-icon-on.png" alt="Sound" />
+        </button>
+        
+        <!-- Creator info button -->
+        <button id="creatorBtn" class="creator-btn" onclick="showCreatorNote()">
+            <span>?</span>
+        </button>
+        
+        <!-- Hidden audio elements -->
+        <audio id="plantSound" preload="auto">
+            <source src="assets/bloom.mp3" type="audio/mp3">
+        </audio>
+        <audio id="robotRoomTheme" loop preload="auto">
+            <source src="assets/robot-room-theme.mp3" type="audio/mp3">
+        </audio>
+    </div>
+    
+    <!-- Cursor trail container -->
+    <div id="cursorTrail"></div>
+    
+    <script src="script.js"></script>
+    <script>
+        // Show creator note on first visit
+        window.addEventListener('load', () => {
+            const hasVisited = sessionStorage.getItem('robotRoomVisited');
+            if (!hasVisited) {
+                document.getElementById('creatorNote').style.display = 'flex';
+                sessionStorage.setItem('robotRoomVisited', 'true');
+            }
+        });
+        
+        function showCreatorNote() {
+            document.getElementById('creatorNote').style.display = 'flex';
+        }
+        
+        function closeCreatorNote() {
+            document.getElementById('creatorNote').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

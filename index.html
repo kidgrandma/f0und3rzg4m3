@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>f0und3rz g4m3 - Enter Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f5f5f5;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Background image if you have one */
+        .bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('assets/entrance/entrance-bg.jpg') center/cover;
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        /* CD Cases scattered */
+        .cd-case {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .cd-case:hover {
+            transform: scale(1.1) translateY(-10px);
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+        }
+
+        .cd-case::after {
+            content: 'CLICK TO OPEN';
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #666;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cd-case:hover::after {
+            opacity: 1;
+        }
+
+        .cd-case.opened::after {
+            content: 'DROP IN VORTEX';
+            color: #ff00ff;
+            opacity: 1;
+            text-shadow: 0 0 5px #ff00ff;
+        }
+
+        .cd-case img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+
+        /* Individual case positions */
+        #confused-case {
+            top: 15%;
+            left: 20%;
+            transform: rotate(-15deg);
+        }
+
+        #curious-case {
+            top: 25%;
+            right: 25%;
+            transform: rotate(22deg);
+        }
+
+        #resident-case {
+            bottom: 30%;
+            left: 15%;
+            transform: rotate(-8deg);
+        }
+
+        #robot-case {
+            bottom: 20%;
+            right: 20%;
+            transform: rotate(30deg);
+            opacity: 0.7;
+        }
+
+        /* CD Discs */
+        .cd-disc {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            cursor: grab;
+            display: none;
+            z-index: 20;
+            animation: discSpin 4s linear infinite;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
+        }
+
+        .cd-disc.active {
+            display: block;
+            cursor: grabbing;
+        }
+
+        .cd-disc.dragging {
+            animation: none;
+            z-index: 100;
+        }
+
+        .cd-disc img {
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes discSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Portal Vortex */
+        .portal-container {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+        }
+
+        .portal-vortex {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, 
+                transparent 0%, 
+                #ff00ff 20%, 
+                #00ffff 40%, 
+                #ffff00 60%, 
+                #ff00ff 80%, 
+                #000000 100%);
+            animation: vortexSpin 3s linear infinite;
+            position: relative;
+            filter: blur(2px);
+            box-shadow: 0 0 50px #ff00ff, 
+                        0 0 100px #00ffff,
+                        inset 0 0 50px rgba(255,255,255,0.5);
+        }
+
+        .portal-vortex.hovering {
+            animation-duration: 1s;
+            filter: blur(1px);
+            transform: scale(1.1);
+        }
+
+        @keyframes vortexSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Inner vortex layers */
+        .portal-vortex::before,
+        .portal-vortex::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, 
+                #000000 0%, 
+                transparent 30%, 
+                #ff00ff 60%, 
+                transparent 100%);
+            animation: vortexPulse 2s ease-in-out infinite;
+        }
+
+        .portal-vortex::after {
+            animation-delay: 1s;
+            transform: scale(0.8);
+        }
+
+        @keyframes vortexPulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
+
+        /* Portal label */
+        .portal-label {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #333;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            white-space: nowrap;
+        }
+
+        @font-face {
+            font-family: 'PS2';
+            src: url('assets/entrance/ps2-font.ttf') format('truetype');
+        }
+
+        /* Title */
+        .title {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'PS2', sans-serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            color: #fff;
+            text-align: center;
+            z-index: 5;
+            text-shadow: 2px 2px 0 #000;
+            line-height: 0.9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 0 20px;
+            max-width: 100%;
+        }
+
+        .title-line1 {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .title-line2 {
+            font-size: 1.2em;
+            position: relative;
+        }
+
+        /* Glitch effect */
+        .glitch {
+            position: relative;
+            animation: glitch 3s infinite;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            animation: glitch-1 0.5s infinite;
+            color: #00ffff;
+            z-index: -1;
+        }
+
+        .glitch::after {
+            animation: glitch-2 0.5s infinite;
+            color: #ff00ff;
+            z-index: -2;
+        }
+
+        @keyframes glitch {
+            0%, 93%, 100% {
+                opacity: 1;
+            }
+            94%, 96%, 98% {
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes glitch-1 {
+            0%, 94%, 100% {
+                clip-path: inset(0 0 0 0);
+                transform: translate(0);
+            }
+            95% {
+                clip-path: inset(0 0 50% 0);
+                transform: translate(-2px, 2px);
+            }
+            96% {
+                clip-path: inset(50% 0 0 0);
+                transform: translate(2px, -1px);
+            }
+        }
+
+        @keyframes glitch-2 {
+            0%, 94%, 100% {
+                clip-path: inset(0 0 0 0);
+                transform: translate(0);
+            }
+            95% {
+                clip-path: inset(0 0 30% 0);
+                transform: translate(2px, 1px);
+            }
+            97% {
+                clip-path: inset(70% 0 0 0);
+                transform: translate(-1px, -2px);
+            }
+        }
+
+        /* Transition overlay */
+        .transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+
+        .transition-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .title {
+                font-size: clamp(2rem, 10vw, 3.5rem);
+                padding: 0 15px;
+            }
+            
+            .cd-case {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .cd-case::after {
+                font-size: 8px;
+                bottom: -20px;
+            }
+            
+            .cd-disc {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .portal-vortex {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .portal-container {
+                bottom: 5%;
+            }
+            
+            /* Adjust CD positions for mobile */
+            #confused-case {
+                top: 10%;
+                left: 10%;
+            }
+            
+            #curious-case {
+                top: 20%;
+                right: 10%;
+            }
+            
+            #resident-case {
+                bottom: 40%;
+                left: 10%;
+            }
+            
+            #robot-case {
+                bottom: 30%;
+                right: 10%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layer"></div>
+    
+    <div class="title">
+        <div class="title-line1">WELCOME 2</div>
+        <div class="title-line2 glitch" data-text="PLAYSTATION">PLAYSTATION</div>
+    </div>
+
+    <!-- CD Cases -->
+    <div class="cd-case" id="confused-case" data-disc="confused">
+        <img src="assets/entrance/confused-case.png" alt="Confused Portal">
+    </div>
+    <div class="cd-case" id="curious-case" data-disc="curious">
+        <img src="assets/entrance/curious-case.png" alt="Curious Portal">
+    </div>
+    <div class="cd-case" id="resident-case" data-disc="resident">
+        <img src="assets/entrance/resident-case.png" alt="Resident Portal">
+    </div>
+    <div class="cd-case" id="robot-case" data-disc="robot">
+        <img src="assets/entrance/robot-case.png" alt="Robot Portal">
+    </div>
+
+    <!-- CD Discs (hidden until case clicked) -->
+    <div class="cd-disc" id="confused-disc" data-portal="confused">
+        <img src="assets/entrance/confused-disk.png" alt="Confused Disc">
+    </div>
+    <div class="cd-disc" id="curious-disc" data-portal="curious">
+        <img src="assets/entrance/curious-disk.png" alt="Curious Disc">
+    </div>
+    <div class="cd-disc" id="resident-disc" data-portal="resident">
+        <img src="assets/entrance/resident-disc.png" alt="Resident Disc">
+    </div>
+    <div class="cd-disc" id="robot-disc" data-portal="robot">
+        <img src="assets/entrance/robot-disk.png" alt="Robot Disc">
+    </div>
+
+    <!-- Portal Vortex -->
+    <div class="portal-container">
+        <div class="portal-vortex" id="portal"></div>
+        <div class="portal-label">Insert Disc</div>
+    </div>
+
+    <!-- Transition overlay -->
+    <div class="transition-overlay"></div>
+
+    <!-- Audio elements -->
+    <audio id="bgMusic" loop>
+        <source src="assets/entrance/entrance-bg.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="caseOpen">
+        <source src="assets/entrance/case-open.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="discPickup">
+        <source src="assets/entrance/disc-pickup.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="vortexHum" loop>
+        <source src="assets/entrance/vortex-hum.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="portalActivate">
+        <source src="assets/entrance/portal-activate.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Audio setup
+        const sounds = {
+            bgMusic: document.getElementById('bgMusic'),
+            caseOpen: document.getElementById('caseOpen'),
+            discPickup: document.getElementById('discPickup'),
+            vortexHum: document.getElementById('vortexHum'),
+            portalActivate: document.getElementById('portalActivate')
+        };
+
+        // Letter swap glitch effect
+        const glitchText = document.querySelector('.glitch');
+        const originalText = 'PLAYSTATION';
+        const corruptedText = 'PAISTATION';
+        
+        // Start with PLAYSTATION for 2 seconds before glitching begins
+        setTimeout(() => {
+            // First corruption
+            glitchText.textContent = corruptedText;
+            glitchText.setAttribute('data-text', corruptedText);
+            
+            // Then start random glitching between both
+            setInterval(() => {
+                const currentText = glitchText.textContent;
+                const newText = currentText === originalText ? corruptedText : originalText;
+                
+                if (Math.random() > 0.4) { // 60% chance to glitch
+                    glitchText.textContent = newText;
+                    glitchText.setAttribute('data-text', newText);
+                    
+                    // Sometimes do a quick double glitch
+                    if (Math.random() > 0.6) {
+                        setTimeout(() => {
+                            glitchText.textContent = currentText;
+                            glitchText.setAttribute('data-text', currentText);
+                            setTimeout(() => {
+                                glitchText.textContent = newText;
+                                glitchText.setAttribute('data-text', newText);
+                            }, 100);
+                        }, 200);
+                    }
+                }
+            }, 1500);
+        }, 2000); // Wait 2 seconds before first glitch
+
+        // Start background music at low volume
+        sounds.bgMusic.volume = 0.2;
+        sounds.bgMusic.play().catch(e => {
+            // Autoplay might be blocked, wait for user interaction
+            document.addEventListener('click', () => {
+                sounds.bgMusic.play();
+            }, { once: true });
+        });
+
+        // Portal destinations
+        const portals = {
+            confused: './confused/',
+            curious: './curious/',
+            resident: './resident/',
+            robot: './robot-room/'
+        };
+
+        // CD case click handler
+        document.querySelectorAll('.cd-case').forEach(cdCase => {
+            cdCase.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Play case open sound
+                sounds.caseOpen.currentTime = 0;
+                sounds.caseOpen.play();
+                
+                // Mark case as opened
+                this.classList.add('opened');
+                const discType = this.dataset.disc;
+                const disc = document.getElementById(`${discType}-disc`);
+                
+                // Don't re-open if already active
+                if (disc.classList.contains('active')) {
+                    return;
+                }
+                
+                // Position disc to emerge from case
+                const caseRect = this.getBoundingClientRect();
+                const slideDistance = 30; // How far disc slides out
+                
+                disc.style.left = (caseRect.left + slideDistance) + 'px';
+                disc.style.top = (caseRect.top - slideDistance) + 'px';
+                disc.classList.add('active');
+                
+                // Reset any previous transform
+                disc.style.transform = 'translate(0, 0)';
+                
+                // Animate slide out
+                setTimeout(() => {
+                    disc.style.transition = 'left 0.5s ease-out, top 0.5s ease-out';
+                    disc.style.left = (caseRect.left + caseRect.width/2) + 'px';
+                    disc.style.top = (caseRect.top - caseRect.height/2) + 'px';
+                    
+                    // Enable dragging after animation
+                    setTimeout(() => {
+                        disc.style.transition = '';
+                        enableDragging(disc);
+                    }, 500);
+                }, 50);
+            });
+        });
+
+        // Dragging functionality
+        function enableDragging(disc) {
+            let isDragging = false;
+
+            function dragStart(e) {
+                if (e.target === disc || e.target.parentElement === disc) {
+                    isDragging = true;
+                    disc.classList.add('dragging');
+                    disc.style.zIndex = 1000;
+                    
+                    // Play pickup sound
+                    sounds.discPickup.currentTime = 0;
+                    sounds.discPickup.play();
+                }
+            }
+
+            function dragEnd(e) {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                disc.classList.remove('dragging');
+                disc.style.zIndex = 20;
+
+                // Check if over portal
+                const portal = document.getElementById('portal');
+                const portalRect = portal.getBoundingClientRect();
+                const discRect = disc.getBoundingClientRect();
+                
+                const discCenterX = discRect.left + discRect.width / 2;
+                const discCenterY = discRect.top + discRect.height / 2;
+                const portalCenterX = portalRect.left + portalRect.width / 2;
+                const portalCenterY = portalRect.top + portalRect.height / 2;
+                
+                const distance = Math.sqrt(
+                    Math.pow(discCenterX - portalCenterX, 2) + 
+                    Math.pow(discCenterY - portalCenterY, 2)
+                );
+
+                if (distance < 100) {
+                    // Disc is over portal - activate!
+                    activatePortal(disc.dataset.portal);
+                }
+                
+                // Stop vortex hum
+                sounds.vortexHum.pause();
+                portal.classList.remove('hovering');
+            }
+
+            function drag(e) {
+                if (!isDragging) return;
+                
+                e.preventDefault();
+                
+                let clientX, clientY;
+                if (e.type === "touchmove") {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+
+                // Position disc at cursor/finger
+                disc.style.left = (clientX - disc.offsetWidth / 2) + 'px';
+                disc.style.top = (clientY - disc.offsetHeight / 2) + 'px';
+
+                // Check proximity to portal
+                const portal = document.getElementById('portal');
+                const portalRect = portal.getBoundingClientRect();
+                
+                const discCenterX = clientX;
+                const discCenterY = clientY;
+                const portalCenterX = portalRect.left + portalRect.width / 2;
+                const portalCenterY = portalRect.top + portalRect.height / 2;
+                
+                const distance = Math.sqrt(
+                    Math.pow(discCenterX - portalCenterX, 2) + 
+                    Math.pow(discCenterY - portalCenterY, 2)
+                );
+
+                if (distance < 150) {
+                    // Near portal - play hum
+                    if (sounds.vortexHum.paused) {
+                        sounds.vortexHum.volume = 0.3;
+                        sounds.vortexHum.play();
+                    }
+                    portal.classList.add('hovering');
+                } else {
+                    sounds.vortexHum.pause();
+                    portal.classList.remove('hovering');
+                }
+            }
+
+            // Mouse events
+            disc.addEventListener('mousedown', dragStart);
+            document.addEventListener('mouseup', dragEnd);
+            document.addEventListener('mousemove', drag);
+
+            // Touch events
+            disc.addEventListener('touchstart', dragStart);
+            document.addEventListener('touchend', dragEnd);
+            document.addEventListener('touchmove', drag);
+        }
+
+        // Portal activation
+        function activatePortal(portalType) {
+            // Play activation sound
+            sounds.portalActivate.currentTime = 0;
+            sounds.portalActivate.play();
+            
+            // Fade to black
+            const overlay = document.querySelector('.transition-overlay');
+            overlay.classList.add('active');
+            
+            // Navigate after animation
+            setTimeout(() => {
+                window.location.href = portals[portalType];
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

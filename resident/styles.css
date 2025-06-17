@@ -1,0 +1,1187 @@
+/* Fortune Selfie CCTV - Y2K Futurism Styles */
+
+/* Reset and Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+    background: url('../assets/resident/background-y2k.jpg') center/cover no-repeat fixed;
+}
+
+/* Y2K Container */
+.y2k-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 20px;
+}
+
+/* Floating Orbs */
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, 
+        rgba(255, 255, 255, 0.9),
+        rgba(100, 200, 255, 0.4),
+        rgba(100, 200, 255, 0.1)
+    );
+    filter: blur(0.5px);
+    animation: float 20s infinite ease-in-out;
+    will-change: transform;
+}
+
+.orb-1 {
+    width: 80px;
+    height: 80px;
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.orb-2 {
+    width: 120px;
+    height: 120px;
+    bottom: 20%;
+    right: 15%;
+    animation-delay: 7s;
+}
+
+.orb-3 {
+    width: 60px;
+    height: 60px;
+    top: 50%;
+    right: 10%;
+    animation-delay: 14s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -30px) scale(1.05); }
+    66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+/* Content Wrapper */
+.content-wrapper {
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    max-width: 800px;
+    width: 100%;
+}
+
+/* Title Image */
+.main-title-img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 30px rgba(160, 208, 255, 0.5));
+}
+
+/* Subtitle */
+.subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    margin-bottom: 30px;
+    font-weight: 300;
+}
+
+/* Orbiting Instructions */
+.orbit-container {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 5;
+}
+
+.orbit-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    font-weight: 600;
+    text-shadow: 
+        0 0 10px rgba(100, 200, 255, 0.8),
+        0 0 20px rgba(100, 200, 255, 0.4);
+    white-space: nowrap;
+    font-family: 'Comic Sans MS', cursive;
+    will-change: transform;
+}
+
+.orbit-1 {
+    animation: orbit1 20s linear infinite;
+}
+
+.orbit-2 {
+    animation: orbit2 25s linear infinite;
+}
+
+.orbit-3 {
+    animation: orbit3 30s linear infinite;
+}
+
+@keyframes orbit1 {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg) translateX(200px) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg) translateX(200px) rotate(-360deg);
+    }
+}
+
+@keyframes orbit2 {
+    0% {
+        transform: translate(-50%, -50%) rotate(120deg) translateX(250px) rotate(-120deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(480deg) translateX(250px) rotate(-480deg);
+    }
+}
+
+@keyframes orbit3 {
+    0% {
+        transform: translate(-50%, -50%) rotate(240deg) translateX(180px) rotate(-240deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(600deg) translateX(180px) rotate(-600deg);
+    }
+}
+
+/* Media Player Container */
+.media-player-container {
+    position: relative;
+    display: inline-block;
+    margin: 0 auto;
+}
+
+.media-player-frame {
+    width: 100%;
+    max-width: 450px;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 20px 40px rgba(0, 100, 200, 0.3));
+}
+
+/* Camera Window - FIXED POSITION */
+.camera-window {
+    position: absolute;
+    width: 230px;
+    height: 157px;
+    top: 47%;
+    left: 38.9%; 
+    transform: translate(-50%, -50%);
+    background: #000;
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+/* Active camera glow */
+.camera-window.active {
+    box-shadow: 0 0 40px rgba(100, 200, 255, 0.6);
+}
+
+/* Start Screen */
+.start-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle, 
+        rgba(100, 200, 255, 0.1),
+        rgba(0, 0, 0, 0.9)
+    );
+}
+
+.pulse-ring {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 2px solid rgba(100, 200, 255, 0.5);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+.start-btn {
+    background: linear-gradient(135deg, 
+        rgba(0, 100, 255, 0.9) 0%,
+        rgba(0, 150, 255, 0.8) 50%,
+        rgba(0, 200, 255, 0.9) 100%
+    );
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    padding: 18px 40px;
+    border-radius: 40px;
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 0 30px rgba(0, 150, 255, 0.8),
+        inset 0 0 20px rgba(255, 255, 255, 0.3);
+    z-index: 1;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    position: relative;
+    overflow: hidden;
+}
+
+.start-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        transparent 70%
+    );
+    transform: rotate(45deg);
+    transition: all 0.5s;
+    opacity: 0;
+}
+
+.start-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 
+        0 0 50px rgba(0, 150, 255, 1),
+        inset 0 0 30px rgba(255, 255, 255, 0.5);
+    border-color: white;
+}
+
+.start-btn:hover::before {
+    animation: shine 0.5s ease-in-out;
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+}
+
+/* RESTORE ORIGINAL Y2K CCTV Filters */
+.camera-feed,
+.upload-preview,
+.frozen-capture {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    filter: 
+        brightness(1.4)
+        contrast(1.8)
+        saturate(0)
+        sepia(100%)
+        hue-rotate(180deg);
+    transform: scaleX(-1);
+}
+
+/* Y2K Filter for result display - STRONGER */
+.y2k-cctv-filter-blue {
+    filter: 
+        brightness(1.5)
+        contrast(2)
+        saturate(0)
+        sepia(100%)
+        hue-rotate(180deg);
+    transform: scaleX(-1);
+}
+
+/* Enhanced Duo-tone overlay - STRONGER BLOWN OUT EFFECT */
+.ethereal-overlay {
+    position: absolute;
+    inset: 0;
+    background: 
+        radial-gradient(circle at center, 
+            rgba(255, 255, 255, 0.5) 0%,
+            rgba(150, 200, 255, 0.6) 20%,
+            rgba(0, 100, 255, 0.7) 60%,
+            rgba(0, 50, 200, 0.9) 100%
+        );
+    pointer-events: none;
+    mix-blend-mode: screen;
+    z-index: 15;
+    display: none;
+    opacity: 0.8;
+}
+
+/* Scan lines effect */
+.camera-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+    z-index: 20;
+}
+
+/* Capture Button */
+.capture-btn {
+    position: absolute;
+    right: 9%;
+    top: 27%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.capture-icon {
+    width: 60px;
+    height: 60px;
+    display: block;
+    filter: drop-shadow(0 0 20px rgba(100, 200, 255, 0.5));
+    transition: all 0.3s ease;
+}
+
+.capture-btn:hover .capture-icon {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 30px rgba(100, 200, 255, 0.8));
+}
+
+.capture-btn:active .capture-icon {
+    transform: scale(0.95);
+}
+
+/* Instructions */
+.instructions {
+    margin-top: 30px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.instructions p {
+    margin: 5px 0;
+}
+
+/* Popup Overlay - Clean Y2K Background */
+.popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, 
+        rgba(0, 10, 30, 0.95) 0%,
+        rgba(0, 30, 80, 0.9) 50%,
+        rgba(0, 50, 100, 0.95) 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.3s ease-in;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+}
+
+/* Add grid pattern overlay for Y2K effect */
+.popup-overlay#resultPopup::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+        repeating-linear-gradient(
+            0deg,
+            rgba(100, 200, 255, 0.03) 0px,
+            transparent 1px,
+            transparent 2px,
+            rgba(100, 200, 255, 0.03) 3px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            rgba(100, 200, 255, 0.03) 0px,
+            transparent 1px,
+            transparent 2px,
+            rgba(100, 200, 255, 0.03) 3px
+        );
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* 3D Orbital Instructions Popup */
+.popup-content-3d {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.orbit-3d-container {
+    position: relative;
+    width: 800px;
+    height: 600px;
+    transform-style: preserve-3d;
+    perspective: 1200px;
+}
+
+/* Central core with input and button */
+.central-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    text-align: center;
+    background: linear-gradient(135deg, 
+        rgba(0, 10, 30, 0.9) 0%,
+        rgba(0, 30, 60, 0.8) 100%
+    );
+    padding: 30px;
+    border-radius: 30px;
+    box-shadow: 
+        0 0 100px rgba(100, 200, 255, 0.5),
+        inset 0 0 30px rgba(100, 200, 255, 0.2);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(100, 200, 255, 0.3);
+}
+
+.handle-input-3d {
+    width: 250px;
+    padding: 12px 20px;
+    border: 2px solid rgba(100, 200, 255, 0.5);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    border-radius: 25px;
+    text-align: center;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 
+        inset 0 2px 10px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(100, 200, 255, 0.3);
+}
+
+.handle-input-3d:focus {
+    outline: none;
+    border-color: rgba(100, 200, 255, 0.8);
+    box-shadow: 
+        inset 0 2px 10px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(100, 200, 255, 0.6);
+}
+
+.handle-input-3d::placeholder {
+    color: rgba(100, 200, 255, 0.5);
+}
+
+.popup-btn-3d {
+    background: linear-gradient(135deg, 
+        rgba(0, 100, 255, 0.9) 0%,
+        rgba(0, 200, 255, 0.8) 100%
+    );
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    padding: 12px 30px;
+    border-radius: 30px;
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 0 30px rgba(0, 150, 255, 0.8),
+        inset 0 0 20px rgba(255, 255, 255, 0.3);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+.popup-btn-3d:hover {
+    transform: scale(1.05);
+    box-shadow: 
+        0 0 50px rgba(0, 150, 255, 1),
+        inset 0 0 30px rgba(255, 255, 255, 0.5);
+}
+
+/* Orbiting elements */
+.orbit-element {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-style: preserve-3d;
+    pointer-events: none;
+}
+
+.orbit-text-3d {
+    display: block;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    font-weight: 600;
+    text-shadow: 
+        0 0 20px rgba(100, 200, 255, 0.8),
+        0 0 40px rgba(100, 200, 255, 0.4);
+    white-space: nowrap;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    letter-spacing: 1px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg,
+        rgba(100, 200, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+/* Individual orbits with different parameters */
+.orbit-1 {
+    animation: orbit3d-1 20s infinite linear;
+}
+
+.orbit-2 {
+    animation: orbit3d-2 25s infinite linear;
+}
+
+.orbit-3 {
+    animation: orbit3d-3 30s infinite linear;
+}
+
+.orbit-4 {
+    animation: orbit3d-4 35s infinite linear;
+}
+
+.orbit-5 {
+    animation: orbit3d-5 40s infinite linear;
+}
+
+.orbit-6 {
+    animation: orbit3d-6 45s infinite linear;
+}
+
+/* 3D orbital animations */
+@keyframes orbit3d-1 {
+    0% {
+        transform: translate(-50%, -50%) rotateY(0deg) translateZ(300px) rotateY(0deg) rotateX(10deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotateY(360deg) translateZ(300px) rotateY(-360deg) rotateX(10deg);
+    }
+}
+
+@keyframes orbit3d-2 {
+    0% {
+        transform: translate(-50%, -50%) rotateY(60deg) rotateX(20deg) translateZ(250px) rotateX(-20deg) rotateY(-60deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotateY(420deg) rotateX(20deg) translateZ(250px) rotateX(-20deg) rotateY(-420deg);
+    }
+}
+
+@keyframes orbit3d-3 {
+    0% {
+        transform: translate(-50%, -50%) rotateY(120deg) rotateX(-15deg) translateZ(350px) rotateX(15deg) rotateY(-120deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotateY(480deg) rotateX(-15deg) translateZ(350px) rotateX(15deg) rotateY(-480deg);
+    }
+}
+
+@keyframes orbit3d-4 {
+    0% {
+        transform: translate(-50%, -50%) rotateY(180deg) rotateX(30deg) translateZ(280px) rotateX(-30deg) rotateY(-180deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotateY(540deg) rotateX(30deg) translateZ(280px) rotateX(-30deg) rotateY(-540deg);
+    }
+}
+
+@keyframes orbit3d-5 {
+    0% {
+        transform: translate(-50%, -50%) rotateY(240deg) rotateX(-25deg) translateZ(320px) rotateX(25deg) rotateY(-240deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotateY(600deg) rotateX(-25deg) translateZ(320px) rotateX(25deg) rotateY(-600deg);
+    }
+}
+
+@keyframes orbit3d-6 {
+    0% {
+        transform: translate(-50%, -50%) rotateY(300deg) rotateX(15deg) translateZ(300px) rotateX(-15deg) rotateY(-300deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotateY(660deg) rotateX(15deg) translateZ(300px) rotateX(-15deg) rotateY(-660deg);
+    }
+}
+
+/* Mobile adjustments for 3D popup */
+@media (max-width: 768px) {
+    .orbit-3d-container {
+        width: 100vw;
+        height: 100vh;
+    }
+    
+    .orbit-text-3d {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+    
+    .central-core {
+        padding: 20px;
+    }
+    
+    .handle-input-3d {
+        width: 200px;
+        font-size: 13px;
+    }
+    
+    .popup-btn-3d {
+        padding: 10px 25px;
+        font-size: 14px;
+    }
+    
+    /* Smaller orbit radius on mobile */
+    @keyframes orbit3d-1 {
+        0% {
+            transform: translate(-50%, -50%) rotateY(0deg) translateZ(150px) rotateY(0deg) rotateX(10deg);
+        }
+        100% {
+            transform: translate(-50%, -50%) rotateY(360deg) translateZ(150px) rotateY(-360deg) rotateX(10deg);
+        }
+    }
+    
+    @keyframes orbit3d-2 {
+        0% {
+            transform: translate(-50%, -50%) rotateY(60deg) rotateX(20deg) translateZ(130px) rotateX(-20deg) rotateY(-60deg);
+        }
+        100% {
+            transform: translate(-50%, -50%) rotateY(420deg) rotateX(20deg) translateZ(130px) rotateX(-20deg) rotateY(-420deg);
+        }
+    }
+    
+    @keyframes orbit3d-3 {
+        0% {
+            transform: translate(-50%, -50%) rotateY(120deg) rotateX(-15deg) translateZ(170px) rotateX(15deg) rotateY(-120deg);
+        }
+        100% {
+            transform: translate(-50%, -50%) rotateY(480deg) rotateX(-15deg) translateZ(170px) rotateX(15deg) rotateY(-480deg);
+        }
+    }
+    
+    @keyframes orbit3d-4 {
+        0% {
+            transform: translate(-50%, -50%) rotateY(180deg) rotateX(30deg) translateZ(140px) rotateX(-30deg) rotateY(-180deg);
+        }
+        100% {
+            transform: translate(-50%, -50%) rotateY(540deg) rotateX(30deg) translateZ(140px) rotateX(-30deg) rotateY(-540deg);
+        }
+    }
+    
+    @keyframes orbit3d-5 {
+        0% {
+            transform: translate(-50%, -50%) rotateY(240deg) rotateX(-25deg) translateZ(160px) rotateX(25deg) rotateY(-240deg);
+        }
+        100% {
+            transform: translate(-50%, -50%) rotateY(600deg) rotateX(-25deg) translateZ(160px) rotateX(25deg) rotateY(-600deg);
+        }
+    }
+    
+    @keyframes orbit3d-6 {
+        0% {
+            transform: translate(-50%, -50%) rotateY(300deg) rotateX(15deg) translateZ(150px) rotateX(-15deg) rotateY(-300deg);
+        }
+        100% {
+            transform: translate(-50%, -50%) rotateY(660deg) rotateX(15deg) translateZ(150px) rotateX(-15deg) rotateY(-660deg);
+        }
+    }
+}
+
+/* Y2K Media Player Style Result - Enhanced */
+.result-container {
+    position: relative;
+    display: inline-block;
+    margin: 0 auto 20px;
+    animation: floatIn 0.5s ease-out;
+    background: radial-gradient(circle at center,
+        rgba(100, 200, 255, 0.1) 0%,
+        rgba(0, 100, 200, 0.05) 50%,
+        transparent 70%
+    );
+    padding: 20px;
+    border-radius: 20px;
+}
+
+@keyframes floatIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* The media player image */
+.result-media-player {
+    width: 100%;
+    max-width: 450px;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 20px 40px rgba(0, 100, 200, 0.5));
+}
+
+/* Photo window - positioned inside media player */
+.result-photo-window {
+    position: absolute;
+    width: 228px;
+    height: 161px;
+    top: 48%;
+    left: 39.9%; /* Same as camera window */
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+.result-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Same overlay as live feed */
+.result-photo-overlay {
+    position: absolute;
+    inset: 0;
+    background: 
+        radial-gradient(ellipse at center, 
+            rgba(0, 50, 150, 0.3) 0%,
+            rgba(0, 80, 200, 0.4) 40%,
+            rgba(0, 20, 80, 0.6) 100%
+        );
+    mix-blend-mode: multiply;
+}
+
+/* Dog Tag - Positioned as Overlay */
+.result-dog-tag {
+    position: absolute;
+    bottom: -20px; /* Overlapping the media player */
+    right: -10px;
+    width: 120px;
+    height: auto;
+    filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.6));
+    animation: tagFadeIn 0.8s ease-out forwards, metalFloat 4s ease-in-out infinite;
+    z-index: 50;
+    transition: all 0.3s ease;
+}
+
+@keyframes metalFloat {
+    0%, 100% { 
+        transform: translateY(0) rotate(-5deg);
+    }
+    50% { 
+        transform: translateY(-8px) rotate(2deg);
+    }
+}
+
+@keyframes tagFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) rotate(-5deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) rotate(-5deg);
+    }
+}
+
+.result-dog-tag:hover {
+    filter: 
+        drop-shadow(0 15px 35px rgba(0, 0, 0, 0.7))
+        brightness(1.2);
+    transform: scale(1.1) rotate(-8deg);
+}
+
+/* Timestamp Overlay - Burned into photo */
+.timestamp-overlay {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 10px;
+    font-family: 'Courier New', monospace;
+    text-shadow: 
+        0 0 3px rgba(0, 0, 0, 0.8),
+        0 0 6px rgba(0, 0, 0, 0.6);
+    letter-spacing: 1px;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.timestamp-handle {
+    font-weight: bold;
+    color: rgba(100, 200, 255, 0.9);
+}
+
+/* Floating Buttons Container */
+.floating-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    animation: floatIn 0.6s ease-out 0.2s both;
+}
+
+/* Y2K Chrome Button Style */
+.y2k-button {
+    background: linear-gradient(145deg,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(230, 230, 250, 0.9) 50%,
+        rgba(200, 200, 220, 0.95) 100%
+    );
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-weight: 700;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    border-radius: 35px;
+    padding: 15px 35px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 13px;
+    box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.3),
+        inset 0 2px 4px rgba(255, 255, 255, 1),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.1),
+        0 0 40px rgba(100, 200, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    animation: floatButton 3s ease-in-out infinite;
+}
+
+/* Different float animations for each button */
+.retake-btn {
+    animation-delay: 0s;
+}
+
+.instagram-btn {
+    animation-delay: 1.5s;
+}
+
+@keyframes floatButton {
+    0%, 100% { 
+        transform: translateY(0);
+    }
+    50% { 
+        transform: translateY(-5px);
+    }
+}
+
+/* Chrome shimmer effect */
+.y2k-button::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.8) 50%,
+        transparent 70%
+    );
+    transform: rotate(45deg);
+    transition: all 0.6s;
+    opacity: 0;
+}
+
+.y2k-button:hover {
+    background: linear-gradient(145deg,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(240, 240, 255, 0.95) 50%,
+        rgba(220, 220, 240, 1) 100%
+    );
+    box-shadow: 
+        0 12px 35px rgba(0, 0, 0, 0.4),
+        inset 0 2px 6px rgba(255, 255, 255, 1),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.15),
+        0 0 60px rgba(100, 200, 255, 0.4);
+    transform: translateY(-2px) scale(1.05);
+    border-color: #fff;
+}
+
+.y2k-button:hover::before {
+    animation: chromeShine 0.6s ease-out;
+}
+
+@keyframes chromeShine {
+    0% { 
+        left: -200%;
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% { 
+        left: 200%;
+        opacity: 0;
+    }
+}
+
+.y2k-button:active {
+    transform: translateY(0) scale(1);
+}
+
+/* Icon styling */
+.instagram-icon {
+    font-size: 16px;
+}
+
+/* Result Popup Y2K Orbs */
+.result-orb {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, 
+        rgba(255, 255, 255, 0.8),
+        rgba(100, 200, 255, 0.3),
+        rgba(100, 200, 255, 0.1)
+    );
+    filter: blur(1px);
+    animation: floatResult 15s infinite ease-in-out;
+    pointer-events: none;
+}
+
+.result-orb-1 {
+    width: 100px;
+    height: 100px;
+    top: 10%;
+    left: 5%;
+    animation-delay: 0s;
+}
+
+.result-orb-2 {
+    width: 150px;
+    height: 150px;
+    bottom: 10%;
+    right: 5%;
+    animation-delay: 5s;
+}
+
+.result-orb-3 {
+    width: 80px;
+    height: 80px;
+    top: 50%;
+    right: 10%;
+    animation-delay: 10s;
+}
+
+@keyframes floatResult {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+    33% { transform: translate(20px, -20px) scale(1.1); opacity: 0.8; }
+    66% { transform: translate(-10px, 10px) scale(0.9); opacity: 0.5; }
+}
+
+/* Flash effect */
+@keyframes flash {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.flash-effect {
+    position: fixed;
+    inset: 0;
+    background: white;
+    pointer-events: none;
+    z-index: 9999;
+    animation: flash 0.5s ease-out;
+}
+
+/* Mobile Responsive - FIXED */
+@media (max-width: 768px) {
+    .popup-overlay {
+        gap: 15px;
+        padding: 10px;
+    }
+    
+    .y2k-container {
+        padding: 15px;
+    }
+    
+    .media-player-frame,
+    .result-media-player {
+        max-width: 350px;
+    }
+    
+    .camera-window,
+    .result-photo-window {
+        width: 175px;
+        height: 125px;
+        top: 48%;
+        left: 38.9%;
+    }
+    
+    .capture-btn {
+        right: 9%;
+        top: 27%;
+    }
+    
+    .capture-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .result-dog-tag {
+        width: 100px;
+        bottom: -15px;
+        right: -5px;
+    }
+    
+    .floating-buttons {
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+        margin-top: 20px;
+        width: 100%;
+        max-width: 350px;
+        justify-content: center;
+    }
+    
+    .y2k-button {
+        padding: 12px 25px;
+        font-size: 11px;
+        flex: 1;
+        max-width: 160px;
+        letter-spacing: 1px;
+    }
+    
+    .instagram-icon {
+        font-size: 14px;
+    }
+    
+    .timestamp-overlay {
+        font-size: 9px;
+    }
+    
+    /* Adjust orbit for mobile */
+    .orbit-container {
+        width: 400px;
+        height: 400px;
+    }
+    
+    .orbit-text {
+        font-size: 12px;
+    }
+    
+    @keyframes orbit1 {
+        0% {
+            transform: translate(-50%, -50%) rotate(0deg) translateX(120px) rotate(0deg);
+        }
+        100% {
+            transform: translate(-50%, -50%) rotate(360deg) translateX(120px) rotate(-360deg);
+        }
+    }
+    
+    @keyframes orbit2 {
+        0% {
+            transform: translate(-50%, -50%) rotate(120deg) translateX(150px) rotate(-120deg);
+        }
+        100% {
+            transform: translate(-50%, -50%) rotate(480deg) translateX(150px) rotate(-480deg);
+        }
+    }
+    
+    @keyframes orbit3 {
+        0% {
+            transform: translate(-50%, -50%) rotate(240deg) translateX(100px) rotate(-240deg);
+        }
+        100% {
+            transform: translate(-50%, -50%) rotate(600deg) translateX(100px) rotate(-600deg);
+        }
+    }
+}
+
+/* Very small screens */
+@media (max-width: 400px) {
+    .media-player-frame,
+    .result-media-player {
+        max-width: 300px;
+    }
+    
+    .camera-window,
+    .result-photo-window {
+        width: 148px;
+        height: 104px;
+    }
+    
+    .capture-icon {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .result-dog-tag {
+        width: 80px;
+    }
+}
+
+/* Focus states for accessibility */
+.start-btn:focus,
+.capture-btn:focus,
+.popup-btn:focus,
+.y2k-button:focus {
+    outline: 3px solid rgba(100, 200, 255, 0.8);
+    outline-offset: 2px;
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Prevent scrolling on mobile during camera */
+body.camera-active {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+}

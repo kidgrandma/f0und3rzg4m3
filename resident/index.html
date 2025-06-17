@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fortune Selfie CCTV - f0und3rzg4m3</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Background music -->
+    <audio id="bgMusic" loop>
+        <source src="../assets/resident/orbital-bg.mp3" type="audio/mp3">
+    </audio>
+
+    <!-- Capture sound effect -->
+    <audio id="captureSound">
+        <source src="../assets/resident/finished.mp3" type="audio/mp3">
+    </audio>
+
+    <!-- Instructions Popup -->
+    <div class="popup-overlay" id="instructionsPopup">
+        <div class="popup-content-3d">
+            <div class="orbit-3d-container">
+                <!-- Central input and button -->
+                <div class="central-core">
+                    <input type="text" id="userHandle" class="handle-input-3d" placeholder="enter your @handle">
+                    <button class="popup-btn-3d" id="continueBtn">LET'S GO →</button>
+                </div>
+                
+                <!-- Orbiting elements -->
+                <div class="orbit-element orbit-1">
+                    <span class="orbit-text-3d">Welcome back to your fucked up home!</span>
+                </div>
+                <div class="orbit-element orbit-2">
+                    <span class="orbit-text-3d">I missed you >__<</span>
+                </div>
+                <div class="orbit-element orbit-3">
+                    <span class="orbit-text-3d">TAKE A PHOTO</span>
+                </div>
+                <div class="orbit-element orbit-4">
+                    <span class="orbit-text-3d">SCREENSHOT TO PROVE IT</span>
+                </div>
+                <div class="orbit-element orbit-5">
+                    <span class="orbit-text-3d">send to @kidgrandma :)</span>
+                </div>
+                <div class="orbit-element orbit-6">
+                    <span class="orbit-text-3d">xoxoxo moderator</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Popup -->
+    <div class="popup-overlay" id="resultPopup" style="display: none;">
+        <!-- Y2K Decorative Elements -->
+        <div class="result-orb result-orb-1"></div>
+        <div class="result-orb result-orb-2"></div>
+        <div class="result-orb result-orb-3"></div>
+        
+        <!-- Media Player Container with Photo and Dog Tag -->
+        <div class="result-container">
+            <!-- Full media player as background -->
+            <img src="../assets/resident/media-player-frame.png" class="result-media-player">
+            
+            <!-- Photo positioned inside -->
+            <div class="result-photo-window">
+                <img id="resultPhoto" class="result-photo y2k-cctv-filter-blue">
+                <div class="result-photo-overlay"></div>
+                
+                <!-- Timestamp overlay burned into photo -->
+                <div class="timestamp-overlay">
+                    <span id="timestampDate"></span>
+                    <span id="timestampHandle" class="timestamp-handle"></span>
+                </div>
+            </div>
+            
+            <!-- Dog Tag overlapping the media player -->
+            <img id="resultDogTag" class="result-dog-tag">
+        </div>
+        
+        <!-- Floating Buttons Side by Side -->
+        <div class="floating-buttons">
+            <button class="y2k-button retake-btn" id="retakeBtn">Take Another</button>
+            <a href="https://instagram.com/kidgrandma" target="_blank" class="y2k-button instagram-btn">
+                <span class="instagram-icon">📸</span>
+                <span>Meet @kidgrandma</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="y2k-container">
+        <!-- Floating orbs decoration -->
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+
+        <!-- Main Content -->
+        <div class="content-wrapper">
+            <!-- Title Image -->
+            <img src="../assets/resident/title.png" alt="Fortune Selfie CCTV" class="main-title-img">
+
+            <!-- Orbiting Instructions -->
+            <div class="orbit-container">
+                <div class="orbit-text orbit-1">take a selfie</div>
+                <div class="orbi t-text orbit-2">get ur fortune</div>
+                <div class="orbit-text orbit-3">send 2 kidgrandma</div>
+            </div>
+
+            <!-- Media Player Device -->
+            <div class="media-player-container">
+                <img src="../assets/resident/media-player-frame.png" alt="Media Player" class="media-player-frame">
+                
+                <!-- Camera Window - positioned inside the frame -->
+                <div class="camera-window">
+                    <!-- Initial state -->
+                    <div class="start-screen" id="startScreen">
+                        <div class="pulse-ring"></div>
+                        <button class="start-btn" id="startBtn">
+                            <span class="btn-text">ACTIVATE</span>
+                        </button>
+                    </div>
+
+                    <!-- Camera feed -->
+                    <video id="cameraFeed" class="camera-feed" autoplay playsinline muted></video>
+                    
+                    <!-- Upload preview -->
+                    <img id="uploadPreview" class="upload-preview" />
+                    
+                    <!-- Frozen capture display -->
+                    <img id="frozenCapture" class="frozen-capture" style="display: none;" />
+                    
+                    <!-- Ethereal overlay -->
+                    <div class="ethereal-overlay" id="etherealOverlay"></div>
+                </div>
+
+                <!-- Capture button using your start.png -->
+                <button class="capture-btn" id="captureBtn" style="display: none;">
+                    <img src="../assets/resident/start.png" alt="Capture" class="capture-icon">
+                </button>
+            </div>
+
+            <!-- Hidden file input -->
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DECK-O-MATIC™ - Disrupt Your Reality</title>
+    <link rel="stylesheet" href="../shared/common.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="deck-container">
+        <!-- Header with Marquee Fix -->
+        <header class="deck-header">
+            <div class="title-marquee">
+                <h1 class="deck-title" data-text="DECK-O-MATIC™">DECK-O-MATIC™</h1>
+                <h1 class="deck-title" data-text="DECK-O-MATIC™" aria-hidden="true">DECK-O-MATIC™</h1>
+                <h1 class="deck-title" data-text="DECK-O-MATIC™" aria-hidden="true">DECK-O-MATIC™</h1>
+            </div>
+        </header>
+
+        <!-- Main Stage -->
+        <div class="main-stage">
+            <!-- Lotion Tony -->
+            <div class="lotion-tony" id="lotionTony">
+                <img src="../assets/confused/lotion-tony.png" alt="Lotion Tony" class="tony-image" id="tonyImage">
+                <div class="speech-bubble">
+                    <p>Hey bud! You got questions about the game? Make me a deck and I'll tell you more.</p>
+                </div>
+            </div>
+
+            <!-- Product Selection -->
+            <div class="product-section">
+                <h2 class="section-title">CHOOSE UR HUSTLE...</h2>
+                <div class="product-grid">
+                    <button class="product-card" data-product="cbd-sanitizer">
+                        <img src="../assets/confused/product-cbd.png" alt="CBD Hand Sanitizer" class="product-image">
+                        <span>CBD HAND SANITIZER</span>
+                    </button>
+                    <button class="product-card" data-product="marshmallow-shoes">
+                        <img src="../assets/confused/product-shoes.png" alt="Marshmallow Shoes" class="product-image">
+                        <span>MARSHMALLOW SHOES</span>
+                    </button>
+                    <button class="product-card" data-product="salty-skittles">
+                        <img src="../assets/confused/product-skittles.png" alt="Salty Skittles" class="product-image">
+                        <span>SALTY SKITTLES</span>
+                    </button>
+                    <button class="product-card" data-product="glow-cds">
+                        <img src="../assets/confused/product-cds.png" alt="Glow CDs" class="product-image">
+                        <span>GLOW-IN-DARK UBER CDs</span>
+                    </button>
+                    <button class="product-card" data-product="horoscope-ice">
+                        <img src="../assets/confused/product-ice.png" alt="Horoscope Ice" class="product-image">
+                        <span>HOROSCOPE ICE CUBES</span>
+                    </button>
+                    <button class="product-card" data-product="brain-smoothie">
+                        <img src="../assets/confused/product-smoothie.png" alt="Brain Smoothie" class="product-image">
+                        <span>BRAIN SMOOTHIE</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mad Libs Modal -->
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="mad-libs-modal" id="madLibsModal">
+            <div class="modal-header">
+                <h3>FILL IN THE BLANKS, DUHHH!</h3>
+            </div>
+            <div class="modal-content">
+                <form id="madLibsForm">
+                    <div class="input-group">
+                        <label>ADJECTIVE:</label>
+                        <input type="text" name="adjective1" placeholder="(describing word)" required>
+                    </div>
+                    <div class="input-group">
+                        <label>INDUSTRY:</label>
+                        <input type="text" name="industry" placeholder="(business type)" required>
+                    </div>
+                    <div class="input-group">
+                        <label>BUZZWORD:</label>
+                        <input type="text" name="buzzword" placeholder="(tech term)" required>
+                    </div>
+                    <div class="input-group">
+                        <label>VEGETABLE:</label>
+                        <input type="text" name="vegetable" placeholder="(any vegetable)" required>
+                    </div>
+                    <div class="input-group">
+                        <label>NUMBER (1-999):</label>
+                        <input type="text" name="number" placeholder="(pick a number)" required>
+                    </div>
+                    <div class="input-group">
+                        <label>PLURAL NOUN:</label>
+                        <input type="text" name="pluralNoun" placeholder="(multiple things)" required>
+                    </div>
+                    <div class="input-group">
+                        <label>EMOTION:</label>
+                        <input type="text" name="emotion" placeholder="(feeling)" required>
+                    </div>
+                    <button type="submit" class="submit-btn">GENERATE MY DECK!</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Final Deck Display -->
+        <div class="final-deck" id="finalDeck">
+            <div class="deck-window">
+                <div class="deck-header-bar">
+                    <span>POWERPOINT 2000 - [CONFIDENTIAL.ppt]</span>
+                    <div class="window-controls">
+                        <span class="window-btn">_</span>
+                        <span class="window-btn">□</span>
+                        <span class="window-btn" id="closeDeck">X</span>
+                    </div>
+                </div>
+                <div class="deck-content">
+                    <img src="../assets/confused/stamp-confidential.png" alt="CONFIDENTIAL" class="confidential-stamp">
+                    <h1 class="deck-headline" id="deckHeadline">REVOLUTIONARY PARADIGM SHIFT</h1>
+                    <div class="deck-body">
+                        <div class="product-showcase" id="productShowcase"></div>
+                        <p class="deck-text" id="deckText"></p>
+                        <div class="synergy-watermark">SYNERGY</div>
+                    </div>
+                    <div class="clip-art-container">
+                        <img src="../assets/confused/clipart-money.png" alt="Money" class="clip-art money">
+                        <img src="../assets/confused/clipart-graph.png" alt="Graph" class="clip-art graph">
+                        <img src="../assets/confused/clipart-handshake.png" alt="Handshake" class="clip-art handshake">
+                        <img src="../assets/confused/clipart-briefcase.png" alt="Briefcase" class="clip-art briefcase">
+                        <img src="../assets/confused/clipart-synergy.png" alt="Synergy" class="clip-art synergy-arrows">
+                    </div>
+                </div>
+                <div class="deck-footer">
+                    <p class="instruction-text">SCREENSHOT THIS MASTERPIECE & DM TO MODERATOR</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

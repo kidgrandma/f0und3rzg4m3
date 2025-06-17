@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build Your Apocalyptic Bedroom</title>
+    <link rel="stylesheet" href="../shared/common.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Marquee Title Card -->
+    <div class="marquee-container">
+        <div class="marquee-content">
+            <span>🏠 DRAG AND DROP ITEMS TO PIMP YOUR BUNKER! 🛏️</span>
+            <span>✨ DOUBLE-CLICK TO ROTATE! ✨</span>
+            <span>🎮 TRY THE KONAMI CODE! 🎮</span>
+            <span>📸 SCREENSHOT AND SHARE! 📸</span>
+            <span>🏠 DRAG AND DROP ITEMS TO PIMP YOUR BUNKER! 🛏️</span>
+            <span>✨ DOUBLE-CLICK TO ROTATE! ✨</span>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-section">
+                <span class="status-icon">🏠</span>
+                <span id="statusText">Ready</span>
+            </div>
+            <div class="status-section">
+                <span id="itemStatus">Items: 0</span>
+            </div>
+            <div class="status-section">
+                <span id="timeStatus">12:00 PM</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bedroom-container">
+        <!-- Header -->
+        <header class="bedroom-header">
+            <h1 class="title-bar">🛏️ PIMP YOUR BUNKER</h1>
+        </header>
+
+        <!-- Main Builder Area -->
+        <div class="builder-layout">
+            <!-- Room Preview -->
+            <div class="room-preview">
+                <!-- Profile Bar at Top -->
+                <div class="room-label" id="roomLabel">
+                    <div class="profile-header">
+                        <input type="text" id="playerNameInput" placeholder="YOUR INSTAGRAM" maxlength="20" class="name-input">
+                        <span>'s BUNKER</span>
+                    </div>
+                    <div class="profile-stats">
+                        ROOM #<span id="roomNumber">104</span> | 
+                        SUPPLIES: <span id="suppliesCount">0</span> | 
+                        VIBE: <span id="vibeText">EMPTY</span> | 
+                        SURVIVAL: <span id="survivalRating">☠️</span>
+                    </div>
+                </div>
+                
+                <div class="room-base" id="roomBase">
+                    <!-- Wallpaper Layer -->
+                    <div class="wallpaper-layer pink" id="wallpaperLayer">
+                        <div class="wallpaper-prompt" id="wallpaperPrompt">
+                            SELECT FROM THE MENU TO BUILD YOUR DREAM BUNKER!
+                        </div>
+                    </div>
+                    
+                    <!-- Static Room Elements -->
+                    <div class="room-floor"></div>
+                    <div class="room-window">
+                        <div class="window-frame"></div>
+                        <div class="apocalypse-view"></div>
+                    </div>
+                    
+                    <!-- Bed Container (Empty - bed will be added as draggable item) -->
+                    <div class="bed-container" id="bedContainer" style="display: none;">
+                        <img src="../assets/curious/bed-bunk.png" alt="Bed" class="bed-image" id="bedImage">
+                    </div>
+                    
+                    <!-- Draggable Items Container -->
+                    <div class="items-layer" id="itemsLayer">
+                        <!-- Items will be added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <div class="panel-window">
+                    <div class="panel-header">
+                        <span class="window-title">CUSTOMIZE YOUR ROOM</span>
+                        <div class="window-buttons">
+                            <span class="btn red"></span>
+                            <span class="btn yellow"></span>
+                            <span class="btn green"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="panel-content">
+                        <!-- Tab Buttons -->
+                        <div class="tab-buttons">
+                            <button class="tab-btn active" data-tab="bed">BED</button>
+                            <button class="tab-btn" data-tab="wallpaper">WALLPAPER</button>
+                            <button class="tab-btn special" data-tab="items">✨ ADD ITEM</button>
+                        </div>
+                        
+                        <!-- Tab Content -->
+                        <div class="tab-content">
+                            <!-- Bed Options -->
+                            <div class="tab-panel active" id="bedTab">
+                                <div class="options-grid">
+                                    <button class="option-btn" data-bed="basic">
+                                        <img src="../assets/curious/bed-basic.png" alt="Cooler Coffin" class="option-preview">
+                                        <span>Cooler Coffin</span>
+                                    </button>
+                                    <button class="option-btn" data-bed="race">
+                                        <img src="../assets/curious/bed-race.png" alt="Race Car" class="option-preview">
+                                        <span>Race Car Bed</span>
+                                    </button>
+                                    <button class="option-btn" data-bed="bunk">
+                                        <img src="../assets/curious/bed-bunk.png" alt="Bunk Bed" class="option-preview">
+                                        <span>Bunk Bed</span>
+                                    </button>
+                                    <button class="option-btn" data-bed="princess">
+                                        <img src="../assets/curious/bed-princess.png" alt="Princess Air" class="option-preview">
+                                        <span>Princess Air</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Wallpaper Options -->
+                            <div class="tab-panel" id="wallpaperTab">
+                                <div class="options-grid">
+                                    <button class="option-btn wallpaper-btn" data-wallpaper="pink">
+                                        <div class="option-preview wallpaper-preview pink"></div>
+                                        <span>Lisa Frank</span>
+                                    </button>
+                                    <button class="option-btn wallpaper-btn" data-wallpaper="space">
+                                        <div class="option-preview wallpaper-preview space"></div>
+                                        <span>Space Acid</span>
+                                    </button>
+                                    <button class="option-btn wallpaper-btn" data-wallpaper="wood">
+                                        <div class="option-preview wallpaper-preview wood"></div>
+                                        <span>Broken Concrete</span>
+                                    </button>
+                                    <button class="option-btn wallpaper-btn" data-wallpaper="clouds">
+                                        <div class="option-preview wallpaper-preview clouds"></div>
+                                        <span>Microsoft Clouds</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Items to Add -->
+                            <div class="tab-panel" id="itemsTab">
+                                <div class="items-grid">
+                                    <button class="item-btn" data-item="water">
+                                        <img src="../assets/curious/item-water.png" alt="Aquafina" class="item-preview">
+                                        <span>Aquafina Case</span>
+                                    </button>
+                                    <button class="item-btn" data-item="batteries">
+                                        <img src="../assets/curious/item-batteries.png" alt="Car Batteries" class="item-preview">
+                                        <span>Car Batteries</span>
+                                    </button>
+                                    <button class="item-btn" data-item="nsync">
+                                        <img src="../assets/curious/item-nsync.png" alt="Ricky Martin" class="item-preview">
+                                        <span>Ricky Martin</span>
+                                    </button>
+                                    <button class="item-btn" data-item="lamp">
+                                        <img src="../assets/curious/item-lamp.png" alt="IKEA Lamp" class="item-preview">
+                                        <span>IKEA Lamp</span>
+                                    </button>
+                                    <button class="item-btn" data-item="juice">
+                                        <img src="../assets/curious/item-juice.png" alt="Sunny D" class="item-preview">
+                                        <span>Sunny D x15</span>
+                                    </button>
+                                    <button class="item-btn" data-item="disco">
+                                        <img src="../assets/curious/item-disco.png" alt="Disco Lighter" class="item-preview">
+                                        <span>Disco Lighter</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="action-btn clear-btn" id="clearItems">CLEAR ITEMS</button>
+                            <button class="action-btn screenshot-btn" id="screenshotBtn">
+                                📸 TAKE A SCREENSHOT
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions Modal -->
+        <div class="modal-overlay" id="instructionsModal">
+            <div class="instructions-window">
+                <div class="window-header">
+                    <span>screenshot_instructions.txt</span>
+                    <button class="close-btn" id="closeInstructions">X</button>
+                </div>
+                <div class="window-content">
+                    <h2>📸 SCREENSHOT COMPLETE! 📸</h2>
+                    <p>Your apocalyptic bedroom is ready!</p>
+                    <br>
+                    <p><strong>NOW DO THIS:</strong></p>
+                    <ol>
+                        <li>Take a screenshot of your room</li>
+                        <li>DM it to the moderator</li>
+                        <li>Wait for further instructions</li>
+                    </ol>
+                    <br>
+                    <p class="blink">ROOM SAVED TO ARCHIVE ✓</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-overlay" id="welcomeModal" style="display: block;">
+            <div class="instructions-window welcome-window">
+                <div class="window-header">
+                    <span>🏠 welcome_to_bunker.exe</span>
+                    <button class="close-btn" id="closeWelcome">X</button>
+                </div>
+                <div class="window-content">
+                    <h2 style="text-align: center; color: #ff00ff;">🎮 PIMP YOUR BUNKER 🎮</h2>
+                    
+                    <div class="welcome-section">
+                        <p><strong>STEP 1:</strong></p>
+                        <p>Enter your Instagram handle<br>
+                        <input type="text" id="welcomeNameInput" placeholder="@yourhandle" maxlength="20" class="welcome-input">
+                        </p>
+                    </div>
+                    
+                    <div class="welcome-section">
+                        <p><strong>STEP 2:</strong></p>
+                        <p>Build your dream apocalypse bunker!</p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>Choose your bed 🛏️</li>
+                            <li>Pick wallpaper 🎨</li>
+                            <li>Add survival items 📦</li>
+                            <li>Drag & drop to arrange 👆</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="welcome-section">
+                        <p><strong>STEP 3:</strong></p>
+                        <p>Screenshot your finished room and DM to<br>
+                        <a href="https://instagram.com/kidgrandma" target="_blank" style="color: #ff00ff; font-weight: bold;">@kidgrandma</a></p>
+                    </div>
+                    
+                    <button class="start-btn" id="startBuilding">
+                        LET'S BUILD! →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
