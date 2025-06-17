@@ -17,6 +17,17 @@
             font-family: Arial, sans-serif;
             overflow: hidden;
             position: relative;
+            /* Prevent pull-to-refresh on mobile */
+            overscroll-behavior: none;
+            touch-action: pan-x pan-y;
+        }
+
+        /* Prevent iOS bounce effect */
+        html, body {
+            position: fixed;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
         }
 
         /* Background image if you have one */
@@ -114,6 +125,8 @@
             z-index: 20;
             animation: discSpin 4s linear infinite;
             filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
+            /* Prevent touch from doing anything else while dragging */
+            touch-action: none;
         }
 
         .cd-disc.active {
@@ -124,11 +137,13 @@
         .cd-disc.dragging {
             animation: none;
             z-index: 100;
+            touch-action: none;
         }
 
         .cd-disc img {
             width: 100%;
             height: 100%;
+            pointer-events: none; /* Prevent image from interfering with drag */
         }
 
         @keyframes discSpin {
@@ -456,6 +471,30 @@
     </audio>
 
     <script>
+        // Cleanup function for when leaving page
+        window.addEventListener('beforeunload', () => {
+            // Stop all audio
+            const allAudio = document.querySelectorAll('audio');
+            allAudio.forEach(audio => {
+                audio.pause();
+                audio.src = '';
+            });
+            
+            // Clear all intervals and timeouts
+            const highestId = window.setTimeout(() => {}, 0);
+            for (let i = 0; i < highestId; i++) {
+                window.clearTimeout(i);
+                window.clearInterval(i);
+            }
+        });
+
+        // Prevent pull to refresh on mobile
+        document.addEventListener('touchmove', function(e) {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
         // Audio setup
         const sounds = {
             bgMusic: document.getElementById('bgMusic'),
@@ -568,6 +607,7 @@
 
             function dragStart(e) {
                 if (e.target === disc || e.target.parentElement === disc) {
+                    e.preventDefault(); // Prevent any default touch behavior
                     isDragging = true;
                     disc.classList.add('dragging');
                     disc.style.zIndex = 1000;
@@ -614,11 +654,15 @@
                 if (!isDragging) return;
                 
                 e.preventDefault();
+                e.stopPropagation();
                 
                 let clientX, clientY;
                 if (e.type === "touchmove") {
-                    clientX = e.touches[0].clientX;
-                    clientY = e.touches[0].clientY;
+                    e.preventDefault(); // Extra prevention for touch
+                    if (e.touches.length > 0) {
+                        clientX = e.touches[0].clientX;
+                        clientY = e.touches[0].clientY;
+                    }
                 } else {
                     clientX = e.clientX;
                     clientY = e.clientY;
@@ -660,14 +704,21 @@
             document.addEventListener('mouseup', dragEnd);
             document.addEventListener('mousemove', drag);
 
-            // Touch events
-            disc.addEventListener('touchstart', dragStart);
-            document.addEventListener('touchend', dragEnd);
-            document.addEventListener('touchmove', drag);
+            // Touch events with passive: false to allow preventDefault
+            disc.addEventListener('touchstart', dragStart, { passive: false });
+            document.addEventListener('touchend', dragEnd, { passive: false });
+            document.addEventListener('touchmove', drag, { passive: false });
         }
 
         // Portal activation
         function activatePortal(portalType) {
+            // Clean up before navigation
+            // Stop all sounds
+            Object.values(sounds).forEach(sound => {
+                sound.pause();
+                sound.currentTime = 0;
+            });
+
             // Play activation sound
             sounds.portalActivate.currentTime = 0;
             sounds.portalActivate.play();
