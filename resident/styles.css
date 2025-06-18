@@ -79,7 +79,7 @@ body {
 
 /* Title Image */
 .main-title-img {
-    max-width: 100%;
+    max-width: 75%;
     height: auto;
     margin-bottom: 10px;
     filter: drop-shadow(0 0 30px rgba(160, 208, 255, 0.5));
