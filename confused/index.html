@@ -9,10 +9,14 @@
 </head>
 <body>
     <div class="deck-container">
+        <!-- Back to Playstation Button -->
+        <button class="home-btn" onclick="goHome()">← BACK TO PAISTATION</button>
+        
         <!-- Header with Marquee Fix -->
         <header class="deck-header">
             <div class="title-marquee">
                 <h1 class="deck-title" data-text="DECK-O-MATIC™">DECK-O-MATIC™</h1>
+                <h1 class="deck-title" data-text="DECK-O-MATIC™" aria-hidden="true">DECK-O-MATIC™</h1>
                 <h1 class="deck-title" data-text="DECK-O-MATIC™" aria-hidden="true">DECK-O-MATIC™</h1>
                 <h1 class="deck-title" data-text="DECK-O-MATIC™" aria-hidden="true">DECK-O-MATIC™</h1>
             </div>
@@ -24,7 +28,7 @@
             <div class="lotion-tony" id="lotionTony">
                 <img src="../assets/confused/lotion-tony.png" alt="Lotion Tony" class="tony-image" id="tonyImage">
                 <div class="speech-bubble">
-                    <p>Hey bud! You got questions about the game? Make me a deck and I'll tell you more.</p>
+                    <p>Hey bud! You got questions about the game? Show me ur deck and I'll tell u more.</p>
                 </div>
             </div>
 
@@ -64,25 +68,25 @@
         <div class="modal-overlay" id="modalOverlay"></div>
         <div class="mad-libs-modal" id="madLibsModal">
             <div class="modal-header">
-                <h3>FILL IN THE BLANKS, DUHHH!</h3>
+                <h3>Fill in the blanks and I'll whip you up a billion dollar deck!</h3>
             </div>
             <div class="modal-content">
                 <form id="madLibsForm">
                     <div class="input-group">
                         <label>ADJECTIVE:</label>
-                        <input type="text" name="adjective1" placeholder="(describing word)" required>
+                        <input type="text" name="adjective1" placeholder="(type)" required>
                     </div>
                     <div class="input-group">
                         <label>INDUSTRY:</label>
-                        <input type="text" name="industry" placeholder="(business type)" required>
+                        <input type="text" name="industry" placeholder="(type)" required>
                     </div>
                     <div class="input-group">
                         <label>BUZZWORD:</label>
-                        <input type="text" name="buzzword" placeholder="(tech term)" required>
+                        <input type="text" name="buzzword" placeholder="(type)" required>
                     </div>
                     <div class="input-group">
                         <label>VEGETABLE:</label>
-                        <input type="text" name="vegetable" placeholder="(any vegetable)" required>
+                        <input type="text" name="vegetable" placeholder="(type)" required>
                     </div>
                     <div class="input-group">
                         <label>NUMBER (1-999):</label>
@@ -90,11 +94,11 @@
                     </div>
                     <div class="input-group">
                         <label>PLURAL NOUN:</label>
-                        <input type="text" name="pluralNoun" placeholder="(multiple things)" required>
+                        <input type="text" name="pluralNoun" placeholder="(type)" required>
                     </div>
                     <div class="input-group">
                         <label>EMOTION:</label>
-                        <input type="text" name="emotion" placeholder="(feeling)" required>
+                        <input type="text" name="emotion" placeholder="(type)" required>
                     </div>
                     <button type="submit" class="submit-btn">GENERATE MY DECK!</button>
                 </form>
@@ -105,7 +109,7 @@
         <div class="final-deck" id="finalDeck">
             <div class="deck-window">
                 <div class="deck-header-bar">
-                    <span>POWERPOINT 2000 - [CONFIDENTIAL.ppt]</span>
+                    <span>POST_Apocalyptic_SF_LAST_CHANCE.ppt</span>
                     <div class="window-controls">
                         <span class="window-btn">_</span>
                         <span class="window-btn">□</span>
@@ -129,7 +133,7 @@
                     </div>
                 </div>
                 <div class="deck-footer">
-                    <p class="instruction-text">SCREENSHOT THIS MASTERPIECE & DM TO MODERATOR</p>
+                    <p class="instruction-text">SCREENSHOT THIS MASTERPIECE & DM TO MODERATOR TO COMPLETE ONBOARDING</p>
                 </div>
             </div>
         </div>

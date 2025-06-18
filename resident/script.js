@@ -1,12 +1,12 @@
-// Fortune Selfie CCTV Script - Fixed
+// Fortune Selfie CCTV Script - Updated for new flow
 
 // State management
 let cameraStream = null;
 let userHandle = '';
 let capturedImageData = null;
 
-// Dog tag images
-const dogTags = [
+// Silver card images (replacing dog tags)
+const silverCards = [
     '711.png',
     'hair.png',
     'jesus.png',
@@ -33,10 +33,11 @@ const continueBtn = document.getElementById('continueBtn');
 const userHandleInput = document.getElementById('userHandle');
 const resultPopup = document.getElementById('resultPopup');
 const resultPhoto = document.getElementById('resultPhoto');
-const resultDogTag = document.getElementById('resultDogTag');
+const resultCard = document.getElementById('resultCard');
 const timestampDate = document.getElementById('timestampDate');
 const timestampHandle = document.getElementById('timestampHandle');
 const retakeBtn = document.getElementById('retakeBtn');
+const paiBtn = document.getElementById('paiBtn');
 const cameraWindow = document.querySelector('.camera-window');
 
 // Initialize
@@ -45,7 +46,7 @@ window.addEventListener('load', () => {
     console.log('Fortune Selfie CCTV initialized');
 });
 
-// Continue button from instructions
+// Continue button from instructions (play.png)
 continueBtn.addEventListener('click', () => {
     userHandle = userHandleInput.value.trim();
     if (!userHandle) {
@@ -67,9 +68,9 @@ continueBtn.addEventListener('click', () => {
     }, 300);
 });
 
-// Start button click
+// Start button click (open-glen.png)
 startBtn.addEventListener('click', async () => {
-    console.log('Start button clicked');
+    console.log('Glen opened!');
     
     // Play music on user interaction
     bgMusic.play();
@@ -115,6 +116,11 @@ startBtn.addEventListener('click', async () => {
     }
 });
 
+// Pai button - Instagram link
+paiBtn.addEventListener('click', () => {
+    window.open('https://instagram.com/kidgrandma', '_blank');
+});
+
 // File upload fallback
 fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -140,8 +146,8 @@ captureBtn.addEventListener('click', capturePhoto);
 function capturePhoto() {
     console.log('Capturing photo...');
     
-    // Select random dog tag
-    const randomTag = dogTags[Math.floor(Math.random() * dogTags.length)];
+    // Select random silver card
+    const randomCard = silverCards[Math.floor(Math.random() * silverCards.length)];
     
     // Create canvas to capture with filter
     const canvas = document.createElement('canvas');
@@ -180,17 +186,17 @@ function capturePhoto() {
             capturedImageData = canvas.toDataURL('image/jpeg', 0.9);
             
             // Continue with capture process
-            finishCapture(randomTag);
+            finishCapture(randomCard);
         };
         img.src = uploadPreview.src;
         return; // Exit here, finishCapture will be called after image loads
     }
     
     // Continue with capture process
-    finishCapture(randomTag);
+    finishCapture(randomCard);
 }
 
-function finishCapture(randomTag) {
+function finishCapture(randomCard) {
     // Freeze the capture in the media player
     frozenCapture.src = capturedImageData;
     frozenCapture.style.display = 'block';
@@ -221,16 +227,16 @@ function finishCapture(randomTag) {
     
     // Show result popup after flash
     setTimeout(() => {
-        showResultPopup(capturedImageData, randomTag);
+        showResultPopup(capturedImageData, randomCard);
     }, 500);
 }
 
-function showResultPopup(imageData, tagImage) {
+function showResultPopup(imageData, cardImage) {
     // Set the photo
     resultPhoto.src = imageData;
     
-    // Set dog tag
-    resultDogTag.src = `../assets/resident/${tagImage}`;
+    // Set silver card
+    resultCard.src = `../assets/resident/${cardImage}`;
     
     // Set timestamp
     const now = new Date();
@@ -260,9 +266,9 @@ function showResultPopup(imageData, tagImage) {
     });
 }
 
-// Retake button
+// Retake button (start-over.png)
 retakeBtn.addEventListener('click', () => {
-    console.log('Retake button clicked');
+    console.log('Starting over...');
     
     // Fade out result popup
     resultPopup.style.opacity = '0';
@@ -331,7 +337,7 @@ window.addEventListener('beforeunload', () => {
 
 // Console easter egg
 console.log('%c✨ Fortune Selfie CCTV Active ✨', 'color: #64c8ff; font-size: 20px; font-weight: bold;');
-console.log('%cYour dog tag fortune awaits...', 'color: #a0d0ff; font-style: italic;');
+console.log('%cYour silver card fortune awaits...', 'color: #a0d0ff; font-style: italic;');
 console.log('Send screenshots to @kidgrandma!');
 
 // Keyboard shortcuts
@@ -357,16 +363,20 @@ document.addEventListener('keydown', (e) => {
         }
     }
 });
+
+// Go home function
 function goHome() {
     // Clean up before leaving
-    if (typeof soundEnabled !== 'undefined') {
-        // Stop all audio
-        const allAudio = document.querySelectorAll('audio');
-        allAudio.forEach(audio => {
-            audio.pause();
-            audio.src = '';
-        });
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
     }
+    
+    // Stop all audio
+    const allAudio = document.querySelectorAll('audio');
+    allAudio.forEach(audio => {
+        audio.pause();
+        audio.src = '';
+    });
     
     // Navigate to home
     window.location.href = '../index.html';

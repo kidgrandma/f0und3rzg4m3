@@ -9,28 +9,47 @@ const audio = {
     ],
     openModal: new Audio('../assets/confused/open-modal.mp3'),
     finishDeck: new Audio('../assets/confused/finish-deck.mp3'),
-    currentTrack: 0
+    currentTrack: 0,
+    isPlaying: false
 };
 
 // Initialize audio settings
 audio.mainTracks.forEach(track => {
-    track.volume = 0.7; // Adjust volume as needed
+    track.volume = 0.7;
+    track.preload = 'auto';
 });
 audio.openModal.volume = 0.8;
 audio.finishDeck.volume = 0.9;
 
 // Function to play background music sequentially
 function playBackgroundMusic() {
+    if (audio.isPlaying) return; // Prevent multiple instances
+    
     const currentAudio = audio.mainTracks[audio.currentTrack];
+    audio.isPlaying = true;
+    
+    // Ensure all other tracks are stopped
+    audio.mainTracks.forEach((track, index) => {
+        if (index !== audio.currentTrack) {
+            track.pause();
+            track.currentTime = 0;
+        }
+    });
     
     currentAudio.play().catch(e => {
         console.log('Audio autoplay blocked. User needs to interact first.');
+        audio.isPlaying = false;
     });
     
-    currentAudio.addEventListener('ended', () => {
+    // Remove any existing event listeners first
+    currentAudio.onended = null;
+    
+    // Add new event listener for when track ends
+    currentAudio.onended = () => {
         audio.currentTrack = (audio.currentTrack + 1) % audio.mainTracks.length;
+        audio.isPlaying = false;
         playBackgroundMusic();
-    });
+    };
 }
 
 // Start background music when page loads (or on first user interaction)
@@ -40,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Backup: play on first user interaction if autoplay is blocked
     document.addEventListener('click', function startAudio() {
-        if (audio.mainTracks[0].paused) {
+        if (!audio.isPlaying && audio.mainTracks[0].paused) {
             playBackgroundMusic();
         }
         document.removeEventListener('click', startAudio);
@@ -181,32 +200,6 @@ function generateDeck() {
     makeTonyDance();
 }
 
-// Get product class for styling
-function getProductClass(product) {
-    const classes = {
-        'cbd-sanitizer': 'cbd',
-        'marshmallow-shoes': 'shoes',
-        'salty-skittles': 'skittles',
-        'glow-cds': 'cds',
-        'horoscope-ice': 'ice',
-        'brain-smoothie': 'smoothie'
-    };
-    return classes[product];
-}
-
-// Get product label
-function getProductLabel(product) {
-    const labels = {
-        'cbd-sanitizer': 'CBD',
-        'marshmallow-shoes': 'SHOES',
-        'salty-skittles': 'SALTY',
-        'glow-cds': 'CDs',
-        'horoscope-ice': 'ICE',
-        'brain-smoothie': 'BRAIN'
-    };
-    return labels[product];
-}
-
 // Make Tony dance when deck is complete
 function makeTonyDance() {
     const tonyImage = document.getElementById('tonyImage');
@@ -222,7 +215,7 @@ function makeTonyDance() {
     setTimeout(() => {
         tonyImage.style.animation = '';
         tonyImage.src = '../assets/confused/lotion-tony.png';
-        speechBubble.textContent = 'Hi there, Bright Mind™! Ready to disrupt the future of electrolytes?';
+        speechBubble.textContent = 'Hey bud! You got questions about the game? Make me a deck and I\'ll tell you more.';
     }, 5000);
 }
 
@@ -261,10 +254,6 @@ styleSheet.textContent = `
         0%, 100% { transform: rotate(0deg); }
         25% { transform: rotate(-10deg); }
         75% { transform: rotate(10deg); }
-    }
-    
-    .tony-placeholder.excited {
-        animation: bounce 0.5s ease-out !important;
     }
 `;
 document.head.appendChild(styleSheet);
@@ -378,17 +367,33 @@ document.head.appendChild(orbStyle);
 
 // Audio controls helper (for debugging/testing)
 console.log('Audio Controls: audio.mainTracks[0].pause() to pause music');
+
+// Go home function
 function goHome() {
     // Clean up before leaving
-    if (typeof soundEnabled !== 'undefined') {
-        // Stop all audio
-        const allAudio = document.querySelectorAll('audio');
-        allAudio.forEach(audio => {
-            audio.pause();
-            audio.src = '';
-        });
+    // Stop all audio
+    audio.mainTracks.forEach(track => {
+        track.pause();
+        track.currentTime = 0;
+    });
+    audio.openModal.pause();
+    audio.finishDeck.pause();
+    
+    // Clear intervals
+    const highestId = window.setTimeout(() => {}, 0);
+    for (let i = 0; i < highestId; i++) {
+        window.clearTimeout(i);
+        window.clearInterval(i);
     }
     
     // Navigate to home
     window.location.href = '../index.html';
 }
+
+// Clean up on page unload
+window.addEventListener('beforeunload', () => {
+    audio.mainTracks.forEach(track => {
+        track.pause();
+        track.src = '';
+    });
+});

@@ -1,4 +1,10 @@
-/* Body with background image */
+/* Y2K Chaos Bedroom Builder Styles */
+
+/* Base Reset and Body */
+* {
+    box-sizing: border-box;
+}
+
 body {
     background-image: url('../assets/curious/bunker-bg.jpg');
     background-size: cover;
@@ -13,6 +19,33 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    overflow-x: hidden;
+}
+
+/* Home Button */
+.home-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #00ffff;
+    color: #00ffff;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.home-btn:hover {
+    background: #00ffff;
+    color: #000;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #00ffff;
 }
 
 /* Marquee Title Card */
@@ -50,7 +83,7 @@ body {
     100% { transform: translateX(-50%); }
 }
 
-/* Main container styled as browser window */
+/* Main Container - Mac OS X Aqua meets Windows XP Chaos */
 .bedroom-container {
     display: flex;
     flex-direction: column;
@@ -58,61 +91,34 @@ body {
     max-width: 1200px;
     flex: 1;
     max-height: 800px;
-    background: #c0c0c0;
-    border: 2px solid;
-    border-color: #ffffff #808080 #808080 #ffffff;
+    background: linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 100%);
+    border: 2px solid #333;
+    border-radius: 8px;
     box-shadow: 
-        inset 1px 1px 0 #dfdfdf,
-        inset -1px -1px 0 #000000,
-        4px 4px 10px rgba(0, 0, 0, 0.5);
+        0 0 0 1px #fff inset,
+        0 8px 24px rgba(0, 0, 0, 0.4);
     overflow: hidden;
+    position: relative;
 }
 
-/* Header - Enhanced Browser Style */
+/* Header - Aqua Style */
 .bedroom-header {
-    background: linear-gradient(to right, #000080, #1084d0);
-    padding: 4px 8px;
-    border-bottom: 2px solid #000000;
+    background: linear-gradient(to bottom, #f0f0f0 0%, #d8d8d8 50%, #c0c0c0 100%);
+    padding: 8px;
+    border-bottom: 1px solid #999;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-}
-
-/* Add browser address bar */
-.bedroom-header::before {
-    content: '🌐 http://www.pimpyourbunker.com/room-builder/';
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #ffffff;
-    padding: 2px 20px;
-    font-size: 11px;
-    color: #000000;
-    border: 1px inset #808080;
-    font-family: "MS Sans Serif", Tahoma, sans-serif;
+    justify-content: center;
+    position: relative;
 }
 
 .title-bar {
-    font-family: "MS Sans Serif", Tahoma, sans-serif;
-    font-size: 13px;
-    color: #ffffff;
+    font-family: "Lucida Grande", "Arial", sans-serif;
+    font-size: 14px;
+    color: #333;
     margin: 0;
     font-weight: bold;
-    z-index: 1;
-}
-
-/* Window controls */
-.bedroom-header::after {
-    content: '⎯ ▢ ✕';
-    color: #000000;
-    background: #c0c0c0;
-    padding: 2px 4px;
-    font-family: "MS Sans Serif", Tahoma, sans-serif;
-    font-size: 12px;
-    border: 1px solid;
-    border-color: #ffffff #808080 #808080 #ffffff;
-    cursor: pointer;
-    z-index: 1;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 /* Main Layout */
@@ -122,60 +128,152 @@ body {
     gap: 20px;
     padding: 20px;
     overflow: hidden;
+    background: #f5f5f5;
 }
 
-/* Room Preview - Windows 98 Window */
+/* Room Preview - Mixed Style Window */
 .room-preview {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #c0c0c0;
-    border: 2px solid;
-    border-color: #ffffff #808080 #808080 #ffffff;
-    box-shadow: inset -1px -1px 0 #000000;
+    background: linear-gradient(135deg, #ff69b4 0%, #00ced1 100%);
+    border: 3px solid #fff;
+    border-radius: 12px;
+    box-shadow: 
+        inset 0 0 0 1px rgba(0, 0, 0, 0.2),
+        0 4px 16px rgba(0, 0, 0, 0.3);
     position: relative;
+    overflow: hidden;
 }
 
 .room-base {
     flex: 1;
     position: relative;
-    background: #008080;
-    border: 2px solid;
-    border-color: #808080 #ffffff #ffffff #808080;
+    background: #222;
+    border: 2px solid #000;
     overflow: hidden;
-    margin: 2px;
+    margin: 8px;
+    border-radius: 8px;
 }
 
-/* Wallpaper Layer with actual images */
+/* Room Label - Y2K Style */
+.room-label {
+    background: linear-gradient(45deg, #ffff00, #ff00ff, #00ffff);
+    color: #000;
+    padding: 8px;
+    font-family: "Impact", sans-serif;
+    font-size: 14px;
+    border: 2px solid #000;
+    margin: 8px;
+    box-shadow: 
+        3px 3px 0 #000,
+        inset 0 0 10px rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+}
+
+.profile-header {
+    display: inline-block;
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+.profile-stats {
+    display: inline-block;
+    background: #000;
+    color: #0f0;
+    padding: 4px 8px;
+    border: 1px solid #0f0;
+    font-family: "Courier New", monospace;
+    text-shadow: 0 0 5px #0f0;
+}
+
+.name-input {
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid #ff00ff;
+    color: #000;
+    font-family: "Comic Sans MS", cursive;
+    font-size: inherit;
+    width: 150px;
+    padding: 2px 4px;
+    text-transform: uppercase;
+    outline: none;
+}
+
+.name-input:focus {
+    background: #ffff00;
+    border-color: #ff00ff;
+    box-shadow: 0 0 10px #ff00ff;
+}
+
+/* Wallpaper System - Less Tiling */
 .wallpaper-layer {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 30%;
-    background-image: url('../assets/curious/wallpaper-pink.png');
-    background-repeat: repeat;
-    background-size: auto;
-    background-position: top left;
-    transition: background-image 0.3s ease;
+    background-size: cover;
+    background-position: center;
+    transition: all 0.3s ease;
 }
 
-.wallpaper-layer.pink {
+.wallpaper-layer.pink { 
     background-image: url('../assets/curious/wallpaper-pink.png');
+    filter: hue-rotate(10deg) brightness(1.1);
 }
-
-.wallpaper-layer.space {
+.wallpaper-layer.space { 
     background-image: url('../assets/curious/wallpaper-space.png');
+    filter: contrast(1.2);
 }
-
-.wallpaper-layer.wood {
+.wallpaper-layer.wood { 
     background-image: url('../assets/curious/wallpaper-wood.png');
+    filter: sepia(0.3);
 }
-
-.wallpaper-layer.clouds {
+.wallpaper-layer.clouds { 
     background-image: url('../assets/curious/wallpaper-clouds.png');
+    filter: brightness(1.2) saturate(1.5);
 }
 
+.wallpaper-prompt {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #000;
+    color: #0f0;
+    padding: 20px 40px;
+    font-family: "Courier New", monospace;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    border: 3px solid #0f0;
+    box-shadow: 
+        0 0 20px #0f0,
+        inset 0 0 20px rgba(0, 255, 0, 0.2);
+    animation: promptPulse 2s ease-in-out infinite;
+    z-index: 50;
+}
+
+/* Hide prompt when wallpaper is selected */
+.wallpaper-layer.pink .wallpaper-prompt,
+.wallpaper-layer.space .wallpaper-prompt,
+.wallpaper-layer.wood .wallpaper-prompt,
+.wallpaper-layer.clouds .wallpaper-prompt {
+    display: none;
+}
+
+@keyframes promptPulse {
+    0%, 100% { 
+        box-shadow: 0 0 20px #0f0, inset 0 0 20px rgba(0, 255, 0, 0.2);
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% { 
+        box-shadow: 0 0 40px #0f0, inset 0 0 40px rgba(0, 255, 0, 0.4);
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+}
+
+/* Room Elements */
 .room-floor {
     position: absolute;
     bottom: 0;
@@ -183,9 +281,9 @@ body {
     right: 0;
     height: 30%;
     background-image: url('../assets/curious/carpet.png');
-    background-repeat: repeat;
-    background-size: auto;
+    background-size: cover;
     border-top: 3px solid #000;
+    z-index: 5;
 }
 
 .room-window {
@@ -194,9 +292,12 @@ body {
     left: 10%;
     width: 100px;
     height: 120px;
-    background: #87ceeb;
+    background: linear-gradient(135deg, #87ceeb, #98fb98);
     border: 4px solid #8b4513;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+    box-shadow: 
+        inset 0 0 20px rgba(0,0,0,0.3),
+        0 0 20px rgba(135, 206, 235, 0.5);
+    z-index: 5;
 }
 
 .window-frame {
@@ -208,95 +309,51 @@ body {
     background: #8b4513;
 }
 
-/* Bed Container */
-.bed-container {
+/* Items Layer */
+.items-layer {
     position: absolute;
-    bottom: 30%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 180px;
-    height: 120px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 10;
 }
 
-.bed-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-/* Room Label - Enhanced Windows 98 Style */
-.room-label {
-    background: linear-gradient(to bottom, #ffffff 0%, #dfdfdf 50%, #c0c0c0 100%);
-    color: #000000;
-    padding: 8px;
-    font-family: "MS Sans Serif", Tahoma, sans-serif;
-    font-size: 14px;
-    border: 2px solid;
-    border-color: #ffffff #808080 #808080 #ffffff;
-    margin: 4px;
-    box-shadow: inset 1px 1px 0 #ffffff;
-}
-
-.profile-header {
-    display: inline-block;
-    margin-right: 20px;
-    font-weight: bold;
-}
-
-.profile-stats {
-    display: inline-block;
-    background: #000080;
-    color: #ffffff;
-    padding: 2px 8px;
-    border: 2px inset #c0c0c0;
-}
-
-.name-input {
-    background: #ffffff;
-    border: 2px inset #c0c0c0;
-    color: #000000;
-    font-family: inherit;
-    font-size: inherit;
-    width: 150px;
-    padding: 2px 4px;
-    text-transform: uppercase;
-}
-
-.name-input::placeholder {
-    color: #808080;
-    font-style: italic;
-}
-
-.name-input:focus {
-    background: #ffffcc;
-    outline: none;
-}
-
-/* Control Panel */
+/* Control Panel - Clashing Aqua/XP Style */
 .control-panel {
+    background: linear-gradient(45deg, 
+    rgba(255, 0, 255, 0.3),
+    rgba(0, 255, 255, 0.3),
+    rgba(255, 255, 0, 0.3));
+backdrop-filter: blur(10px);
     width: 400px;
     display: flex;
     flex-direction: column;
 }
 
 .panel-window {
-    background: #c0c0c0;
+    background: linear-gradient(135deg, #00ff00 0%, #ff00ff 50%, #ffff00 100%);
     border: 3px solid #000;
-    box-shadow: inset -2px -2px 0 #808080, inset 2px 2px 0 #fff;
+    border-radius: 12px;
+    box-shadow: 
+        0 0 0 1px #fff inset,
+        0 4px 16px rgba(0, 0, 0, 0.5);
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .panel-header {
-    background: linear-gradient(90deg, #ff0080, #ff00ff);
+    background: linear-gradient(45deg, #ff0080, #00ff80);
     color: #fff;
     padding: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-weight: bold;
+    text-shadow: 1px 1px 2px #000;
+    border-bottom: 2px solid #000;
 }
 
 .window-buttons {
@@ -308,22 +365,31 @@ body {
     width: 15px;
     height: 15px;
     border-radius: 50%;
-    border: 1px solid rgba(0,0,0,0.3);
+    border: 1px solid #000;
+    cursor: pointer;
 }
 
-.btn.red { background: #ff5f56; }
-.btn.yellow { background: #ffbd2e; }
-.btn.green { background: #27c93f; }
+.btn.red { 
+    background: radial-gradient(circle at 30% 30%, #ff6b6b, #ff0000); 
+}
+.btn.yellow { 
+    background: radial-gradient(circle at 30% 30%, #ffe66d, #ffd700); 
+}
+.btn.green { 
+    background: radial-gradient(circle at 30% 30%, #90ee90, #00ff00); 
+}
 
+/* Panel Content */
 .panel-content {
     flex: 1;
     padding: 15px;
     display: flex;
     flex-direction: column;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.9);
+    overflow: hidden;
 }
 
-/* Tab System */
+/* Tab System - Mixed Fonts Chaos */
 .tab-buttons {
     display: flex;
     gap: 5px;
@@ -333,39 +399,76 @@ body {
 
 .tab-btn {
     padding: 8px 15px;
-    background: #ddd;
+    background: linear-gradient(to bottom, #fff, #ddd);
     border: 2px solid #999;
-    border-radius: 5px 5px 0 0;
+    border-radius: 20px 5px 20px 5px;
     cursor: pointer;
-    font-family: "Arial", sans-serif;
+    font-family: "Impact", sans-serif;
     font-weight: bold;
     transition: all 0.2s ease;
+    text-transform: uppercase;
+    box-shadow: 2px 2px 0 #666;
 }
 
 .tab-btn:hover {
-    background: #eee;
+    background: linear-gradient(to bottom, #ffff00, #ff00ff);
+    transform: rotate(-2deg) scale(1.1);
+    box-shadow: 4px 4px 0 #000;
 }
 
 .tab-btn.active {
-    background: #fff;
-    border-bottom-color: #fff;
-    transform: translateY(2px);
+    background: linear-gradient(45deg, #00ff00, #00ffff);
+    border-color: #000;
+    transform: rotate(2deg);
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .tab-btn.special {
-    background: linear-gradient(45deg, #ff6b9d, #feca57);
+    background: linear-gradient(45deg, #ff1493, #ffd700, #00ff7f);
     color: #fff;
+    font-family: "Comic Sans MS", cursive;
+    animation: specialPulse 2s ease-in-out infinite;
+}
+
+@keyframes specialPulse {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.05) rotate(-5deg); }
 }
 
 /* Tab Content */
 .tab-content {
     flex: 1;
     overflow-y: auto;
-    background: #fff;
-    border: 2px solid #999;
+    background: 
+        /* Dark grid on light */
+        repeating-linear-gradient(
+            0deg,
+            #000 0px,
+            #000 2px,
+            transparent 2px,
+            transparent 30px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            #000 0px,
+            #000 2px,
+            transparent 2px,
+            transparent 30px
+        ),
+        /* Inverted neon colors */
+        linear-gradient(135deg, 
+            rgba(0, 0, 255, 0.2) 0%,    /* inverted yellow */
+            rgba(255, 0, 0, 0.2) 25%,   /* inverted cyan */
+            rgba(0, 255, 0, 0.2) 50%,   /* inverted magenta */
+            rgba(255, 0, 255, 0.2) 75%, /* inverted green */
+            rgba(0, 0, 255, 0.2) 100%);
+    background-color: #f0f0f0;
+    border: 3px solid #000;
     padding: 10px;
+    box-shadow: 
+        inset 0 0 30px rgba(0, 0, 0, 0.2),
+        inset 0 0 10px rgba(255, 255, 255, 0.8);
 }
-
 .tab-panel {
     display: none;
 }
@@ -380,107 +483,74 @@ body {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
 }
-
 .option-btn {
-    background: #f0f0f0;
-    border: 2px solid #666;
+    background: linear-gradient(135deg, #f0f0f0, #fff);
+    border: 3px solid #000;
     padding: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
+    border-radius: 10px;
+    font-family: "Arial Black", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 120px;
 }
 
 .option-btn:hover {
-    background: #e0e0e0;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background: linear-gradient(135deg, #ffff00, #ff00ff);
+    transform: translateY(-2px) rotate(1deg);
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.3);
 }
 
+/* Fix the preview images */
 .option-preview {
     width: 80px;
     height: 60px;
-    margin: 0 auto 5px;
-    border: 1px solid #999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
+    margin: 0;
+    border: 2px solid #000;
     object-fit: contain;
+    background: #fff;
+    border-radius: 5px;
 }
 
-/* Wallpaper Previews using actual images */
+/* Fix the text labels */
+.option-btn span {
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: #000;
+    word-wrap: break-word;
+    max-width: 100%;
+}
+
+/* Ensure consistent grid spacing */
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 5px;
+}
+
+/* Wallpaper Previews */
 .wallpaper-preview {
     width: 100%;
     height: 60px;
     background-size: cover;
     background-position: center;
-    border: 1px solid #999;
+    border: 2px solid #000;
 }
 
-.wallpaper-preview.pink {
-    background-image: url('../assets/curious/wallpaper-pink.png');
-}
+.wallpaper-preview.pink { background-image: url('../assets/curious/wallpaper-pink.png'); }
+.wallpaper-preview.space { background-image: url('../assets/curious/wallpaper-space.png'); }
+.wallpaper-preview.wood { background-image: url('../assets/curious/wallpaper-wood.png'); }
+.wallpaper-preview.clouds { background-image: url('../assets/curious/wallpaper-clouds.png'); }
 
-.wallpaper-preview.space {
-    background-image: url('../assets/curious/wallpaper-space.png');
-}
 
-.wallpaper-preview.wood {
-    background-image: url('../assets/curious/wallpaper-wood.png');
-}
-
-.wallpaper-preview.clouds {
-    background-image: url('../assets/curious/wallpaper-clouds.png');
-}
-
-/* Wallpaper Prompt */
-.wallpaper-prompt {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: #00ff00;
-    padding: 20px 40px;
-    font-family: "Courier New", monospace;
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-align: center;
-    border: 3px solid #00ff00;
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
-    animation: promptPulse 2s ease-in-out infinite;
-}
-
-@keyframes promptPulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); }
-    50% { box-shadow: 0 0 40px rgba(0, 255, 0, 0.8); }
-}
-
-/* Hide prompt when wallpaper is selected */
-.wallpaper-layer.pink .wallpaper-prompt,
-.wallpaper-layer.space .wallpaper-prompt,
-.wallpaper-layer.wood .wallpaper-prompt,
-.wallpaper-layer.clouds .wallpaper-prompt {
-    display: none;
-}
-
-.wallpaper-preview.pink {
-    background-image: url('../assets/curious/wallpaper-pink.png');
-}
-
-.wallpaper-preview.space {
-    background-image: url('../assets/curious/wallpaper-space.png');
-}
-
-.wallpaper-preview.wood {
-    background-image: url('../assets/curious/wallpaper-wood.png');
-}
-
-.wallpaper-preview.clouds {
-    background-image: url('../assets/curious/wallpaper-clouds.png');
-}
-
-/* Items Grid */
 .items-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -488,26 +558,47 @@ body {
 }
 
 .item-btn {
-    background: #fffacd;
-    border: 2px solid #ffd700;
+    background: linear-gradient(135deg, #f0f0f0, #fff);
+    border: 3px solid #000;
     padding: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
+    border-radius: 10px;
+    font-family: "Arial Black", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 100px;
 }
 
 .item-btn:hover {
-    background: #ffd700;
-    transform: scale(1.05);
+    background: linear-gradient(135deg, #ffff00, #ff00ff);
+    transform: translateY(-2px) rotate(1deg);
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.3);
 }
 
 .item-preview {
-    width: 60px;
-    height: 60px;
-    margin: 0 auto 5px;
+    width: 50px;
+    height: 50px;
+    margin: 0;
+    border: 2px solid #000;
     object-fit: contain;
+    background: #fff;
+    border-radius: 5px;
 }
 
+.item-btn span {
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: #000;
+    word-wrap: break-word;
+    max-width: 100%;
+}
 /* Draggable Room Items */
 .room-item {
     position: absolute;
@@ -519,48 +610,20 @@ body {
 
 .room-item:hover {
     transform: scale(1.1);
+    filter: drop-shadow(0 0 10px #ffff00);
 }
 
 .room-item.dragging {
     opacity: 0.7;
     z-index: 100;
+    filter: drop-shadow(0 0 20px #ff00ff);
 }
 
 .room-item img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-}
-
-/* Specific item sizes */
-.room-item[data-type="water"] {
-    width: 80px;
-    height: 80px;
-}
-
-.room-item[data-type="batteries"] {
-    width: 60px;
-    height: 60px;
-}
-
-.room-item[data-type="nsync"] {
-    width: 100px;
-    height: 100px;
-}
-
-.room-item[data-type="lamp"] {
-    width: 70px;
-    height: 70px;
-}
-
-.room-item[data-type="juice"] {
-    width: 60px;
-    height: 60px;
-}
-
-.room-item[data-type="disco"] {
-    width: 90px;
-    height: 90px;
+    filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.8));
 }
 
 /* Action Buttons */
@@ -574,30 +637,38 @@ body {
     flex: 1;
     padding: 15px;
     font-weight: bold;
-    font-family: Arial Black, sans-serif;
+    font-family: "Impact", sans-serif;
     border: 3px solid #000;
     cursor: pointer;
     transition: all 0.2s ease;
     text-transform: uppercase;
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
 }
 
 .clear-btn {
-    background: #ff6b6b;
+    background: linear-gradient(45deg, #ff0000, #ff69b4);
     color: #fff;
+    text-shadow: 2px 2px 0 #000;
 }
 
 .screenshot-btn {
-    background: #4ecdc4;
+    background: linear-gradient(45deg, #00ffff, #00ff00);
     color: #000;
     font-size: 1.1rem;
 }
 
 .action-btn:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) rotate(-1deg);
     box-shadow: 0 5px 10px rgba(0,0,0,0.3);
 }
 
-/* Instructions Modal */
+.action-btn:active {
+    transform: translateY(0) rotate(0);
+}
+
+/* Welcome Modal - AIM/MSN Style */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -609,74 +680,194 @@ body {
     z-index: 1000;
 }
 
+.welcome-window,
 .instructions-window {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: #c0c0c0;
+    background: linear-gradient(135deg, #fff, #e0e0ff);
     border: 3px solid #000;
-    box-shadow: inset -2px -2px 0 #808080, inset 2px 2px 0 #fff;
+    border-radius: 15px;
+    box-shadow: 
+        0 0 0 2px #fff,
+        0 0 0 4px #000,
+        0 10px 30px rgba(0, 0, 0, 0.5);
     width: 90%;
     max-width: 500px;
+    overflow: hidden;
 }
 
 .window-header {
-    background: #000080;
+    background: linear-gradient(to right, #0000ff, #ff00ff);
     color: #fff;
-    padding: 5px 10px;
+    padding: 8px 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-family: "Arial", sans-serif;
+    font-weight: bold;
+}
+
+.window-title {
+    text-shadow: 1px 1px 2px #000;
 }
 
 .close-btn {
-    background: #c0c0c0;
-    border: 2px solid #000;
+    background: #ff0000;
+    border: 2px solid #fff;
+    color: #fff;
     padding: 2px 8px;
     cursor: pointer;
     font-weight: bold;
+    border-radius: 4px;
+    font-family: "Arial", sans-serif;
+}
+
+.close-btn:hover {
+    background: #ff6666;
+    transform: scale(1.1);
 }
 
 .window-content {
     padding: 20px;
     background: #fff;
-    font-family: Arial, sans-serif;
+    font-family: "Comic Sans MS", cursive;
     color: #000;
 }
 
-.blink {
-    animation: blink 1s step-end infinite;
-    color: #00ff00;
+/* Welcome Modal Specific */
+.welcome-title {
+    text-align: center;
+    font-family: "Impact", sans-serif;
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-shadow: 
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000;
+    color: #fff;
+}
+
+.welcome-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(45deg, rgba(255, 0, 255, 0.1), rgba(0, 255, 255, 0.1));
+    border: 2px solid;
+    border-radius: 10px;
+}
+
+.welcome-section.step1 {
+    border-color: #ff00ff;
+}
+
+.welcome-section.step2 {
+    border-color: #00ff00;
+}
+
+.welcome-section.step3 {
+    border-color: #00ffff;
+}
+
+.section-header {
+    font-family: "Arial Black", sans-serif;
+    font-size: 18px;
+    color: #ff00ff;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.welcome-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 3px solid #ff00ff;
+    background: linear-gradient(to right, #ffffcc, #ffccff);
+    font-family: "Comic Sans MS", cursive;
+    margin-top: 10px;
+    border-radius: 20px;
+    text-align: center;
+    outline: none;
+}
+
+.welcome-input:focus {
+    background: #ffff00;
+    border-color: #00ff00;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+}
+
+.funky-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.funky-list li {
+    padding: 5px 0;
+    font-size: 14px;
+}
+
+.list-icon {
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.insta-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 5px 15px;
+    background: linear-gradient(45deg, #ff00ff, #00ffff);
+    color: #fff;
+    text-decoration: none;
     font-weight: bold;
+    border-radius: 20px;
+    text-shadow: 1px 1px 2px #000;
+    transition: all 0.3s ease;
 }
 
-@keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
+.insta-link:hover {
+    transform: scale(1.1) rotate(-5deg);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
 }
 
-/* Animations */
-@keyframes itemBounce {
-    0% { transform: scale(0) rotate(0deg); opacity: 0; }
-    50% { transform: scale(1.2) rotate(180deg); }
-    100% { transform: scale(1) rotate(360deg); opacity: 1; }
+.start-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(45deg, #ff006e, #00ff00, #00ffff);
+    color: #000;
+    border: 3px solid #000;
+    font-weight: bold;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 30px;
+    font-family: "Impact", sans-serif;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
 }
 
-@keyframes roomShake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-10px); }
-    75% { transform: translateX(10px); }
+.start-btn:hover {
+    transform: scale(1.05) rotate(2deg);
+    box-shadow: 
+        0 0 20px rgba(255, 0, 110, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.5);
+    background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+}
+
+.start-btn:active {
+    transform: scale(0.95);
 }
 
 /* Status Bar */
 .status-bar {
-    background: #c0c0c0;
-    border-top: 2px solid #ffffff;
-    padding: 2px 4px;
+    background: linear-gradient(to right, #c0c0c0, #808080);
+    border-top: 2px solid #fff;
+    padding: 4px 8px;
     display: flex;
     justify-content: space-between;
-    font-family: "MS Sans Serif", Tahoma, sans-serif;
+    font-family: "Tahoma", sans-serif;
     font-size: 11px;
 }
 
@@ -689,46 +880,56 @@ body {
 .status-icon {
     margin-right: 4px;
 }
-html {
-    -webkit-text-size-adjust: 100%;
-    -ms-text-size-adjust: 100%;
+
+/* Animations */
+.blink {
+    animation: blink 1s step-end infinite;
+    color: #00ff00;
+    font-weight: bold;
 }
 
-/* Prevent horizontal scroll */
-body {
-    overflow-x: hidden;
-    position: relative;
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
 }
 
-/* Touch-friendly interactions */
-button, .option-btn, .item-btn, .tab-btn {
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-    touch-action: manipulation;
+@keyframes itemBounce {
+    0% { transform: scale(0) rotate(0deg); opacity: 0; }
+    50% { transform: scale(1.2) rotate(180deg); }
+    100% { transform: scale(1) rotate(360deg); opacity: 1; }
 }
 
-/* Improve touch targets */
-@media (hover: none) and (pointer: coarse) {
-    .option-btn, .item-btn, .tab-btn, .action-btn {
-        min-height: 44px;
-        min-width: 44px;
-    }
+@keyframes roomShake {
+    0%, 100% { transform: translateX(0); }
+    10% { transform: translateX(-15px) rotate(-1deg); }
+    20% { transform: translateX(15px) rotate(1deg); }
+    30% { transform: translateX(-15px) rotate(-1deg); }
+    40% { transform: translateX(15px) rotate(1deg); }
+    50% { transform: translateX(-10px) rotate(-0.5deg); }
+    60% { transform: translateX(10px) rotate(0.5deg); }
+    70% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+    90% { transform: translateX(-2px); }
 }
 
-/* Base mobile styles */
+/* Mobile Optimizations */
 @media (max-width: 768px) {
     body {
         padding: 0;
         margin: 0;
-        min-height: 100vh;
-        overflow-x: hidden;
     }
     
-    /* Marquee container mobile */
+    .home-btn {
+        top: 10px;
+        left: 10px;
+        padding: 8px 15px;
+        font-size: 12px;
+    }
+    
     .marquee-container {
         width: 100%;
         margin-bottom: 0;
         padding: 5px;
-        font-size: 14px;
     }
     
     .marquee-content span {
@@ -736,127 +937,39 @@ button, .option-btn, .item-btn, .tab-btn {
         padding: 0 20px;
     }
     
-    /* Main container fills viewport */
     .bedroom-container {
         width: 100%;
-        max-width: 100%;
         height: 100vh;
-        border: none;
         border-radius: 0;
-        display: flex;
-        flex-direction: column;
+        max-height: none;
     }
     
-    /* Simplified header for mobile */
     .bedroom-header {
         padding: 8px;
-        position: relative;
-        min-height: 40px;
     }
     
-    /* Hide desktop browser chrome on mobile */
-    .bedroom-header::before {
-        display: none;
-    }
-    
-    .bedroom-header::after {
-        display: none;
-    }
-    
-    .title-bar {
-        font-size: 16px;
-        text-align: center;
-    }
-    
-    /* Builder layout stacks vertically */
     .builder-layout {
         flex-direction: column;
         padding: 10px;
         gap: 10px;
-        height: calc(100vh - 100px);
-        overflow: hidden;
     }
     
-    /* Room preview takes top half */
     .room-preview {
         flex: 0 0 45vh;
         min-height: 300px;
-        max-height: 400px;
-        width: 100%;
-        margin: 0;
     }
     
-    .room-base {
-        height: 100%;
-    }
-    
-    /* Room label responsive */
-    .room-label {
-        font-size: 11px;
-        padding: 4px;
-        margin: 2px;
-    }
-    
-    .profile-header {
-        display: block;
-        margin-bottom: 4px;
-    }
-    
-    .name-input {
-        width: 120px;
-        font-size: 11px;
-        padding: 1px 4px;
-    }
-    
-    .profile-stats {
-        font-size: 10px;
-        padding: 2px 4px;
-        display: inline-block;
-    }
-    
-    /* Control panel takes bottom half */
     .control-panel {
         width: 100%;
         flex: 1;
         min-height: 0;
-        overflow: hidden;
     }
     
-    .panel-window {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .panel-header {
-        padding: 6px;
-        font-size: 14px;
-    }
-    
-    .window-title {
-        font-size: 13px;
-    }
-    
-    .window-buttons {
-        scale: 0.8;
-    }
-    
-    /* Panel content scrollable */
-    .panel-content {
-        flex: 1;
-        padding: 10px;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        min-height: 0;
-    }
-    
-    /* Tab system mobile */
     .tab-buttons {
         gap: 3px;
-        margin-bottom: 10px;
-        flex-wrap: nowrap;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
     }
     
     .tab-btn {
@@ -866,48 +979,13 @@ button, .option-btn, .item-btn, .tab-btn {
         flex-shrink: 0;
     }
     
-    /* Tab content scrollable */
-    .tab-content {
-        max-height: calc(100% - 120px);
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    /* Options grid mobile */
     .options-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
     
-    .option-btn {
-        padding: 8px;
-        font-size: 11px;
-    }
-    
-    .option-preview {
-        width: 60px;
-        height: 45px;
-    }
-    
-    /* Items grid mobile */
     .items-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-    }
-    
-    .item-btn {
-        padding: 8px;
-        font-size: 11px;
-    }
-    
-    .item-preview {
-        width: 50px;
-        height: 50px;
-    }
-    
-    /* Action buttons mobile */
-    .action-buttons {
-        margin-top: 10px;
         gap: 8px;
     }
     
@@ -916,98 +994,39 @@ button, .option-btn, .item-btn, .tab-btn {
         font-size: 12px;
     }
     
-    /* Modal mobile */
-    .instructions-window {
-        width: 95%;
-        max-width: none;
-        margin: 10px;
-    }
-    
-    .window-content {
-        padding: 15px;
-        font-size: 14px;
-    }
-    
-    /* Status bar mobile */
-    .status-bar {
-        font-size: 10px;
-        padding: 2px;
-    }
-    
-    .status-section {
-        padding: 1px 4px;
-    }
-    
-    /* Draggable items scale */
-    .room-item {
-        transform-origin: center;
-    }
-    
+    /* Adjust draggable item sizes */
     .room-item[data-type="bed"] {
         width: 160px !important;
         height: 120px !important;
     }
     
-    .room-item[data-type="water"] {
-        width: 60px !important;
-        height: 60px !important;
+    .room-item[data-type="water"] { width: 60px !important; height: 60px !important; }
+    .room-item[data-type="batteries"] { width: 45px !important; height: 45px !important; }
+    .room-item[data-type="nsync"] { width: 70px !important; height: 70px !important; }
+    .room-item[data-type="lamp"] { width: 50px !important; height: 50px !important; }
+    .room-item[data-type="juice"] { width: 45px !important; height: 45px !important; }
+    .room-item[data-type="disco"] { width: 65px !important; height: 65px !important; }
+    
+    .welcome-window,
+    .instructions-window {
+        width: 95%;
+        max-width: none;
     }
     
-    .room-item[data-type="batteries"] {
-        width: 45px !important;
-        height: 45px !important;
+    .welcome-title {
+        font-size: 20px;
     }
     
-    .room-item[data-type="nsync"] {
-        width: 70px !important;
-        height: 70px !important;
+    .welcome-section {
+        padding: 10px;
     }
     
-    .room-item[data-type="lamp"] {
-        width: 50px !important;
-        height: 50px !important;
-    }
-    
-    .room-item[data-type="juice"] {
-        width: 45px !important;
-        height: 45px !important;
-    }
-    
-    .room-item[data-type="disco"] {
-        width: 65px !important;
-        height: 65px !important;
+    .section-header {
+        font-size: 16px;
     }
 }
 
-/* Small mobile devices */
-@media (max-width: 375px) {
-    .room-preview {
-        flex: 0 0 40vh;
-        min-height: 250px;
-    }
-    
-    .tab-btn {
-        padding: 5px 10px;
-        font-size: 11px;
-    }
-    
-    .options-grid,
-    .items-grid {
-        gap: 6px;
-    }
-    
-    .option-preview {
-        width: 50px;
-        height: 40px;
-    }
-    
-    .item-preview {
-        width: 40px;
-        height: 40px;
-    }
-}
-
-/* Landscape mode adjustments */
+/* Landscape Mobile */
 @media (max-width: 768px) and (orientation: landscape) {
     .builder-layout {
         flex-direction: row;
@@ -1015,49 +1034,10 @@ button, .option-btn, .item-btn, .tab-btn {
     
     .room-preview {
         flex: 0 0 60%;
-        max-height: none;
         height: 100%;
     }
     
     .control-panel {
         flex: 1;
-        height: 100%;
-    }
-    
-    .tab-content {
-        max-height: calc(100% - 100px);
-    }
-}.home-btn {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background: rgba(0, 0, 0, 0.8);
-    border: 2px solid #00ffff;
-    color: #00ffff;
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 1000;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.home-btn:hover {
-    background: #00ffff;
-    color: #000;
-    transform: scale(1.05);
-    box-shadow: 0 0 20px #00ffff;
-}
-
-/* Mobile adjustments */
-@media (max-width: 768px) {
-    .home-btn {
-        top: 10px;
-        left: 10px;
-        padding: 8px 15px;
-        font-size: 12px;
     }
 }

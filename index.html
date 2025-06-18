@@ -109,8 +109,8 @@
         }
 
         #robot-case {
-            bottom: 20%;
-            right: 20%;
+            bottom: 31%;
+            right: 14%;
             transform: rotate(30deg);
             opacity: 0.7;
         }
@@ -354,21 +354,196 @@
             pointer-events: all;
         }
 
-        /* Mobile adjustments */
-        @media (max-width: 768px) {
+        /* Blocked message styles */
+        .blocked-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: glitchIn 0.3s;
+        }
+
+        .blocked-content {
+            background: #000;
+            border: 2px solid #ff0000;
+            padding: 40px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            max-width: 400px;
+            animation: shake 0.5s;
+        }
+
+        .blocked-content h2 {
+            color: #ff0000;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-shadow: 0 0 10px #ff0000;
+            animation: blink 1s infinite;
+        }
+
+        .blocked-content p {
+            color: #00ff00;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .blocked-content .hint {
+            color: #ffff00;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        .blocked-content .error-code {
+            color: #ff00ff;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        .blocked-content button {
+            margin-top: 20px;
+            padding: 10px 30px;
+            background: #ff0000;
+            color: #000;
+            border: none;
+            font-family: inherit;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+
+        .blocked-content button:hover {
+            background: #ff00ff;
+            transform: scale(1.1);
+        }
+
+        @keyframes glitchIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.5; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Mobile adjustments for 393px iPhone viewport */
+        @media (max-width: 393px) {
+            /* Center portal more on screen */
+            .portal-container {
+                position: fixed;
+                bottom: 120px; /* Bring portal up to more central position */
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 30;
+            }
+            
+            .portal-vortex {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .portal-label {
+                font-size: 10px;
+                bottom: -25px;
+            }
+            
+            /* Move title up slightly */
             .title {
-                font-size: clamp(2rem, 10vw, 3.5rem);
-                padding: 0 15px;
+                top: 42%;
+                font-size: 2.2rem;
+                padding: 0 10px;
+            }
+            
+            .title-line1 {
+                font-size: 0.7em;
+            }
+            
+            .title-line2 {
+                font-size: 1em;
+            }
+            
+            /* Smaller CD cases and better distribution */
+            .cd-case {
+                width: 75px;
+                height: 75px;
+            }
+            
+            .cd-case::after {
+                font-size: 7px;
+                bottom: -15px;
+            }
+            
+            /* Distribute cases around the screen more evenly */
+            #confused-case {
+                top: 20%;
+                left: 10%;
+                transform: rotate(-10deg);
+            }
+            
+            #curious-case {
+                top: 15%;
+                right: 10%;
+                transform: rotate(15deg);
+            }
+            
+            #resident-case {
+                top: 51%;
+                bottom: 15%;
+                left: 17%;
+                transform: rotate(-5deg);
+            }
+            
+            #robot-case {
+                top: 55%;
+                bottom: 14%;
+                right: 10%;
+                transform: rotate(20deg);
+            }
+            
+            /* Smaller discs */
+            .cd-disc {
+                width: 70px;
+                height: 70px;
+            }
+            
+            /* Blocked message adjustments */
+            .blocked-content {
+                padding: 20px;
+                margin: 20px;
+                max-width: 90%;
+            }
+            
+            .blocked-content h2 {
+                font-size: 18px;
+            }
+            
+            .blocked-content p {
+                font-size: 12px;
+            }
+        }
+
+        /* Tablet adjustments */
+        @media (min-width: 394px) and (max-width: 768px) {
+            .title {
+                font-size: clamp(2.5rem, 7vw, 3.5rem);
             }
             
             .cd-case {
                 width: 100px;
                 height: 100px;
-            }
-            
-            .cd-case::after {
-                font-size: 8px;
-                bottom: -20px;
             }
             
             .cd-disc {
@@ -382,107 +557,9 @@
             }
             
             .portal-container {
-                bottom: 5%;
-            }
-            
-            /* Adjust CD positions for mobile */
-            #confused-case {
-                top: 10%;
-                left: 10%;
-            }
-            
-            #curious-case {
-                top: 20%;
-                right: 10%;
-            }
-            
-            #resident-case {
-                bottom: 40%;
-                left: 10%;
-            }
-            
-            #robot-case {
-                bottom: 30%;
-                right: 10%;
+                bottom: 8%;
             }
         }
-        .blocked-message {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    animation: glitchIn 0.3s;
-}
-
-.blocked-content {
-    background: #000;
-    border: 2px solid #ff0000;
-    padding: 40px;
-    text-align: center;
-    font-family: 'Courier New', monospace;
-    max-width: 400px;
-    animation: shake 0.5s;
-}
-
-.blocked-content h2 {
-    color: #ff0000;
-    margin-bottom: 20px;
-    font-size: 24px;
-    text-shadow: 0 0 10px #ff0000;
-    animation: blink 1s infinite;
-}
-
-.blocked-content p {
-    color: #00ff00;
-    margin: 10px 0;
-    font-size: 14px;
-}
-
-.blocked-content .hint {
-    color: #ffff00;
-    font-style: italic;
-    opacity: 0.7;
-}
-
-.blocked-content .error-code {
-    color: #ff00ff;
-    font-size: 12px;
-    margin-top: 20px;
-}
-
-.blocked-content button {
-    margin-top: 20px;
-    padding: 10px 30px;
-    background: #ff0000;
-    color: #000;
-    border: none;
-    font-family: inherit;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: all 0.3s;
-}
-
-.blocked-content button:hover {
-    background: #ff00ff;
-    transform: scale(1.1);
-}
-
-@keyframes glitchIn {
-    0% { opacity: 0; transform: scale(0.9); }
-    50% { opacity: 1; transform: scale(1.1); }
-    100% { opacity: 1; transform: scale(1); }
-}
-
-@keyframes blink {
-    0%, 50%, 100% { opacity: 1; }
-    25%, 75% { opacity: 0.5; }
-}
     </style>
 </head>
 <body>
@@ -789,6 +866,12 @@
 
         // Portal activation
         function activatePortal(portalType) {
+            // Block robot room with mysterious message
+            if (portalType === 'robot') {
+                showBlockedMessage();
+                return; // Don't navigate
+            }
+            
             // Clean up before navigation
             // Stop all sounds
             Object.values(sounds).forEach(sound => {
@@ -809,45 +892,22 @@
                 window.location.href = portals[portalType];
             }, 1000);
         }
-        function activatePortal(portalType) {
-    // Block robot room with mysterious message
-    if (portalType === 'robot') {
-        showBlockedMessage();
-        return; // Don't navigate
-    }
-    
-    // Rest of existing activation code...
-    Object.values(sounds).forEach(sound => {
-        sound.pause();
-        sound.currentTime = 0;
-    });
-    
-    sounds.portalActivate.currentTime = 0;
-    sounds.portalActivate.play();
-    
-    const overlay = document.querySelector('.transition-overlay');
-    overlay.classList.add('active');
-    
-    setTimeout(() => {
-        window.location.href = portals[portalType];
-    }, 1000);
-}
 
-// Blocked message function
-function showBlockedMessage() {
-    const blockedDiv = document.createElement('div');
-    blockedDiv.className = 'blocked-message';
-    blockedDiv.innerHTML = `
-        <div class="blocked-content">
-            <h2>ACCESS DENIED</h2>
-            <p>this portal requires special clearance</p>
-            <p class="hint">perhaps a secret phrase unlocks it...</p>
-            <p class="error-code">ERROR_CODE: 8lo0M</p>
-            <button onclick="this.parentElement.parentElement.remove()">OK</button>
-        </div>
-    `;
-    document.body.appendChild(blockedDiv);
-}
+        // Blocked message function
+        function showBlockedMessage() {
+            const blockedDiv = document.createElement('div');
+            blockedDiv.className = 'blocked-message';
+            blockedDiv.innerHTML = `
+                <div class="blocked-content">
+                    <h2>ACCESS DENIED</h2>
+                    <p>this portal requires special clearance</p>
+                    <p class="hint">perhaps a secret phrase unlocks it...</p>
+                    <p class="error-code">ERROR_CODE: 8lo0M</p>
+                    <button onclick="this.parentElement.parentElement.remove()">OK</button>
+                </div>
+            `;
+            document.body.appendChild(blockedDiv);
+        }
     </script>
 </body>
 </html>

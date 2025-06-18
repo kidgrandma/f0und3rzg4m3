@@ -1,590 +1,657 @@
-// Bedroom Builder Interactive Script with Enhanced Features
+// Y2K Chaos Bedroom Builder - Now with Random Sounds!
+'use strict';
 
-// Audio Setup
-const audio = {
-    background: new Audio('../assets/curious/bedroom.mp3'),
-    placement: [
-        new Audio('../assets/curious/ruby-1.mp3'),
-        new Audio('../assets/curious/ruby-2.mp3'),
-        new Audio('../assets/curious/ruby-3.mp3'),
-        new Audio('../assets/curious/ruby-4.mp3'),
-        new Audio('../assets/curious/ruby-5.mp3')
-    ]
+// Audio Configuration with Random Playback
+const AudioManager = {
+    sounds: {
+        background: null,
+        placement: []
+    },
+    
+    init() {
+        // Background music
+        this.sounds.background = new Audio('../assets/curious/bedroom.mp3');
+        this.sounds.background.loop = true;
+        this.sounds.background.volume = 0.5;
+        
+        // Placement sounds
+        for (let i = 1; i <= 5; i++) {
+            this.sounds.placement.push(new Audio(`../assets/curious/ruby-${i}.mp3`));
+        }
+    },
+    
+    playBackground() {
+        this.sounds.background.play().catch(e => console.log('Audio autoplay blocked'));
+    },
+    
+    playPlacement() {
+        // 40% chance to play a sound
+        if (Math.random() < 0.4) {
+            const sound = this.sounds.placement[Math.floor(Math.random() * this.sounds.placement.length)];
+            sound.currentTime = 0;
+            sound.volume = 0.5 + (Math.random() * 0.3); // Random volume between 0.5-0.8
+            sound.play().catch(e => console.log('Sound play failed'));
+        }
+    },
+    
+    playRandomSound() {
+        // 30% chance for truly random sound at random times
+        if (Math.random() < 0.3) {
+            const sound = this.sounds.placement[Math.floor(Math.random() * this.sounds.placement.length)];
+            sound.currentTime = 0;
+            sound.volume = 0.3 + (Math.random() * 0.4); // Random volume between 0.3-0.7
+            sound.play().catch(e => console.log('Random sound failed'));
+        }
+    },
+    
+    cleanup() {
+        this.sounds.background.pause();
+        this.sounds.background.src = '';
+        this.sounds.placement.forEach(sound => {
+            sound.pause();
+            sound.src = '';
+        });
+    }
 };
 
-// Configure background music
-audio.background.loop = true;
-audio.background.volume = 0.5;
-
-// Touch tracking variables for mobile
-let touchStartX = 0;
-let touchStartY = 0;
-let lastTapTime = 0;
-
-// Welcome Modal Handler
-document.addEventListener('DOMContentLoaded', () => {
-    const welcomeModal = document.getElementById('welcomeModal');
-    const closeWelcome = document.getElementById('closeWelcome');
-    const startBtn = document.getElementById('startBuilding');
-    const welcomeNameInput = document.getElementById('welcomeNameInput');
-    const playerNameInput = document.getElementById('playerNameInput');
+// Room State Manager
+const RoomState = {
+    currentBed: 'bunk',
+    currentWallpaper: 'clouds', // Changed default to clouds
+    roomItems: [],
+    itemIdCounter: 0,
+    playerName: '',
+    highestZIndex: 20,
     
-    // Handle welcome modal
-    if (welcomeModal) {
-        // Focus on name input
-        welcomeNameInput.focus();
-        
-        // Close button
-        closeWelcome.addEventListener('click', closeWelcomeModal);
-        
-        // Start button
-        startBtn.addEventListener('click', () => {
-            const handle = welcomeNameInput.value.trim();
-            if (handle) {
-                // Transfer to main input
-                playerName = handle.replace('@', ''); // Remove @ if included
-                playerNameInput.value = playerName;
-                closeWelcomeModal();
-            } else {
-                welcomeNameInput.style.border = '2px solid #ff0000';
-                welcomeNameInput.placeholder = 'Please enter handle!';
-            }
-        });
-        
-        // Enter key to start
-        welcomeNameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                startBtn.click();
-            }
-        });
+    addItem(id) {
+        this.roomItems.push(id);
+        this.updateStats();
+    },
+    
+    removeItem(id) {
+        this.roomItems = this.roomItems.filter(item => item !== id);
+        this.updateStats();
+    },
+    
+    clearItems() {
+        this.roomItems = [];
+        this.itemIdCounter = 0;
+        this.highestZIndex = 20;
+        this.updateStats();
+    },
+    
+    updateStats() {
+        document.getElementById('suppliesCount').textContent = this.roomItems.length;
+        document.getElementById('vibeText').textContent = this.calculateVibe();
+        document.getElementById('survivalRating').textContent = this.calculateSurvivalRating();
+        document.getElementById('itemStatus').textContent = `Items: ${this.roomItems.length}`;
+    },
+    
+    calculateVibe() {
+        if (!this.currentWallpaper) return 'EMPTY';
+        const vibes = {
+            pink: 'FUCKED',
+            space: 'LIT',
+            wood: 'OD',
+            clouds: 'FIRE'
+        };
+        return vibes[this.currentWallpaper] || 'CHAOS';
+    },
+    
+    calculateSurvivalRating() {
+        const count = this.roomItems.length;
+        if (count >= 10) return '⭐⭐⭐⭐⭐';
+        if (count >= 7) return '⭐⭐⭐⭐';
+        if (count >= 5) return '⭐⭐⭐';
+        if (count >= 3) return '⭐⭐';
+        if (count >= 1) return '⭐';
+        return '☠️';
     }
+};
+
+// UI Controller
+const UIController = {
+    elements: {},
     
-    function closeWelcomeModal() {
-        welcomeModal.style.display = 'none';
-        // Start background music after interaction
-        audio.background.play().catch(e => console.log('Audio autoplay blocked'));
-    }
-});
-
-// Start background music on first interaction (backup)
-document.addEventListener('click', function startMusic() {
-    audio.background.play().catch(e => console.log('Audio autoplay blocked'));
-    document.removeEventListener('click', startMusic);
-}, { once: true });
-
-// Function to play random placement sound
-function playPlacementSound() {
-    const randomSound = audio.placement[Math.floor(Math.random() * audio.placement.length)];
-    randomSound.currentTime = 0;
-    randomSound.volume = 0.7;
-    randomSound.play().catch(e => console.log('Sound play failed'));
-}
-
-// State management
-let currentBed = 'bunk';
-let currentWallpaper = null;
-let roomItems = [];
-let draggedItem = null;
-let itemIdCounter = 0;
-let playerName = '';
-let highestZIndex = 20;
-
-// DOM Elements
-const wallpaperLayer = document.getElementById('wallpaperLayer');
-const bedContainer = document.getElementById('bedContainer');
-const bedImage = document.getElementById('bedImage');
-const itemsLayer = document.getElementById('itemsLayer');
-const roomBase = document.getElementById('roomBase');
-const instructionsModal = document.getElementById('instructionsModal');
-const roomNumber = document.getElementById('roomNumber');
-
-// Initialize room number
-roomNumber.textContent = Math.floor(Math.random() * 900) + 100;
-
-// Tab System
-const tabButtons = document.querySelectorAll('.tab-btn');
-const tabPanels = document.querySelectorAll('.tab-panel');
-
-tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const targetTab = btn.dataset.tab;
+    init() {
+        // Cache DOM elements
+        this.elements = {
+            wallpaperLayer: document.getElementById('wallpaperLayer'),
+            itemsLayer: document.getElementById('itemsLayer'),
+            roomBase: document.getElementById('roomBase'),
+            roomNumber: document.getElementById('roomNumber'),
+            playerNameInput: document.getElementById('playerNameInput'),
+            statusText: document.getElementById('statusText'),
+            timeStatus: document.getElementById('timeStatus'),
+            welcomeModal: document.getElementById('welcomeModal'),
+            instructionsModal: document.getElementById('instructionsModal')
+        };
         
-        // Update active states
-        tabButtons.forEach(b => b.classList.remove('active'));
-        tabPanels.forEach(p => p.classList.remove('active'));
+        // Initialize room number
+        this.elements.roomNumber.textContent = Math.floor(Math.random() * 900) + 100;
         
-        btn.classList.add('active');
-        document.getElementById(`${targetTab}Tab`).classList.add('active');
-    });
-});
-
-// Bed Selection - now adds bed as draggable item
-document.querySelectorAll('[data-bed]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        currentBed = btn.dataset.bed;
-        addBedToRoom();
-        playPlacementSound();
-    });
-});
-
-function addBedToRoom() {
-    // Remove existing bed if any
-    const existingBed = document.querySelector('.room-item[data-type="bed"]');
-    if (existingBed) {
-        existingBed.remove();
-        roomItems = roomItems.filter(id => id !== existingBed.id);
-    }
-    
-    // Add new bed as draggable item
-    const bedElement = document.createElement('div');
-    bedElement.className = 'room-item';
-    bedElement.id = `bed-${currentBed}`;
-    bedElement.dataset.type = 'bed';
-    bedElement.dataset.rotation = '0';
-    
-    // Set bed size (larger than other items)
-    bedElement.style.width = '240px';
-    bedElement.style.height = '180px';
-    
-    // Position bed in center-bottom of room
-    const roomRect = roomBase.getBoundingClientRect();
-    const x = (roomRect.width - 240) / 2;
-    const y = roomRect.height - 240;
-    
-    bedElement.style.left = `${x}px`;
-    bedElement.style.top = `${y}px`;
-    
-    // Create bed image
-    const img = document.createElement('img');
-    img.src = `../assets/curious/bed-${currentBed}.png`;
-    img.alt = currentBed + ' bed';
-    img.style.width = '100%';
-    img.style.height = '100%';
-    img.style.objectFit = 'contain';
-    bedElement.appendChild(img);
-    
-    // Make draggable and rotatable
-    makeDraggable(bedElement);
-    makeRotatable(bedElement);
-    
-    itemsLayer.appendChild(bedElement);
-    roomItems.push(bedElement.id);
-    
-    // Create particles at bed position
-    createParticles(x + 120, y + 90);
-    
-    // Add bounce animation
-    bedElement.style.animation = 'itemBounce 0.5s ease-out';
-}
-
-// Wallpaper Selection with lighting effects
-document.querySelectorAll('[data-wallpaper]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        currentWallpaper = btn.dataset.wallpaper;
-        updateWallpaper();
-        playPlacementSound();
+        // Update time
+        this.updateTime();
+        setInterval(() => this.updateTime(), 60000);
         
-        // Update active state
-        document.querySelectorAll('[data-wallpaper]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    });
-});
-
-function updateWallpaper() {
-    wallpaperLayer.className = 'wallpaper-layer';
-    if (currentWallpaper) {
-        wallpaperLayer.classList.add(currentWallpaper);
-        updateRoomLighting();
+        // Random sounds at random intervals
+        setInterval(() => AudioManager.playRandomSound(), 5000 + Math.random() * 10000);
+    },
+    
+    updateTime() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 || 12;
+        this.elements.timeStatus.textContent = `${displayHours}:${minutes} ${ampm}`;
+    },
+    
+    updateStatus(text) {
+        this.elements.statusText.textContent = text;
+    },
+    
+    showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) modal.style.display = 'block';
+    },
+    
+    hideModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) modal.style.display = 'none';
     }
-}
+};
 
-// Room lighting based on wallpaper
-function updateRoomLighting() {
-    const lightingEffects = {
-        pink: 'rgba(255, 192, 203, 0.2)',
-        space: 'rgba(0, 0, 139, 0.2)',
-        wood: 'rgba(139, 69, 19, 0.2)',
-        clouds: 'rgba(135, 206, 235, 0.2)'
-    };
+// Drag and Drop Manager
+const DragDropManager = {
+    draggedElement: null,
+    touchData: {
+        startX: 0,
+        startY: 0,
+        lastTap: 0
+    },
     
-    // Apply to room base with stronger effect
-    roomBase.style.boxShadow = `inset 0 0 150px ${lightingEffects[currentWallpaper]}`;
-    
-    // Also add a subtle overlay for more visible effect
-    const existingOverlay = document.getElementById('lightingOverlay');
-    if (existingOverlay) {
-        existingOverlay.remove();
-    }
-    
-    if (currentWallpaper) {
-        const overlay = document.createElement('div');
-        overlay.id = 'lightingOverlay';
-        overlay.style.cssText = `
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: ${lightingEffects[currentWallpaper]};
-            pointer-events: none;
-            mix-blend-mode: screen;
-            z-index: 1;
-        `;
-        roomBase.appendChild(overlay);
-    }
-}
-
-// Item Addition with particles and shadows
-document.querySelectorAll('[data-item]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        addItemToRoom(btn.dataset.item);
-    });
-});
-
-function addItemToRoom(itemType) {
-    const itemData = {
-        water: { src: 'item-water.png', size: 120, label: 'Aquafina Case' },
-        batteries: { src: 'item-batteries.png', size: 100, label: 'Car Batteries' },
-        nsync: { src: 'item-nsync.png', size: 150, label: 'Ricky Martin' },
-        lamp: { src: 'item-lamp.png', size: 110, label: 'IKEA Lamp' },
-        juice: { src: 'item-juice.png', size: 100, label: 'Sunny D' },
-        disco: { src: 'item-disco.png', size: 140, label: 'Disco Lighter' }
-    };
-    
-    const item = itemData[itemType];
-    const itemElement = document.createElement('div');
-    itemElement.className = 'room-item';
-    itemElement.id = `item-${itemIdCounter++}`;
-    itemElement.dataset.type = itemType;
-    itemElement.dataset.rotation = '0';
-    
-    // Set size
-    itemElement.style.width = `${item.size}px`;
-    itemElement.style.height = `${item.size}px`;
-    
-    // Random position
-    const roomRect = roomBase.getBoundingClientRect();
-    const x = Math.random() * (roomRect.width - item.size);
-    const y = Math.random() * (roomRect.height - item.size - 100) + 50;
-    
-    itemElement.style.left = `${x}px`;
-    itemElement.style.top = `${y}px`;
-    
-    // Create image with shadow
-    const img = document.createElement('img');
-    img.src = `../assets/curious/${item.src}`;
-    img.alt = item.label;
-    img.style.width = '100%';
-    img.style.height = '100%';
-    img.style.objectFit = 'contain';
-    itemElement.appendChild(img);
-    
-    // Make draggable and rotatable
-    makeDraggable(itemElement);
-    makeRotatable(itemElement);
-    
-    itemsLayer.appendChild(itemElement);
-    roomItems.push(itemElement.id);
-    
-    // Play sound and create particles
-    playPlacementSound();
-    createParticles(x + item.size/2, y + item.size/2);
-    
-    // Add bounce animation
-    itemElement.style.animation = 'itemBounce 0.5s ease-out';
-    
-    // Update profile stats
-    updateProfileStats();
-}
-
-// Enhanced Particle effects - bigger and more visible
-function createParticles(x, y) {
-    for (let i = 0; i < 12; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = x + 'px';
-        particle.style.top = y + 'px';
+    makeDraggable(element) {
+        // Prevent default drag behavior
+        element.ondragstart = () => false;
         
-        const angle = (Math.PI * 2 * i) / 12;
-        const velocity = 80 + Math.random() * 80;
-        particle.style.setProperty('--dx', Math.cos(angle) * velocity + 'px');
-        particle.style.setProperty('--dy', Math.sin(angle) * velocity + 'px');
+        // Bind methods to preserve 'this' context
+        const boundHandleMove = (e) => this.handleMove(e);
+        const boundHandleEnd = (e) => this.handleEnd(e);
         
-        roomBase.appendChild(particle);
-        setTimeout(() => particle.remove(), 1000);
-    }
-}
-
-// Make items rotatable on double-click
-function makeRotatable(element) {
-    element.addEventListener('dblclick', (e) => {
+        // Store bound functions on element for removal later
+        element._boundHandleMove = boundHandleMove;
+        element._boundHandleEnd = boundHandleEnd;
+        
+        // Mouse events
+        element.addEventListener('mousedown', (e) => this.handleStart(e, element));
+        
+        // Touch events
+        element.addEventListener('touchstart', (e) => this.handleStart(e, element), { passive: false });
+        element.addEventListener('touchmove', boundHandleMove, { passive: false });
+        element.addEventListener('touchend', boundHandleEnd, { passive: false });
+        
+        // Double-click/tap for rotation
+        element.addEventListener('dblclick', () => this.rotate(element));
+    },
+    
+    handleStart(e, element) {
         e.preventDefault();
-        const currentRotation = parseInt(element.dataset.rotation) || 0;
-        const newRotation = (currentRotation + 45) % 360;
-        element.dataset.rotation = newRotation;
-        element.style.transform = `rotate(${newRotation}deg)`;
-        playPlacementSound();
-    });
-}
-
-// Mobile-optimized draggable function with proper desktop support
-function makeDraggable(element) {
-    let isDragging = false;
-    let startX, startY, initialX, initialY;
-    let isTouch = false;
-    
-    // Touch events for mobile
-    element.addEventListener('touchstart', (e) => {
-        isTouch = true;
-        e.preventDefault();
-        startDrag(e);
-    }, { passive: false });
-    
-    element.addEventListener('touchmove', (e) => {
-        if (isTouch) {
-            e.preventDefault();
-            drag(e);
-        }
-    }, { passive: false });
-    
-    element.addEventListener('touchend', (e) => {
-        if (isTouch) {
-            e.preventDefault();
-            endDrag(e);
-            isTouch = false;
-        }
-    }, { passive: false });
-    
-    // Mouse events for desktop
-    element.addEventListener('mousedown', (e) => {
-        if (!isTouch) {
-            startDrag(e);
-        }
-    });
-    
-    document.addEventListener('mousemove', (e) => {
-        if (!isTouch) {
-            drag(e);
-        }
-    });
-    
-    document.addEventListener('mouseup', (e) => {
-        if (!isTouch) {
-            endDrag(e);
-        }
-    });
-    
-    function startDrag(e) {
-        isDragging = true;
+        this.draggedElement = element;
         element.classList.add('dragging');
-        element.style.zIndex = ++highestZIndex;
+        element.style.zIndex = ++RoomState.highestZIndex;
         
         const touch = e.touches ? e.touches[0] : e;
         const rect = element.getBoundingClientRect();
-        const parentRect = roomBase.getBoundingClientRect();
+        const parentRect = UIController.elements.roomBase.getBoundingClientRect();
         
-        startX = touch.clientX;
-        startY = touch.clientY;
-        initialX = rect.left - parentRect.left;
-        initialY = rect.top - parentRect.top;
+        element.dataset.startX = touch.clientX;
+        element.dataset.startY = touch.clientY;
+        element.dataset.initialX = rect.left - parentRect.left;
+        element.dataset.initialY = rect.top - parentRect.top;
         
-        // Store for double-tap detection (mobile only)
         if (e.touches) {
-            touchStartX = touch.clientX;
-            touchStartY = touch.clientY;
+            this.touchData.startX = touch.clientX;
+            this.touchData.startY = touch.clientY;
+        } else {
+            // Mouse move/up listeners - bind to preserve context
+            document.addEventListener('mousemove', element._boundHandleMove);
+            document.addEventListener('mouseup', element._boundHandleEnd);
         }
         
-        e.preventDefault();
-    }
+        UIController.updateStatus('Dragging item...');
+    },
     
-    function drag(e) {
-        if (!isDragging) return;
+    handleMove(e) {
+        if (!this.draggedElement) return;
+        e.preventDefault();
         
         const touch = e.touches ? e.touches[0] : e;
-        const deltaX = touch.clientX - startX;
-        const deltaY = touch.clientY - startY;
+        const element = this.draggedElement;
         
-        const newX = initialX + deltaX;
-        const newY = initialY + deltaY;
+        const deltaX = touch.clientX - parseFloat(element.dataset.startX);
+        const deltaY = touch.clientY - parseFloat(element.dataset.startY);
         
-        const roomRect = roomBase.getBoundingClientRect();
+        const newX = parseFloat(element.dataset.initialX) + deltaX;
+        const newY = parseFloat(element.dataset.initialY) + deltaY;
+        
+        const roomRect = UIController.elements.roomBase.getBoundingClientRect();
         const maxX = roomRect.width - element.offsetWidth;
         const maxY = roomRect.height - element.offsetHeight;
         
         element.style.left = Math.max(0, Math.min(newX, maxX)) + 'px';
         element.style.top = Math.max(0, Math.min(newY, maxY)) + 'px';
-        
-        e.preventDefault();
-    }
+    },
     
-    function endDrag(e) {
-        if (!isDragging) return;
+    handleEnd(e) {
+        if (!this.draggedElement) return;
+        e.preventDefault();
         
-        isDragging = false;
+        const element = this.draggedElement;
         element.classList.remove('dragging');
         
-        // Only check for tap on touch devices
+        // Check for tap vs drag on touch devices
         if (e.changedTouches) {
             const touch = e.changedTouches[0];
-            const moveDistance = Math.abs(touch.clientX - touchStartX) + Math.abs(touch.clientY - touchStartY);
+            const moveDistance = Math.abs(touch.clientX - this.touchData.startX) + 
+                               Math.abs(touch.clientY - this.touchData.startY);
             
             if (moveDistance < 10) {
-                // It was a tap, not a drag
-                handleDoubleTap(element);
+                // Check for double tap
+                const currentTime = Date.now();
+                if (currentTime - this.touchData.lastTap < 500) {
+                    this.rotate(element);
+                }
+                this.touchData.lastTap = currentTime;
             } else {
-                // It was a drag
-                playPlacementSound();
+                AudioManager.playPlacement();
             }
         } else {
-            // Desktop - always play sound after drag
-            playPlacementSound();
+            // Desktop - remove listeners
+            document.removeEventListener('mousemove', element._boundHandleMove);
+            document.removeEventListener('mouseup', element._boundHandleEnd);
+            AudioManager.playPlacement();
         }
-    }
-}
-
-// Double-tap detection for rotation
-function handleDoubleTap(element) {
-    const currentTime = new Date().getTime();
-    const tapDelay = currentTime - lastTapTime;
+        
+        this.draggedElement = null;
+        UIController.updateStatus('Ready');
+    },
     
-    if (tapDelay < 500 && tapDelay > 0) {
-        // Double tap detected - rotate
+    rotate(element) {
         const currentRotation = parseInt(element.dataset.rotation) || 0;
         const newRotation = (currentRotation + 45) % 360;
         element.dataset.rotation = newRotation;
         element.style.transform = `rotate(${newRotation}deg)`;
-        playPlacementSound();
+        AudioManager.playPlacement();
+        UIController.updateStatus('Item rotated!');
     }
-    
-    lastTapTime = currentTime;
-}
+};
 
-// Update profile stats
-function updateProfileStats() {
-    const itemCount = roomItems.length;
-    const vibe = calculateVibe();
-    const survivalRating = calculateSurvivalRating();
+// Room Builder
+const RoomBuilder = {
+    init() {
+        this.initializeTabs();
+        this.initializeBedSelection();
+        this.initializeWallpaperSelection();
+        this.initializeItemSelection();
+        this.initializeActionButtons();
+        this.initializeModals();
+        this.initializeNameInput();
+        this.initializeKonamiCode();
+        
+        // Add default bed
+        this.addBed('bunk');
+        // Set default wallpaper to clouds
+        this.updateWallpaper();
+        RoomState.updateStats();
+    },
     
-    // Update individual elements
-    document.getElementById('suppliesCount').textContent = itemCount;
-    document.getElementById('vibeText').textContent = vibe;
-    document.getElementById('survivalRating').textContent = survivalRating;
-}
-
-// Initialize name input listener
-document.addEventListener('DOMContentLoaded', () => {
-    const nameInput = document.getElementById('playerNameInput');
-    if (nameInput) {
-        nameInput.addEventListener('input', (e) => {
-            playerName = e.target.value;
+    initializeTabs() {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTab = btn.dataset.tab;
+                
+                // Update active states
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                
+                btn.classList.add('active');
+                document.getElementById(`${targetTab}Tab`).classList.add('active');
+            });
         });
+    },
+    
+    initializeBedSelection() {
+        document.querySelectorAll('[data-bed]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.addBed(btn.dataset.bed);
+            });
+        });
+    },
+    
+    initializeWallpaperSelection() {
+        document.querySelectorAll('[data-wallpaper]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                RoomState.currentWallpaper = btn.dataset.wallpaper;
+                this.updateWallpaper();
+                AudioManager.playPlacement();
+                
+                // Update active state
+                document.querySelectorAll('[data-wallpaper]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+    },
+    
+    initializeItemSelection() {
+        document.querySelectorAll('[data-item]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.addItem(btn.dataset.item);
+            });
+        });
+    },
+    
+    initializeActionButtons() {
+        document.getElementById('clearItems').addEventListener('click', () => {
+            this.clearAllItems();
+        });
+        
+        document.getElementById('screenshotBtn').addEventListener('click', () => {
+            this.showScreenshotInstructions();
+        });
+    },
+    
+    initializeModals() {
+        // Welcome modal
+        const welcomeModal = document.getElementById('welcomeModal');
+        const closeWelcome = document.getElementById('closeWelcome');
+        const startBtn = document.getElementById('startBuilding');
+        const welcomeNameInput = document.getElementById('welcomeNameInput');
+        
+        // Show welcome modal on load
+        UIController.showModal('welcomeModal');
+        
+        if (welcomeModal) {
+            welcomeNameInput.focus();
+            
+            closeWelcome.addEventListener('click', () => this.closeWelcomeModal());
+            
+            startBtn.addEventListener('click', () => {
+                const handle = welcomeNameInput.value.trim();
+                if (handle) {
+                    RoomState.playerName = handle.replace('@', '');
+                    UIController.elements.playerNameInput.value = RoomState.playerName;
+                    this.closeWelcomeModal();
+                } else {
+                    welcomeNameInput.style.border = '3px solid #ff0000';
+                    welcomeNameInput.placeholder = 'NEED UR HANDLE!';
+                    welcomeNameInput.style.background = '#ffcccc';
+                }
+            });
+            
+            welcomeNameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') startBtn.click();
+            });
+        }
+        
+        // Instructions modal
+        document.getElementById('closeInstructions').addEventListener('click', () => {
+            UIController.hideModal('instructionsModal');
+        });
+        
+        document.getElementById('instructionsModal').addEventListener('click', (e) => {
+            if (e.target.id === 'instructionsModal') {
+                UIController.hideModal('instructionsModal');
+            }
+        });
+    },
+    
+    initializeNameInput() {
+        UIController.elements.playerNameInput.addEventListener('input', (e) => {
+            RoomState.playerName = e.target.value;
+        });
+    },
+    
+    initializeKonamiCode() {
+        let konamiCode = [];
+        const pattern = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 
+                        'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        
+        document.addEventListener('keydown', (e) => {
+            konamiCode.push(e.key);
+            konamiCode = konamiCode.slice(-10);
+            
+            if (konamiCode.join(',') === pattern.join(',')) {
+                this.activatePartyMode();
+            }
+        });
+    },
+    
+    closeWelcomeModal() {
+        UIController.hideModal('welcomeModal');
+        AudioManager.playBackground();
+    },
+    
+    addBed(bedType) {
+        // Remove existing bed
+        const existingBed = document.querySelector('.room-item[data-type="bed"]');
+        if (existingBed) {
+            existingBed.remove();
+            RoomState.removeItem(existingBed.id);
+        }
+        
+        // Create new bed
+        const bedElement = this.createElement('bed', bedType, {
+            width: 240,
+            height: 180,
+            src: `../assets/curious/bed-${bedType}.png`,
+            label: bedType + ' bed'
+        });
+        
+        // Position in center-bottom
+        const roomRect = UIController.elements.roomBase.getBoundingClientRect();
+        bedElement.style.left = `${(roomRect.width - 240) / 2}px`;
+        bedElement.style.top = `${roomRect.height - 240}px`;
+        
+        UIController.elements.itemsLayer.appendChild(bedElement);
+        RoomState.currentBed = bedType;
+        RoomState.addItem(bedElement.id);
+        
+        AudioManager.playPlacement();
+        this.createParticles(parseFloat(bedElement.style.left) + 120, 
+                           parseFloat(bedElement.style.top) + 90);
+    },
+    
+    updateWallpaper() {
+        const layer = UIController.elements.wallpaperLayer;
+        layer.className = 'wallpaper-layer';
+        if (RoomState.currentWallpaper) {
+            layer.classList.add(RoomState.currentWallpaper);
+            this.updateRoomLighting();
+        }
+    },
+    
+    updateRoomLighting() {
+        const effects = {
+            pink: 'rgba(255, 192, 203, 0.2)',
+            space: 'rgba(0, 0, 139, 0.2)',
+            wood: 'rgba(139, 69, 19, 0.2)',
+            clouds: 'rgba(135, 206, 235, 0.2)'
+        };
+        
+        UIController.elements.roomBase.style.boxShadow = 
+            `inset 0 0 150px ${effects[RoomState.currentWallpaper]}`;
+    },
+    
+    addItem(itemType) {
+        const itemData = {
+            water: { src: 'item-water.png', size: 120, label: 'Aquafina Case' },
+            batteries: { src: 'item-batteries.png', size: 100, label: 'Car Batteries' },
+            nsync: { src: 'item-nsync.png', size: 150, label: 'Ricky Martin' },
+            lamp: { src: 'item-lamp.png', size: 110, label: 'IKEA Lamp' },
+            juice: { src: 'item-juice.png', size: 100, label: 'Sunny D' },
+            disco: { src: 'item-disco.png', size: 140, label: 'Disco Lighter' }
+        };
+        
+        const data = itemData[itemType];
+        const itemElement = this.createElement('item', itemType, {
+            width: data.size,
+            height: data.size,
+            src: `../assets/curious/${data.src}`,
+            label: data.label
+        });
+        
+        // Random position
+        const roomRect = UIController.elements.roomBase.getBoundingClientRect();
+        const x = Math.random() * (roomRect.width - data.size);
+        const y = Math.random() * (roomRect.height - data.size - 100) + 50;
+        
+        itemElement.style.left = `${x}px`;
+        itemElement.style.top = `${y}px`;
+        
+        UIController.elements.itemsLayer.appendChild(itemElement);
+        RoomState.addItem(itemElement.id);
+        
+        AudioManager.playPlacement();
+        this.createParticles(x + data.size/2, y + data.size/2);
+    },
+    
+    createElement(type, subtype, data) {
+        const element = document.createElement('div');
+        element.className = 'room-item';
+        element.id = `${type}-${RoomState.itemIdCounter++}`;
+        element.dataset.type = type === 'bed' ? 'bed' : subtype;
+        element.dataset.rotation = '0';
+        
+        element.style.width = `${data.width}px`;
+        element.style.height = `${data.height}px`;
+        
+        const img = document.createElement('img');
+        img.src = data.src;
+        img.alt = data.label;
+        element.appendChild(img);
+        
+        DragDropManager.makeDraggable(element);
+        
+        // Add bounce animation
+        element.style.animation = 'itemBounce 0.5s ease-out';
+        element.addEventListener('animationend', () => {
+            element.style.animation = '';
+        });
+        
+        return element;
+    },
+    
+    createParticles(x, y) {
+        for (let i = 0; i < 12; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.cssText = `
+                position: absolute;
+                width: 8px;
+                height: 8px;
+                background: #ffff00;
+                border-radius: 50%;
+                pointer-events: none;
+                left: ${x}px;
+                top: ${y}px;
+                z-index: 1000;
+                animation: particleFly 1s ease-out forwards;
+                box-shadow: 0 0 6px #ffff00;
+            `;
+            
+            const angle = (Math.PI * 2 * i) / 12;
+            const velocity = 80 + Math.random() * 80;
+            particle.style.setProperty('--dx', Math.cos(angle) * velocity + 'px');
+            particle.style.setProperty('--dy', Math.sin(angle) * velocity + 'px');
+            
+            UIController.elements.roomBase.appendChild(particle);
+            setTimeout(() => particle.remove(), 1000);
+        }
+    },
+    
+    clearAllItems() {
+        UIController.elements.itemsLayer.innerHTML = '';
+        RoomState.clearItems();
+        
+        // 70% chance to play sound on clear
+        if (Math.random() < 0.7) {
+            AudioManager.playPlacement();
+        }
+        
+        UIController.elements.roomBase.style.animation = 'roomShake 0.5s ease-out';
+        setTimeout(() => {
+            UIController.elements.roomBase.style.animation = '';
+        }, 500);
+        
+        UIController.updateStatus('Items cleared!');
+    },
+    
+    showScreenshotInstructions() {
+        UIController.showModal('instructionsModal');
+        
+        // Flash effect
+        const flash = document.createElement('div');
+        flash.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 9999;
+        `;
+        document.body.appendChild(flash);
+        setTimeout(() => flash.remove(), 200);
+        
+        // Random sound on screenshot
+        AudioManager.playRandomSound();
+        UIController.updateStatus('Screenshot ready!');
+    },
+    
+    activatePartyMode() {
+        document.body.style.animation = 'partyMode 1s ease-in-out infinite';
+        
+        // Add party style if not exists
+        if (!document.getElementById('partyStyle')) {
+            const style = document.createElement('style');
+            style.id = 'partyStyle';
+            style.textContent = `
+                @keyframes partyMode {
+                    0%, 100% { filter: hue-rotate(0deg); }
+                    50% { filter: hue-rotate(180deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Add disco balls with sounds
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                this.addItem('disco');
+                // Force sound on party mode
+                const sound = AudioManager.sounds.placement[Math.floor(Math.random() * AudioManager.sounds.placement.length)];
+                sound.currentTime = 0;
+                sound.volume = 0.8;
+                sound.play().catch(e => console.log('Party sound failed'));
+            }, i * 200);
+        }
+        
+        alert('🎉 PARTY MODE ACTIVATED! 🎉');
     }
-});
+};
 
-function calculateVibe() {
-    if (!currentWallpaper) return 'EMPTY';
-    const vibes = {
-        pink: 'KAWAII',
-        space: 'COSMIC',
-        wood: 'RUSTIC',
-        clouds: 'DREAMY'
-    };
-    return vibes[currentWallpaper] || 'UNIQUE';
-}
+// Global functions
+window.goHome = function() {
+    AudioManager.cleanup();
+    window.location.href = '../index.html';
+};
 
-function calculateSurvivalRating() {
-    const items = roomItems.length;
-    if (items >= 10) return '⭐⭐⭐⭐⭐';
-    if (items >= 7) return '⭐⭐⭐⭐';
-    if (items >= 5) return '⭐⭐⭐';
-    if (items >= 3) return '⭐⭐';
-    if (items >= 1) return '⭐';
-    return '☠️';
-}
-
-// Clear Items with enhanced shake effect
-document.getElementById('clearItems').addEventListener('click', () => {
-    itemsLayer.innerHTML = '';
-    roomItems = [];
-    itemIdCounter = 0;
-    highestZIndex = 20;
-    
-    playPlacementSound();
-    
-    // Enhanced shake effect on the whole room
-    roomBase.style.animation = 'roomShake 0.5s ease-out';
-    setTimeout(() => {
-        roomBase.style.animation = '';
-    }, 500);
-    
-    updateProfileStats();
-});
-
-// Enhanced Screenshot Button for Mobile
-document.getElementById('screenshotBtn').addEventListener('click', () => {
-    const modal = instructionsModal;
-    const content = modal.querySelector('.window-content');
-    
-    // Update content to be clearer for mobile
-    content.innerHTML = `
-        <h2>📸 SCREENSHOT TIME! 📸</h2>
-        <p>Your apocalyptic bedroom is ready!</p>
-        <br>
-        <p><strong>NOW DO THIS:</strong></p>
-        <ol>
-            <li>Take a screenshot of your room</li>
-            <li>Open Instagram</li>
-            <li>DM it to <a href="https://instagram.com/kidgrandma" target="_blank" style="color: #ff00ff; font-weight: bold;">@kidgrandma</a></li>
-            <li>Wait for game instructions</li>
-        </ol>
-        <br>
-        <p class="blink">ROOM SAVED TO ARCHIVE ✓</p>
-        <br>
-        <button class="close-btn" style="width: 100%; padding: 10px; background: #4ecdc4; border: 2px solid #000; font-weight: bold;" onclick="document.getElementById('instructionsModal').style.display='none'">
-            GOT IT! 👍
-        </button>
-    `;
-    
-    modal.style.display = 'block';
-    
-    // Flash effect
-    const flash = document.createElement('div');
-    flash.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0.8; pointer-events: none; z-index: 999;';
-    document.body.appendChild(flash);
-    setTimeout(() => flash.remove(), 200);
-});
-
-// Close instructions
-document.getElementById('closeInstructions').addEventListener('click', () => {
-    instructionsModal.style.display = 'none';
-});
-
-instructionsModal.addEventListener('click', (e) => {
-    if (e.target === instructionsModal) {
-        instructionsModal.style.display = 'none';
-    }
-});
-
-// Initialize
-addBedToRoom(); // Add default bunk bed
-updateProfileStats();
-
-// Add all styles at once
-const allStyles = document.createElement('style');
-allStyles.textContent = `
-    /* Enhanced particle styles */
-    .particle {
-        position: absolute;
-        width: 8px;
-        height: 8px;
-        background: #ffff00;
-        border-radius: 50%;
-        pointer-events: none;
-        animation: particleFly 1s ease-out forwards;
-        box-shadow: 0 0 6px #ffff00;
-        z-index: 1000;
-    }
-    
+// Particle animation styles
+const particleStyle = document.createElement('style');
+particleStyle.textContent = `
     @keyframes particleFly {
         0% {
             transform: translate(0, 0) scale(1);
@@ -595,94 +662,30 @@ allStyles.textContent = `
             opacity: 0;
         }
     }
-    
-    /* Enhanced room shake */
-    @keyframes roomShake {
-        0%, 100% { transform: translateX(0); }
-        10% { transform: translateX(-15px) rotate(-1deg); }
-        20% { transform: translateX(15px) rotate(1deg); }
-        30% { transform: translateX(-15px) rotate(-1deg); }
-        40% { transform: translateX(15px) rotate(1deg); }
-        50% { transform: translateX(-10px) rotate(-0.5deg); }
-        60% { transform: translateX(10px) rotate(0.5deg); }
-        70% { transform: translateX(-5px); }
-        80% { transform: translateX(5px); }
-        90% { transform: translateX(-2px); }
-    }
-    
-    /* Item shadows */
-    .room-item img {
-        filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.8)) !important;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
-    
-    .room-item[data-type="bed"] img {
-        filter: drop-shadow(4px 4px 10px rgba(0, 0, 0, 0.9)) !important;
-    }
-    
-    /* Ensure items are above lighting overlay */
-    .items-layer {
-        position: relative;
-        z-index: 10;
-    }
-    
-    /* Name input styles */
-    .name-input {
-        background: transparent;
-        border: none;
-        border-bottom: 2px solid #00ff00;
-        color: #00ff00;
-        font-family: inherit;
-        font-size: inherit;
-        width: 150px;
-        text-align: center;
-        outline: none;
-    }
-    
-    .profile-header {
-        margin-bottom: 5px;
-    }
-    
-    .profile-stats {
-        font-size: 0.8rem;
-        opacity: 0.8;
-    }
 `;
-document.head.appendChild(allStyles);
+document.head.appendChild(particleStyle);
 
-// Easter egg: Konami code
-let konamiCode = [];
-const konamiPattern = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-
-document.addEventListener('keydown', (e) => {
-    konamiCode.push(e.key);
-    konamiCode = konamiCode.slice(-10);
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    AudioManager.init();
+    UIController.init();
+    RoomBuilder.init();
     
-    if (konamiCode.join(',') === konamiPattern.join(',')) {
-        activatePartyMode();
+    // Start background music on first interaction
+    document.addEventListener('click', function startMusic() {
+        AudioManager.playBackground();
+    }, { once: true });
+    
+    // Console messages
+    const isMobile = /Mobile|Android|iPhone/i.test(navigator.userAgent);
+    if (isMobile) {
+        console.log('📱 Mobile user detected! Double-tap items to rotate!');
+    } else {
+        console.log('%c🛏️ Welcome to the Apocalyptic Bedroom Builder! 🛏️', 
+            'font-size: 20px; color: #ff6b9d; font-weight: bold;');
+        console.log('Pro tip: Try the Konami code! ⬆️⬆️⬇️⬇️⬅️➡️⬅️➡️BA');
     }
 });
-
-function activatePartyMode() {
-    document.body.style.animation = 'partyMode 1s ease-in-out infinite';
-    
-    const partyStyle = document.createElement('style');
-    partyStyle.textContent = `
-        @keyframes partyMode {
-            0%, 100% { filter: hue-rotate(0deg); }
-            50% { filter: hue-rotate(180deg); }
-        }
-    `;
-    document.head.appendChild(partyStyle);
-    
-    for (let i = 0; i < 5; i++) {
-        setTimeout(() => addItemToRoom('disco'), i * 200);
-    }
-    
-    alert('🎉 PARTY MODE ACTIVATED! 🎉');
-}
 
 // Prevent zoom on double tap
 document.addEventListener('touchstart', (e) => {
@@ -690,26 +693,3 @@ document.addEventListener('touchstart', (e) => {
         e.preventDefault();
     }
 }, { passive: false });
-
-// Mobile-friendly console message
-if (/Mobile|Android|iPhone/i.test(navigator.userAgent)) {
-    console.log('📱 Mobile user detected! Double-tap items to rotate!');
-} else {
-    console.log('%c🛏️ Welcome to the Apocalyptic Bedroom Builder! 🛏️', 
-        'font-size: 20px; color: #ff6b9d; font-weight: bold;');
-    console.log('Pro tip: Try the Konami code for a surprise! ⬆️⬆️⬇️⬇️⬅️➡️⬅️➡️BA');
-}
-function goHome() {
-    // Clean up before leaving
-    if (typeof soundEnabled !== 'undefined') {
-        // Stop all audio
-        const allAudio = document.querySelectorAll('audio');
-        allAudio.forEach(audio => {
-            audio.pause();
-            audio.src = '';
-        });
-    }
-    
-    // Navigate to home
-    window.location.href = '../index.html';
-}

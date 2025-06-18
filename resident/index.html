@@ -17,35 +17,34 @@
         <source src="../assets/resident/finished.mp3" type="audio/mp3">
     </audio>
 
-    <!-- Instructions Popup -->
+    <!-- Mac OSX Style Welcome Popup -->
     <div class="popup-overlay" id="instructionsPopup">
-        <div class="popup-content-3d">
-            <div class="orbit-3d-container">
-                <!-- Central input and button -->
-                <div class="central-core">
-                    <input type="text" id="userHandle" class="handle-input-3d" placeholder="enter your @handle">
-                    <button class="popup-btn-3d" id="continueBtn">LET'S GO →</button>
+        <div class="osx-window">
+            <!-- OSX Window Chrome -->
+            <div class="osx-titlebar">
+                <div class="osx-buttons">
+                    <span class="osx-btn red"></span>
+                    <span class="osx-btn yellow"></span>
+                    <span class="osx-btn green"></span>
                 </div>
+                <span class="osx-title">Welcome Back!</span>
+            </div>
+            
+            <!-- Window Content -->
+            <div class="osx-content">
+                <p class="welcome-message">
+                    I want you to feel the joy of taking blownoutwhiteandblue<br>photosyoutookandpostednowherebcitwasjustavailable.<br> It was cute. It was fun. <br>It was life before Facebook Marketplace.
+                </p>
                 
-                <!-- Orbiting elements -->
-                <div class="orbit-element orbit-1">
-                    <span class="orbit-text-3d">Welcome back to your fucked up home!</span>
-                </div>
-                <div class="orbit-element orbit-2">
-                    <span class="orbit-text-3d">I missed you >__<</span>
-                </div>
-                <div class="orbit-element orbit-3">
-                    <span class="orbit-text-3d">TAKE A PHOTO</span>
-                </div>
-                <div class="orbit-element orbit-4">
-                    <span class="orbit-text-3d">SCREENSHOT TO PROVE IT</span>
-                </div>
-                <div class="orbit-element orbit-5">
-                    <span class="orbit-text-3d">send to @kidgrandma :)</span>
-                </div>
-                <div class="orbit-element orbit-6">
-                    <span class="orbit-text-3d">xoxoxo moderator</span>
-                </div>
+                <p class="instructions-line">
+                    Enter your handle + take a selfie + grab ur fortune.
+                </p>
+                
+                <input type="text" id="userHandle" class="osx-input" placeholder="@yourhandle">
+                
+                <button class="play-btn" id="continueBtn">
+                    <img src="../assets/resident/play.png" alt="Play">
+                </button>
             </div>
         </div>
     </div>
@@ -57,7 +56,7 @@
         <div class="result-orb result-orb-2"></div>
         <div class="result-orb result-orb-3"></div>
         
-        <!-- Media Player Container with Photo and Dog Tag -->
+        <!-- Media Player Container with Photo and Silver Card -->
         <div class="result-container">
             <!-- Full media player as background -->
             <img src="../assets/resident/media-player-frame.png" class="result-media-player">
@@ -74,17 +73,18 @@
                 </div>
             </div>
             
-            <!-- Dog Tag overlapping the media player -->
-            <img id="resultDogTag" class="result-dog-tag">
+            <!-- Silver Card (replacing dog tag) -->
+            <img id="resultCard" class="result-silver-card">
         </div>
         
-        <!-- Floating Buttons Side by Side -->
-        <div class="floating-buttons">
-            <button class="y2k-button retake-btn" id="retakeBtn">Take Another</button>
-            <a href="https://instagram.com/kidgrandma" target="_blank" class="y2k-button instagram-btn">
-                <span class="instagram-icon">📸</span>
-                <span>Meet @kidgrandma</span>
-            </a>
+        <!-- Image Button Controls -->
+        <div class="result-controls">
+            <button class="img-btn" id="retakeBtn">
+                <img src="../assets/resident/start-over.png" alt="Start Over">
+            </button>
+            <button class="img-btn" id="paiBtn">
+                <img src="../assets/resident/pai.png" alt="Share">
+            </button>
         </div>
     </div>
 
@@ -99,24 +99,16 @@
             <!-- Title Image -->
             <img src="../assets/resident/title.png" alt="Fortune Selfie CCTV" class="main-title-img">
 
-            <!-- Orbiting Instructions -->
-            <div class="orbit-container">
-                <div class="orbit-text orbit-1">take a selfie</div>
-                <div class="orbi t-text orbit-2">get ur fortune</div>
-                <div class="orbit-text orbit-3">send 2 kidgrandma</div>
-            </div>
-
             <!-- Media Player Device -->
             <div class="media-player-container">
                 <img src="../assets/resident/media-player-frame.png" alt="Media Player" class="media-player-frame">
                 
                 <!-- Camera Window - positioned inside the frame -->
                 <div class="camera-window">
-                    <!-- Initial state -->
+                    <!-- Initial state with open-glen button -->
                     <div class="start-screen" id="startScreen">
-                        <div class="pulse-ring"></div>
-                        <button class="start-btn" id="startBtn">
-                            <span class="btn-text">ACTIVATE</span>
+                        <button class="glen-btn" id="startBtn">
+                            <img src="../assets/resident/open-glen.png" alt="Open Glen">
                         </button>
                     </div>
 
@@ -133,14 +125,17 @@
                     <div class="ethereal-overlay" id="etherealOverlay"></div>
                 </div>
 
-                <!-- Capture button using your start.png -->
+                <!-- Capture button using start.png -->
                 <button class="capture-btn" id="captureBtn" style="display: none;">
                     <img src="../assets/resident/start.png" alt="Capture" class="capture-icon">
                 </button>
             </div>
+            
+            <!-- Back button -->
             <button class="home-btn" onclick="goHome()">
-                <span>◄ PAISTATION</span>
+                <span>◄ BACK TO PaiSTATION</span>
             </button>
+            
             <!-- Hidden file input -->
             <input type="file" id="fileInput" accept="image/*" style="display: none;">
         </div>
