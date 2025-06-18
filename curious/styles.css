@@ -11,7 +11,7 @@ body {
     background-position: center;
     background-attachment: fixed;
     color: #fff;
-    font-family: "Courier New", monospace;
+    font-family: "Arial", monospace;
     margin: 0;
     padding: 20px;
     min-height: 100vh;
@@ -23,31 +23,90 @@ body {
 }
 
 /* Home Button */
+/* f0und3rzg4m3 - Rotating Back Button Styles */
 .home-btn {
     position: fixed;
     top: 20px;
     left: 20px;
-    background: rgba(0, 0, 0, 0.8);
-    border: 2px solid #00ffff;
-    color: #00ffff;
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
+    background: transparent;
+    border: none;
+    padding: 0;
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 1000;
-    text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
-.home-btn:hover {
-    background: #00ffff;
-    color: #000;
-    transform: scale(1.05);
-    box-shadow: 0 0 20px #00ffff;
+.home-btn img {
+    display: block;
+    height: 80px; /* Fixed typo: was 80x */
+    width: auto;
+    transition: all 0.3s ease;
+    /* Add rotation animation */
+    animation: rotate 4s linear infinite;
 }
 
+/* Rotation animation */
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* On hover - speed up rotation and add effects */
+.home-btn:hover img {
+    animation-duration: 1s; /* Spins faster on hover */
+    filter: drop-shadow(0 0 20px #00ffff);
+    transform: scale(1.1);
+}
+
+/* Alternative: Rotate only on hover */
+.home-btn.hover-only img {
+    animation: none;
+}
+
+.home-btn.hover-only:hover img {
+    animation: rotate 1s linear infinite;
+    filter: drop-shadow(0 0 20px #00ffff);
+}
+
+/* Alternative: Subtle wobble rotation */
+@keyframes wobble-rotate {
+    0%, 100% {
+        transform: rotate(-5deg);
+    }
+    50% {
+        transform: rotate(5deg);
+    }
+}
+
+.home-btn.wobble img {
+    animation: wobble-rotate 2s ease-in-out infinite;
+}
+
+.home-btn.wobble:hover img {
+    animation: rotate 0.5s linear infinite;
+    filter: drop-shadow(0 0 20px #00ffff);
+}
+
+/* Alternative: Pulse and rotate */
+@keyframes pulse-rotate {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.1);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+.home-btn.pulse img {
+    animation: pulse-rotate 3s ease-in-out infinite;
+}
 /* Marquee Title Card */
 .marquee-container {
     width: 95%;
@@ -75,7 +134,7 @@ body {
     font-weight: bold;
     color: #ffffff;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    font-family: "Comic Sans MS", cursive;
+    font-family: "Comic Sans MS", arial;
 }
 
 @keyframes scroll-marquee {
@@ -183,7 +242,7 @@ body {
     color: #0f0;
     padding: 4px 8px;
     border: 1px solid #0f0;
-    font-family: "Courier New", monospace;
+    font-family: "Arial", monospace;
     text-shadow: 0 0 5px #0f0;
 }
 
@@ -191,7 +250,7 @@ body {
     background: rgba(255, 255, 255, 0.8);
     border: 2px solid #ff00ff;
     color: #000;
-    font-family: "Comic Sans MS", cursive;
+    font-family: "Comic Sans MS", arial;
     font-size: inherit;
     width: 150px;
     padding: 2px 4px;
@@ -426,7 +485,7 @@ backdrop-filter: blur(10px);
 .tab-btn.special {
     background: linear-gradient(45deg, #ff1493, #ffd700, #00ff7f);
     color: #fff;
-    font-family: "Comic Sans MS", cursive;
+    font-family: "Comic Sans MS", arial;
     animation: specialPulse 2s ease-in-out infinite;
 }
 
@@ -732,7 +791,7 @@ backdrop-filter: blur(10px);
 .window-content {
     padding: 20px;
     background: #fff;
-    font-family: "Comic Sans MS", cursive;
+    font-family: "Comic Sans MS", arial;
     color: #000;
 }
 
@@ -784,7 +843,7 @@ backdrop-filter: blur(10px);
     font-size: 16px;
     border: 3px solid #ff00ff;
     background: linear-gradient(to right, #ffffcc, #ffccff);
-    font-family: "Comic Sans MS", cursive;
+    font-family: "Comic Sans MS", arial;
     margin-top: 10px;
     border-radius: 20px;
     text-align: center;
