@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
     <title>f0und3rz g4m3 - Enter Portal</title>
     <style>
         * {
@@ -560,6 +563,20 @@
                 bottom: 8%;
             }
         }
+        .ios-fix {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Prevent horizontal scroll on all devices */
+* {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+body {
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
     </style>
 </head>
 <body>
