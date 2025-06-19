@@ -1,4 +1,4 @@
-// Y2K Chaos Bedroom Builder - Now with Random Sounds!
+// Y2K Chaos Bedroom Builder - Mobile Optimized
 'use strict';
 
 // Audio Configuration with Random Playback
@@ -57,7 +57,7 @@ const AudioManager = {
 // Room State Manager
 const RoomState = {
     currentBed: 'bunk',
-    currentWallpaper: 'clouds', // Changed default to clouds
+    currentWallpaper: 'clouds',
     roomItems: [],
     itemIdCounter: 0,
     playerName: '',
@@ -109,9 +109,10 @@ const RoomState = {
     }
 };
 
-// UI Controller
+// UI Controller with Mobile Enhancements
 const UIController = {
     elements: {},
+    scrollPosition: 0,
     
     init() {
         // Cache DOM elements
@@ -136,6 +137,67 @@ const UIController = {
         
         // Random sounds at random intervals
         setInterval(() => AudioManager.playRandomSound(), 5000 + Math.random() * 10000);
+        
+        // Mobile-specific enhancements
+        this.setupMobileEnhancements();
+    },
+    
+    setupMobileEnhancements() {
+        // Improve touch scrolling for tab content
+        const tabContent = document.querySelector('.tab-content');
+        if (tabContent && 'ontouchstart' in window) {
+            let startY = 0;
+            let startScrollTop = 0;
+            
+            tabContent.addEventListener('touchstart', (e) => {
+                startY = e.touches[0].pageY;
+                startScrollTop = tabContent.scrollTop;
+            }, { passive: true });
+            
+            tabContent.addEventListener('touchmove', (e) => {
+                const deltaY = startY - e.touches[0].pageY;
+                tabContent.scrollTop = startScrollTop + deltaY;
+            }, { passive: true });
+        }
+        
+        // Handle orientation changes
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                this.adjustLayoutForOrientation();
+            }, 100);
+        });
+        
+        // Improve tab switching on mobile
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                btn.click();
+            });
+        });
+        
+        // Prevent iOS bounce scrolling
+        document.body.addEventListener('touchmove', (e) => {
+            if (!e.target.closest('.tab-content') && !e.target.closest('.modal-overlay')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    },
+    
+    adjustLayoutForOrientation() {
+        const roomPreview = document.querySelector('.room-preview');
+        const controlPanel = document.querySelector('.control-panel');
+        
+        if (!roomPreview || !controlPanel) return;
+        
+        if (window.innerHeight < window.innerWidth) {
+            // Landscape
+            roomPreview.style.flex = '0 0 55%';
+            controlPanel.style.flex = '1';
+        } else {
+            // Portrait
+            roomPreview.style.flex = '0 0 35vh';
+            controlPanel.style.flex = '1';
+        }
     },
     
     updateTime() {
@@ -153,22 +215,48 @@ const UIController = {
     
     showModal(modalId) {
         const modal = document.getElementById(modalId);
-        if (modal) modal.style.display = 'block';
+        if (modal) {
+            // Save scroll position and prevent body scroll
+            this.scrollPosition = window.pageYOffset;
+            document.body.classList.add('modal-open');
+            document.body.style.top = `-${this.scrollPosition}px`;
+            
+            modal.style.display = 'block';
+            
+            // Center modal on mobile
+            if (window.innerWidth <= 768) {
+                const modalWindow = modal.querySelector('.welcome-window, .instructions-window');
+                if (modalWindow) {
+                    modalWindow.style.position = 'fixed';
+                    modalWindow.style.top = '50%';
+                    modalWindow.style.left = '50%';
+                    modalWindow.style.transform = 'translate(-50%, -50%)';
+                }
+            }
+        }
     },
     
     hideModal(modalId) {
         const modal = document.getElementById(modalId);
-        if (modal) modal.style.display = 'none';
+        if (modal) {
+            modal.style.display = 'none';
+            
+            // Restore body scroll
+            document.body.classList.remove('modal-open');
+            document.body.style.top = '';
+            window.scrollTo(0, this.scrollPosition);
+        }
     }
 };
 
-// Drag and Drop Manager
+// Enhanced Drag and Drop Manager for Mobile
 const DragDropManager = {
     draggedElement: null,
     touchData: {
         startX: 0,
         startY: 0,
-        lastTap: 0
+        lastTap: 0,
+        identifier: null
     },
     
     makeDraggable(element) {
@@ -186,10 +274,8 @@ const DragDropManager = {
         // Mouse events
         element.addEventListener('mousedown', (e) => this.handleStart(e, element));
         
-        // Touch events
+        // Touch events with better mobile support
         element.addEventListener('touchstart', (e) => this.handleStart(e, element), { passive: false });
-        element.addEventListener('touchmove', boundHandleMove, { passive: false });
-        element.addEventListener('touchend', boundHandleEnd, { passive: false });
         
         // Double-click/tap for rotation
         element.addEventListener('dblclick', () => this.rotate(element));
@@ -213,8 +299,14 @@ const DragDropManager = {
         if (e.touches) {
             this.touchData.startX = touch.clientX;
             this.touchData.startY = touch.clientY;
+            this.touchData.identifier = touch.identifier;
+            
+            // Add touch event listeners
+            document.addEventListener('touchmove', element._boundHandleMove, { passive: false });
+            document.addEventListener('touchend', element._boundHandleEnd, { passive: false });
+            document.addEventListener('touchcancel', element._boundHandleEnd, { passive: false });
         } else {
-            // Mouse move/up listeners - bind to preserve context
+            // Mouse move/up listeners
             document.addEventListener('mousemove', element._boundHandleMove);
             document.addEventListener('mouseup', element._boundHandleEnd);
         }
@@ -226,7 +318,15 @@ const DragDropManager = {
         if (!this.draggedElement) return;
         e.preventDefault();
         
-        const touch = e.touches ? e.touches[0] : e;
+        let touch;
+        if (e.touches) {
+            // Find the correct touch point
+            touch = Array.from(e.touches).find(t => t.identifier === this.touchData.identifier);
+            if (!touch) return;
+        } else {
+            touch = e;
+        }
+        
         const element = this.draggedElement;
         
         const deltaX = touch.clientX - parseFloat(element.dataset.startX);
@@ -252,20 +352,27 @@ const DragDropManager = {
         
         // Check for tap vs drag on touch devices
         if (e.changedTouches) {
-            const touch = e.changedTouches[0];
-            const moveDistance = Math.abs(touch.clientX - this.touchData.startX) + 
-                               Math.abs(touch.clientY - this.touchData.startY);
-            
-            if (moveDistance < 10) {
-                // Check for double tap
-                const currentTime = Date.now();
-                if (currentTime - this.touchData.lastTap < 500) {
-                    this.rotate(element);
+            const touch = Array.from(e.changedTouches).find(t => t.identifier === this.touchData.identifier);
+            if (touch) {
+                const moveDistance = Math.abs(touch.clientX - this.touchData.startX) + 
+                                   Math.abs(touch.clientY - this.touchData.startY);
+                
+                if (moveDistance < 10) {
+                    // Check for double tap
+                    const currentTime = Date.now();
+                    if (currentTime - this.touchData.lastTap < 500) {
+                        this.rotate(element);
+                    }
+                    this.touchData.lastTap = currentTime;
+                } else {
+                    AudioManager.playPlacement();
                 }
-                this.touchData.lastTap = currentTime;
-            } else {
-                AudioManager.playPlacement();
             }
+            
+            // Remove touch listeners
+            document.removeEventListener('touchmove', element._boundHandleMove);
+            document.removeEventListener('touchend', element._boundHandleEnd);
+            document.removeEventListener('touchcancel', element._boundHandleEnd);
         } else {
             // Desktop - remove listeners
             document.removeEventListener('mousemove', element._boundHandleMove);
@@ -274,6 +381,7 @@ const DragDropManager = {
         }
         
         this.draggedElement = null;
+        this.touchData.identifier = null;
         UIController.updateStatus('Ready');
     },
     
@@ -287,7 +395,7 @@ const DragDropManager = {
     }
 };
 
-// Room Builder
+// Room Builder with Mobile Optimizations
 const RoomBuilder = {
     init() {
         this.initializeTabs();
@@ -304,6 +412,20 @@ const RoomBuilder = {
         // Set default wallpaper to clouds
         this.updateWallpaper();
         RoomState.updateStats();
+        
+        // Adjust mobile bed sizes based on screen
+        this.adjustMobileItemSizes();
+    },
+    
+    adjustMobileItemSizes() {
+        if (window.innerWidth <= 768) {
+            // Dynamically adjust item sizes for small screens
+            const roomBase = UIController.elements.roomBase;
+            const baseWidth = roomBase ? roomBase.offsetWidth : window.innerWidth;
+            
+            // Store adjusted sizes
+            this.mobileItemScale = Math.min(1, baseWidth / 400);
+        }
     },
     
     initializeTabs() {
@@ -317,6 +439,11 @@ const RoomBuilder = {
                 
                 btn.classList.add('active');
                 document.getElementById(`${targetTab}Tab`).classList.add('active');
+                
+                // Scroll tab into view on mobile
+                if (window.innerWidth <= 768) {
+                    btn.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                }
             });
         });
     },
@@ -372,7 +499,12 @@ const RoomBuilder = {
         UIController.showModal('welcomeModal');
         
         if (welcomeModal) {
-            welcomeNameInput.focus();
+            // Focus input after a delay for mobile keyboards
+            setTimeout(() => {
+                if (welcomeNameInput && window.innerWidth > 768) {
+                    welcomeNameInput.focus();
+                }
+            }, 100);
             
             closeWelcome.addEventListener('click', () => this.closeWelcomeModal());
             
@@ -390,7 +522,10 @@ const RoomBuilder = {
             });
             
             welcomeNameInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') startBtn.click();
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    startBtn.click();
+                }
             });
         }
         
@@ -399,6 +534,7 @@ const RoomBuilder = {
             UIController.hideModal('instructionsModal');
         });
         
+        // Close modal on outside click
         document.getElementById('instructionsModal').addEventListener('click', (e) => {
             if (e.target.id === 'instructionsModal') {
                 UIController.hideModal('instructionsModal');
@@ -440,26 +576,35 @@ const RoomBuilder = {
             RoomState.removeItem(existingBed.id);
         }
         
+        // Adjust bed size for mobile
+        let bedWidth = 240;
+        let bedHeight = 180;
+        
+        if (window.innerWidth <= 768) {
+            bedWidth = 160;
+            bedHeight = 120;
+        }
+        
         // Create new bed
         const bedElement = this.createElement('bed', bedType, {
-            width: 240,
-            height: 180,
+            width: bedWidth,
+            height: bedHeight,
             src: `../assets/curious/bed-${bedType}.png`,
             label: bedType + ' bed'
         });
         
         // Position in center-bottom
         const roomRect = UIController.elements.roomBase.getBoundingClientRect();
-        bedElement.style.left = `${(roomRect.width - 240) / 2}px`;
-        bedElement.style.top = `${roomRect.height - 240}px`;
+        bedElement.style.left = `${(roomRect.width - bedWidth) / 2}px`;
+        bedElement.style.top = `${roomRect.height - bedHeight - 40}px`;
         
         UIController.elements.itemsLayer.appendChild(bedElement);
         RoomState.currentBed = bedType;
         RoomState.addItem(bedElement.id);
         
         AudioManager.playPlacement();
-        this.createParticles(parseFloat(bedElement.style.left) + 120, 
-                           parseFloat(bedElement.style.top) + 90);
+        this.createParticles(parseFloat(bedElement.style.left) + bedWidth/2, 
+                           parseFloat(bedElement.style.top) + bedHeight/2);
     },
     
     updateWallpaper() {
@@ -485,26 +630,32 @@ const RoomBuilder = {
     
     addItem(itemType) {
         const itemData = {
-            water: { src: 'item-water.png', size: 120, label: 'Aquafina Case' },
-            batteries: { src: 'item-batteries.png', size: 100, label: 'Car Batteries' },
-            nsync: { src: 'item-nsync.png', size: 150, label: 'Ricky Martin' },
-            lamp: { src: 'item-lamp.png', size: 110, label: 'IKEA Lamp' },
-            juice: { src: 'item-juice.png', size: 100, label: 'Sunny D' },
-            disco: { src: 'item-disco.png', size: 140, label: 'Disco Lighter' }
+            water: { src: 'item-water.png', size: 120, mobileSize: 60, label: 'Aquafina Case' },
+            batteries: { src: 'item-batteries.png', size: 100, mobileSize: 45, label: 'Car Batteries' },
+            nsync: { src: 'item-nsync.png', size: 150, mobileSize: 70, label: 'Ricky Martin' },
+            lamp: { src: 'item-lamp.png', size: 110, mobileSize: 50, label: 'IKEA Lamp' },
+            juice: { src: 'item-juice.png', size: 100, mobileSize: 45, label: 'Sunny D' },
+            disco: { src: 'item-disco.png', size: 140, mobileSize: 65, label: 'Disco Lighter' }
         };
         
         const data = itemData[itemType];
+        const isMobile = window.innerWidth <= 768;
+        const itemSize = isMobile ? data.mobileSize : data.size;
+        
         const itemElement = this.createElement('item', itemType, {
-            width: data.size,
-            height: data.size,
+            width: itemSize,
+            height: itemSize,
             src: `../assets/curious/${data.src}`,
             label: data.label
         });
         
-        // Random position
+        // Random position with mobile considerations
         const roomRect = UIController.elements.roomBase.getBoundingClientRect();
-        const x = Math.random() * (roomRect.width - data.size);
-        const y = Math.random() * (roomRect.height - data.size - 100) + 50;
+        const maxX = roomRect.width - itemSize - 10;
+        const maxY = roomRect.height - itemSize - 60;
+        
+        const x = Math.random() * maxX + 5;
+        const y = Math.random() * (maxY - 50) + 50;
         
         itemElement.style.left = `${x}px`;
         itemElement.style.top = `${y}px`;
@@ -513,7 +664,7 @@ const RoomBuilder = {
         RoomState.addItem(itemElement.id);
         
         AudioManager.playPlacement();
-        this.createParticles(x + data.size/2, y + data.size/2);
+        this.createParticles(x + itemSize/2, y + itemSize/2);
     },
     
     createElement(type, subtype, data) {
@@ -543,7 +694,10 @@ const RoomBuilder = {
     },
     
     createParticles(x, y) {
-        for (let i = 0; i < 12; i++) {
+        // Reduce particles on mobile for performance
+        const particleCount = window.innerWidth <= 768 ? 6 : 12;
+        
+        for (let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
             particle.className = 'particle';
             particle.style.cssText = `
@@ -560,7 +714,7 @@ const RoomBuilder = {
                 box-shadow: 0 0 6px #ffff00;
             `;
             
-            const angle = (Math.PI * 2 * i) / 12;
+            const angle = (Math.PI * 2 * i) / particleCount;
             const velocity = 80 + Math.random() * 80;
             particle.style.setProperty('--dx', Math.cos(angle) * velocity + 'px');
             particle.style.setProperty('--dy', Math.sin(angle) * velocity + 'px');
@@ -676,6 +830,21 @@ document.addEventListener('DOMContentLoaded', () => {
         AudioManager.playBackground();
     }, { once: true });
     
+    // Also start on first touch for mobile
+    document.addEventListener('touchstart', function startMusic() {
+        AudioManager.playBackground();
+    }, { once: true });
+    
+    // Handle window resize
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            RoomBuilder.adjustMobileItemSizes();
+            UIController.adjustLayoutForOrientation();
+        }, 250);
+    });
+    
     // Console messages
     const isMobile = /Mobile|Android|iPhone/i.test(navigator.userAgent);
     if (isMobile) {
@@ -690,6 +859,22 @@ document.addEventListener('DOMContentLoaded', () => {
 // Prevent zoom on double tap
 document.addEventListener('touchstart', (e) => {
     if (e.touches.length > 1) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+// Prevent pull-to-refresh on mobile
+let lastY = 0;
+document.addEventListener('touchstart', (e) => {
+    lastY = e.touches[0].clientY;
+}, { passive: true });
+
+document.addEventListener('touchmove', (e) => {
+    const y = e.touches[0].clientY;
+    const scrolling = document.body.scrollTop || document.documentElement.scrollTop;
+    
+    // Prevent overscroll when at the top
+    if (scrolling === 0 && y > lastY) {
         e.preventDefault();
     }
 }, { passive: false });

@@ -1,8 +1,9 @@
-/* Y2K Chaos Bedroom Builder Styles */
+/* Y2K Chaos Bedroom Builder Styles - Mobile Optimized */
 
 /* Base Reset and Body */
 * {
     box-sizing: border-box;
+    max-width: 100%;
 }
 
 body {
@@ -20,10 +21,17 @@ body {
     align-items: center;
     justify-content: center;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+    position: fixed;
+    width: 100%;
+    overflow: hidden;
 }
 
 /* Home Button */
-/* f0und3rzg4m3 - Rotating Back Button Styles */
 .home-btn {
     position: fixed;
     top: 20px;
@@ -38,75 +46,23 @@ body {
 
 .home-btn img {
     display: block;
-    height: 80px; /* Fixed typo: was 80x */
+    height: 80px;
     width: auto;
     transition: all 0.3s ease;
-    /* Add rotation animation */
     animation: rotate 4s linear infinite;
 }
 
-/* Rotation animation */
 @keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-/* On hover - speed up rotation and add effects */
 .home-btn:hover img {
-    animation-duration: 1s; /* Spins faster on hover */
+    animation-duration: 1s;
     filter: drop-shadow(0 0 20px #00ffff);
     transform: scale(1.1);
 }
 
-/* Alternative: Rotate only on hover */
-.home-btn.hover-only img {
-    animation: none;
-}
-
-.home-btn.hover-only:hover img {
-    animation: rotate 1s linear infinite;
-    filter: drop-shadow(0 0 20px #00ffff);
-}
-
-/* Alternative: Subtle wobble rotation */
-@keyframes wobble-rotate {
-    0%, 100% {
-        transform: rotate(-5deg);
-    }
-    50% {
-        transform: rotate(5deg);
-    }
-}
-
-.home-btn.wobble img {
-    animation: wobble-rotate 2s ease-in-out infinite;
-}
-
-.home-btn.wobble:hover img {
-    animation: rotate 0.5s linear infinite;
-    filter: drop-shadow(0 0 20px #00ffff);
-}
-
-/* Alternative: Pulse and rotate */
-@keyframes pulse-rotate {
-    0% {
-        transform: rotate(0deg) scale(1);
-    }
-    50% {
-        transform: rotate(180deg) scale(1.1);
-    }
-    100% {
-        transform: rotate(360deg) scale(1);
-    }
-}
-
-.home-btn.pulse img {
-    animation: pulse-rotate 3s ease-in-out infinite;
-}
 /* Marquee Title Card */
 .marquee-container {
     width: 95%;
@@ -142,7 +98,7 @@ body {
     100% { transform: translateX(-50%); }
 }
 
-/* Main Container - Mac OS X Aqua meets Windows XP Chaos */
+/* Main Container */
 .bedroom-container {
     display: flex;
     flex-direction: column;
@@ -160,7 +116,7 @@ body {
     position: relative;
 }
 
-/* Header - Aqua Style */
+/* Header */
 .bedroom-header {
     background: linear-gradient(to bottom, #f0f0f0 0%, #d8d8d8 50%, #c0c0c0 100%);
     padding: 8px;
@@ -169,6 +125,7 @@ body {
     align-items: center;
     justify-content: center;
     position: relative;
+    flex-shrink: 0;
 }
 
 .title-bar {
@@ -188,9 +145,10 @@ body {
     padding: 20px;
     overflow: hidden;
     background: #f5f5f5;
+    min-height: 0;
 }
 
-/* Room Preview - Mixed Style Window */
+/* Room Preview */
 .room-preview {
     flex: 1;
     display: flex;
@@ -203,6 +161,7 @@ body {
         0 4px 16px rgba(0, 0, 0, 0.3);
     position: relative;
     overflow: hidden;
+    min-height: 0;
 }
 
 .room-base {
@@ -215,7 +174,7 @@ body {
     border-radius: 8px;
 }
 
-/* Room Label - Y2K Style */
+/* Room Label */
 .room-label {
     background: linear-gradient(45deg, #ffff00, #ff00ff, #00ffff);
     color: #000;
@@ -228,6 +187,7 @@ body {
         3px 3px 0 #000,
         inset 0 0 10px rgba(255, 255, 255, 0.5);
     text-transform: uppercase;
+    flex-shrink: 0;
 }
 
 .profile-header {
@@ -264,7 +224,7 @@ body {
     box-shadow: 0 0 10px #ff00ff;
 }
 
-/* Wallpaper System - Less Tiling */
+/* Wallpaper System */
 .wallpaper-layer {
     position: absolute;
     top: 0;
@@ -313,7 +273,6 @@ body {
     z-index: 50;
 }
 
-/* Hide prompt when wallpaper is selected */
 .wallpaper-layer.pink .wallpaper-prompt,
 .wallpaper-layer.space .wallpaper-prompt,
 .wallpaper-layer.wood .wallpaper-prompt,
@@ -378,16 +337,17 @@ body {
     z-index: 10;
 }
 
-/* Control Panel - Clashing Aqua/XP Style */
+/* Control Panel */
 .control-panel {
     background: linear-gradient(45deg, 
-    rgba(255, 0, 255, 0.3),
-    rgba(0, 255, 255, 0.3),
-    rgba(255, 255, 0, 0.3));
-backdrop-filter: blur(10px);
+        rgba(255, 0, 255, 0.3),
+        rgba(0, 255, 255, 0.3),
+        rgba(255, 255, 0, 0.3));
+    backdrop-filter: blur(10px);
     width: 400px;
     display: flex;
     flex-direction: column;
+    min-height: 0;
 }
 
 .panel-window {
@@ -401,6 +361,7 @@ backdrop-filter: blur(10px);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-height: 0;
 }
 
 .panel-header {
@@ -413,6 +374,7 @@ backdrop-filter: blur(10px);
     font-weight: bold;
     text-shadow: 1px 1px 2px #000;
     border-bottom: 2px solid #000;
+    flex-shrink: 0;
 }
 
 .window-buttons {
@@ -428,15 +390,9 @@ backdrop-filter: blur(10px);
     cursor: pointer;
 }
 
-.btn.red { 
-    background: radial-gradient(circle at 30% 30%, #ff6b6b, #ff0000); 
-}
-.btn.yellow { 
-    background: radial-gradient(circle at 30% 30%, #ffe66d, #ffd700); 
-}
-.btn.green { 
-    background: radial-gradient(circle at 30% 30%, #90ee90, #00ff00); 
-}
+.btn.red { background: radial-gradient(circle at 30% 30%, #ff6b6b, #ff0000); }
+.btn.yellow { background: radial-gradient(circle at 30% 30%, #ffe66d, #ffd700); }
+.btn.green { background: radial-gradient(circle at 30% 30%, #90ee90, #00ff00); }
 
 /* Panel Content */
 .panel-content {
@@ -446,14 +402,16 @@ backdrop-filter: blur(10px);
     flex-direction: column;
     background: rgba(255, 255, 255, 0.9);
     overflow: hidden;
+    min-height: 0;
 }
 
-/* Tab System - Mixed Fonts Chaos */
+/* Tab System */
 .tab-buttons {
     display: flex;
     gap: 5px;
     margin-bottom: 15px;
     flex-wrap: wrap;
+    flex-shrink: 0;
 }
 
 .tab-btn {
@@ -498,8 +456,8 @@ backdrop-filter: blur(10px);
 .tab-content {
     flex: 1;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     background: 
-        /* Dark grid on light */
         repeating-linear-gradient(
             0deg,
             #000 0px,
@@ -514,12 +472,11 @@ backdrop-filter: blur(10px);
             transparent 2px,
             transparent 30px
         ),
-        /* Inverted neon colors */
         linear-gradient(135deg, 
-            rgba(0, 0, 255, 0.2) 0%,    /* inverted yellow */
-            rgba(255, 0, 0, 0.2) 25%,   /* inverted cyan */
-            rgba(0, 255, 0, 0.2) 50%,   /* inverted magenta */
-            rgba(255, 0, 255, 0.2) 75%, /* inverted green */
+            rgba(0, 0, 255, 0.2) 0%,
+            rgba(255, 0, 0, 0.2) 25%,
+            rgba(0, 255, 0, 0.2) 50%,
+            rgba(255, 0, 255, 0.2) 75%,
             rgba(0, 0, 255, 0.2) 100%);
     background-color: #f0f0f0;
     border: 3px solid #000;
@@ -527,7 +484,9 @@ backdrop-filter: blur(10px);
     box-shadow: 
         inset 0 0 30px rgba(0, 0, 0, 0.2),
         inset 0 0 10px rgba(255, 255, 255, 0.8);
+    min-height: 0;
 }
+
 .tab-panel {
     display: none;
 }
@@ -540,8 +499,10 @@ backdrop-filter: blur(10px);
 .options-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 15px;
+    padding: 5px;
 }
+
 .option-btn {
     background: linear-gradient(135deg, #f0f0f0, #fff);
     border: 3px solid #000;
@@ -565,7 +526,6 @@ backdrop-filter: blur(10px);
     box-shadow: 4px 4px 8px rgba(0,0,0,0.3);
 }
 
-/* Fix the preview images */
 .option-preview {
     width: 80px;
     height: 60px;
@@ -576,7 +536,6 @@ backdrop-filter: blur(10px);
     border-radius: 5px;
 }
 
-/* Fix the text labels */
 .option-btn span {
     font-size: 12px;
     font-weight: bold;
@@ -585,14 +544,6 @@ backdrop-filter: blur(10px);
     color: #000;
     word-wrap: break-word;
     max-width: 100%;
-}
-
-/* Ensure consistent grid spacing */
-.options-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    padding: 5px;
 }
 
 /* Wallpaper Previews */
@@ -609,7 +560,7 @@ backdrop-filter: blur(10px);
 .wallpaper-preview.wood { background-image: url('../assets/curious/wallpaper-wood.png'); }
 .wallpaper-preview.clouds { background-image: url('../assets/curious/wallpaper-clouds.png'); }
 
-
+/* Items Grid */
 .items-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -658,6 +609,7 @@ backdrop-filter: blur(10px);
     word-wrap: break-word;
     max-width: 100%;
 }
+
 /* Draggable Room Items */
 .room-item {
     position: absolute;
@@ -690,6 +642,7 @@ backdrop-filter: blur(10px);
     display: flex;
     gap: 10px;
     margin-top: 15px;
+    flex-shrink: 0;
 }
 
 .action-btn {
@@ -727,7 +680,7 @@ backdrop-filter: blur(10px);
     transform: translateY(0) rotate(0);
 }
 
-/* Welcome Modal - AIM/MSN Style */
+/* Modals */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -754,7 +707,8 @@ backdrop-filter: blur(10px);
         0 10px 30px rgba(0, 0, 0, 0.5);
     width: 90%;
     max-width: 500px;
-    overflow: hidden;
+    max-height: 90vh;
+    overflow: auto;
 }
 
 .window-header {
@@ -766,6 +720,9 @@ backdrop-filter: blur(10px);
     align-items: center;
     font-family: "Arial", sans-serif;
     font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .window-title {
@@ -817,17 +774,9 @@ backdrop-filter: blur(10px);
     border-radius: 10px;
 }
 
-.welcome-section.step1 {
-    border-color: #ff00ff;
-}
-
-.welcome-section.step2 {
-    border-color: #00ff00;
-}
-
-.welcome-section.step3 {
-    border-color: #00ffff;
-}
+.welcome-section.step1 { border-color: #ff00ff; }
+.welcome-section.step2 { border-color: #00ff00; }
+.welcome-section.step3 { border-color: #00ffff; }
 
 .section-header {
     font-family: "Arial Black", sans-serif;
@@ -928,6 +877,7 @@ backdrop-filter: blur(10px);
     justify-content: space-between;
     font-family: "Tahoma", sans-serif;
     font-size: 11px;
+    flex-shrink: 0;
 }
 
 .status-section {
@@ -971,18 +921,23 @@ backdrop-filter: blur(10px);
     90% { transform: translateX(-2px); }
 }
 
-/* Mobile Optimizations */
+/* Mobile Optimizations - IMPROVED */
 @media (max-width: 768px) {
     body {
         padding: 0;
         margin: 0;
+        height: 100vh;
+        overflow: hidden;
     }
     
     .home-btn {
         top: 10px;
         left: 10px;
-        padding: 8px 15px;
-        font-size: 12px;
+        z-index: 1001;
+    }
+    
+    .home-btn img {
+        height: 60px;
     }
     
     .marquee-container {
@@ -1001,56 +956,148 @@ backdrop-filter: blur(10px);
         height: 100vh;
         border-radius: 0;
         max-height: none;
+        display: flex;
+        flex-direction: column;
     }
     
     .bedroom-header {
-        padding: 8px;
+        padding: 6px;
+    }
+    
+    .title-bar {
+        font-size: 12px;
     }
     
     .builder-layout {
         flex-direction: column;
         padding: 10px;
         gap: 10px;
+        height: 100%;
+        overflow: hidden;
     }
     
+    /* Smaller room preview to give more space to controls */
     .room-preview {
-        flex: 0 0 45vh;
-        min-height: 300px;
+        flex: 0 0 35vh;
+        min-height: 250px;
+        max-height: 350px;
     }
     
+    /* Give control panel more space */
     .control-panel {
         width: 100%;
         flex: 1;
         min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
     }
     
+    .panel-window {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+    
+    .panel-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        padding: 10px;
+        overflow: hidden;
+    }
+    
+    /* Tab buttons wrap instead of scroll */
     .tab-buttons {
-        gap: 3px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        flex-wrap: nowrap;
-    }
-    
-    .tab-btn {
-        padding: 6px 12px;
-        font-size: 12px;
-        white-space: nowrap;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 10px;
         flex-shrink: 0;
     }
     
+    .tab-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+        flex: 1 1 auto;
+        min-width: 80px;
+        text-align: center;
+    }
+    
+    /* Better scrolling for tab content */
+    .tab-content {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        min-height: 0;
+        padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+    
+    /* Larger touch targets */
     .options-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
+        gap: 12px;
+        padding: 10px;
+    }
+    
+    .option-btn {
+        min-height: 100px;
+        padding: 8px;
     }
     
     .items-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 10px;
+    }
+    
+    .item-btn {
+        min-height: 90px;
+        padding: 8px;
+    }
+    
+    /* More accessible action buttons */
+    .action-buttons {
+        flex-shrink: 0;
+        padding: 10px 0;
         gap: 8px;
     }
     
     .action-btn {
-        padding: 10px;
+        padding: 12px;
         font-size: 12px;
+        min-height: 44px;
+    }
+    
+    /* Adjust room label */
+    .room-label {
+        font-size: 12px;
+        padding: 6px;
+        margin: 4px;
+    }
+    
+    .name-input {
+        width: 120px;
+        font-size: 12px;
+    }
+    
+    .profile-stats {
+        font-size: 10px;
+        padding: 2px 4px;
+    }
+    
+    /* Status bar adjustments */
+    .status-bar {
+        font-size: 10px;
+        padding: 4px;
+    }
+    
+    /* Smaller wallpaper prompt */
+    .wallpaper-prompt {
+        font-size: 0.9rem;
+        padding: 15px 25px;
     }
     
     /* Adjust draggable item sizes */
@@ -1066,10 +1113,12 @@ backdrop-filter: blur(10px);
     .room-item[data-type="juice"] { width: 45px !important; height: 45px !important; }
     .room-item[data-type="disco"] { width: 65px !important; height: 65px !important; }
     
+    /* Modal adjustments */
     .welcome-window,
     .instructions-window {
         width: 95%;
         max-width: none;
+        max-height: 90vh;
     }
     
     .welcome-title {
@@ -1078,10 +1127,49 @@ backdrop-filter: blur(10px);
     
     .welcome-section {
         padding: 10px;
+        margin-bottom: 15px;
     }
     
     .section-header {
         font-size: 16px;
+    }
+    
+    .welcome-input {
+        font-size: 14px;
+        padding: 8px;
+    }
+    
+    .start-btn {
+        font-size: 16px;
+        padding: 12px;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 375px) {
+    .room-preview {
+        flex: 0 0 30vh;
+        min-height: 200px;
+    }
+    
+    .tab-btn {
+        font-size: 11px;
+        padding: 6px 8px;
+        min-width: 70px;
+    }
+    
+    .action-btn {
+        font-size: 11px;
+    }
+    
+    .option-preview {
+        width: 60px;
+        height: 45px;
+    }
+    
+    .item-preview {
+        width: 40px;
+        height: 40px;
     }
 }
 
@@ -1089,14 +1177,52 @@ backdrop-filter: blur(10px);
 @media (max-width: 768px) and (orientation: landscape) {
     .builder-layout {
         flex-direction: row;
+        padding: 5px;
     }
     
     .room-preview {
-        flex: 0 0 60%;
-        height: 100%;
+        flex: 0 0 55%;
+        height: auto;
+        max-height: none;
     }
     
     .control-panel {
         flex: 1;
+        height: 100%;
+    }
+    
+    .tab-buttons {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .tab-content {
+        max-height: calc(100vh - 200px);
+    }
+}
+
+/* iOS Safe Area */
+.ios-fix {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Ensure no horizontal scroll */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+/* Touch-friendly hover states for mobile */
+@media (hover: none) and (pointer: coarse) {
+    .option-btn:active,
+    .item-btn:active,
+    .tab-btn:active,
+    .action-btn:active {
+        transform: scale(0.95);
+    }
+    
+    .room-item:active {
+        transform: scale(0.9);
     }
 }

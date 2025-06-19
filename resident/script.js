@@ -1,4 +1,4 @@
-// Fortune Selfie CCTV Script - Updated for new flow
+// Fortune Selfie CCTV Script - Updated with brightness fixes
 
 // State management
 let cameraStream = null;
@@ -143,13 +143,14 @@ fileInput.addEventListener('change', (e) => {
 // Capture button click
 captureBtn.addEventListener('click', capturePhoto);
 
+// UPDATED CAPTURE FUNCTION WITH BRIGHTNESS FIX
 function capturePhoto() {
     console.log('Capturing photo...');
     
     // Select random silver card
     const randomCard = silverCards[Math.floor(Math.random() * silverCards.length)];
     
-    // Create canvas to capture with filter
+    // Create canvas to capture
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     
@@ -158,12 +159,27 @@ function capturePhoto() {
         canvas.width = cameraFeed.videoWidth || 640;
         canvas.height = cameraFeed.videoHeight || 480;
         
-        // Draw the video frame WITHOUT mirroring (CSS will handle it)
+        // IMPORTANT: Save context state
+        ctx.save();
+        
+        // Mirror the canvas for selfie (not the video element)
+        ctx.scale(-1, 1);
+        ctx.translate(-canvas.width, 0);
+        
+        // Draw the video frame
         ctx.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
         
-        // Apply blue filter manually
+        // Restore context
+        ctx.restore();
+        
+        // Apply a LIGHTER blue filter (reduced opacity)
         ctx.globalCompositeOperation = 'multiply';
-        ctx.fillStyle = 'rgba(0, 100, 200, 0.4)';
+        ctx.fillStyle = 'rgba(100, 150, 255, 0.25)'; // Reduced from 0.4 to 0.25
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Add a slight brightness boost
+        ctx.globalCompositeOperation = 'screen';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'; // Slight white overlay
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         capturedImageData = canvas.toDataURL('image/jpeg', 0.9);
@@ -175,12 +191,21 @@ function capturePhoto() {
             canvas.width = img.width;
             canvas.height = img.height;
             
-            // Draw the image WITHOUT mirroring (CSS will handle it)
+            // Mirror for consistency
+            ctx.save();
+            ctx.scale(-1, 1);
+            ctx.translate(-canvas.width, 0);
             ctx.drawImage(img, 0, 0);
+            ctx.restore();
             
-            // Apply blue filter
+            // Apply LIGHTER blue filter
             ctx.globalCompositeOperation = 'multiply';
-            ctx.fillStyle = 'rgba(0, 100, 200, 0.4)';
+            ctx.fillStyle = 'rgba(100, 150, 255, 0.25)'; // Lighter blue
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add brightness boost
+            ctx.globalCompositeOperation = 'screen';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             capturedImageData = canvas.toDataURL('image/jpeg', 0.9);
