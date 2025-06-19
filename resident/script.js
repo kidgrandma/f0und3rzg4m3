@@ -162,7 +162,7 @@ function capturePhoto() {
         // IMPORTANT: Save context state
         ctx.save();
         
-        // Mirror the canvas for selfie (not the video element)
+        // Mirror the canvas for selfie
         ctx.scale(-1, 1);
         ctx.translate(-canvas.width, 0);
         
@@ -172,14 +172,36 @@ function capturePhoto() {
         // Restore context
         ctx.restore();
         
-        // Apply a LIGHTER blue filter (reduced opacity)
-        ctx.globalCompositeOperation = 'multiply';
-        ctx.fillStyle = 'rgba(100, 150, 255, 0.25)'; // Reduced from 0.4 to 0.25
+        // Apply CCTV blue/white filter effect
+        // First, desaturate to grayscale
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        for (let i = 0; i < data.length; i += 4) {
+            // Convert to grayscale
+            const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+            
+            // Apply blue tint with increased brightness
+            data[i] = gray * 0.7;         // Red channel (reduced)
+            data[i + 1] = gray * 0.85;    // Green channel (slightly reduced)
+            data[i + 2] = Math.min(255, gray * 1.4); // Blue channel (increased)
+            
+            // Boost brightness overall
+            data[i] = Math.min(255, data[i] * 1.3);
+            data[i + 1] = Math.min(255, data[i + 1] * 1.3);
+            data[i + 2] = Math.min(255, data[i + 2] * 1.3);
+        }
+        
+        ctx.putImageData(imageData, 0, 0);
+        
+        // Add subtle white overlay for that CCTV glow
+        ctx.globalCompositeOperation = 'screen';
+        ctx.fillStyle = 'rgba(200, 220, 255, 0.2)'; // Light blue-white overlay
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        // Add a slight brightness boost
-        ctx.globalCompositeOperation = 'screen';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'; // Slight white overlay
+        // Add contrast boost
+        ctx.globalCompositeOperation = 'overlay';
+        ctx.fillStyle = 'rgba(100, 150, 255, 0.1)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         capturedImageData = canvas.toDataURL('image/jpeg', 0.9);
@@ -198,26 +220,39 @@ function capturePhoto() {
             ctx.drawImage(img, 0, 0);
             ctx.restore();
             
-            // Apply LIGHTER blue filter
-            ctx.globalCompositeOperation = 'multiply';
-            ctx.fillStyle = 'rgba(100, 150, 255, 0.25)'; // Lighter blue
+            // Apply same CCTV filter
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+                
+                data[i] = gray * 0.7;
+                data[i + 1] = gray * 0.85;
+                data[i + 2] = Math.min(255, gray * 1.4);
+                
+                data[i] = Math.min(255, data[i] * 1.3);
+                data[i + 1] = Math.min(255, data[i + 1] * 1.3);
+                data[i + 2] = Math.min(255, data[i + 2] * 1.3);
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+            
+            ctx.globalCompositeOperation = 'screen';
+            ctx.fillStyle = 'rgba(200, 220, 255, 0.2)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Add brightness boost
-            ctx.globalCompositeOperation = 'screen';
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.globalCompositeOperation = 'overlay';
+            ctx.fillStyle = 'rgba(100, 150, 255, 0.1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             capturedImageData = canvas.toDataURL('image/jpeg', 0.9);
             
-            // Continue with capture process
             finishCapture(randomCard);
         };
         img.src = uploadPreview.src;
-        return; // Exit here, finishCapture will be called after image loads
+        return;
     }
-    
-    // Continue with capture process
     finishCapture(randomCard);
 }
 
