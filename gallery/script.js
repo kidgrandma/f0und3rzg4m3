@@ -524,7 +524,7 @@ function selectPayment(method) {
     } else if (method === 'zelle') {
         showPaymentInstructions('zelle', 'ask kidgrandma DM', total, memo);
     } else if (method === 'paypal') {
-        const paypalUrl = `https://www.paypal.com/donate?business=paizley@worksucks.net&amount=${total}&currency_code=USD&item_name=${encodeURIComponent(memo)}`;
+        const paypalUrl = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paizley@worksucks.net&amount=${total}&currency_code=USD&item_name=${encodeURIComponent(memo)}`;
         window.open(paypalUrl, '_blank');
         
         // Show instructions as fallback
