@@ -133,7 +133,13 @@ const founders = [
 ];
 
 // Check if Steve Jobs is already adopted
-const adoptedFounders = [];  // Empty for now - all available
+const adoptedFounders = [
+    '15_jack_ma',
+    '03_dom_hofmann',
+    '23_drew_houston',
+    '42_jonah_peretti',
+    '34_meg_whitman'
+];
 
 // Scatter positions for organic layout
 function getScatterPosition(index, total) {
