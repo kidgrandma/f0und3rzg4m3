@@ -142,6 +142,7 @@ const adoptedFounders = [
     '34_meg_whitman',
     '27_travis_kalanick',
     '47_daniel_ek',
+    '35_tom_anderson',
     '17_sam_altman',
 ];
 
