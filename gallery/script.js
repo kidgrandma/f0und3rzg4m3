@@ -138,10 +138,13 @@ const adoptedFounders = [
     '03_dom_hofmann',
     '23_drew_houston',
     '42_jonah_peretti',
+    '24_larry_ellison',
     '50_jessica_alba',
     '34_meg_whitman',
     '27_travis_kalanick',
     '47_daniel_ek',
+    '40_craig_newmark',
+    '46_dread_pirate',
     '35_tom_anderson',
     '17_sam_altman',
 ];
