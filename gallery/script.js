@@ -138,7 +138,9 @@ const adoptedFounders = [
     '03_dom_hofmann',
     '23_drew_houston',
     '42_jonah_peretti',
-    '34_meg_whitman'
+    '34_meg_whitman',
+    '27_travis_kalanick',
+    '17_sam_altman',
 ];
 
 // Scatter positions for organic layout
