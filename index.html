@@ -86,6 +86,32 @@
             text-shadow: 0 0 5px #ff00ff;
         }
 
+        /* Special styling for PS2 */
+        #ps2-case {
+            width: 180px;
+            height: 120px;
+        }
+
+        #ps2-case::after {
+            content: 'START GAME HERE';
+            color: #00ff00;
+            font-weight: bold;
+            font-size: 12px;
+            text-shadow: 0 0 5px #00ff00;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        #ps2-case.opened::after {
+            content: 'DROP IN VORTEX';
+            color: #ff00ff;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+        }
+
         .cd-case img {
             width: 100%;
             height: 100%;
@@ -111,11 +137,10 @@
             transform: rotate(-8deg);
         }
 
-        #robot-case {
-            bottom: 31%;
-            right: 14%;
-            transform: rotate(30deg);
-            opacity: 0.7;
+        #ps2-case {
+            bottom: 25%;
+            right: 18%;
+            transform: rotate(10deg);
         }
 
         /* CD Discs */
@@ -357,91 +382,6 @@
             pointer-events: all;
         }
 
-        /* Blocked message styles */
-        .blocked-message {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            animation: glitchIn 0.3s;
-        }
-
-        .blocked-content {
-            background: #000;
-            border: 2px solid #ff0000;
-            padding: 40px;
-            text-align: center;
-            font-family: 'Courier New', monospace;
-            max-width: 400px;
-            animation: shake 0.5s;
-        }
-
-        .blocked-content h2 {
-            color: #ff0000;
-            margin-bottom: 20px;
-            font-size: 24px;
-            text-shadow: 0 0 10px #ff0000;
-            animation: blink 1s infinite;
-        }
-
-        .blocked-content p {
-            color: #00ff00;
-            margin: 10px 0;
-            font-size: 14px;
-        }
-
-        .blocked-content .hint {
-            color: #ffff00;
-            font-style: italic;
-            opacity: 0.7;
-        }
-
-        .blocked-content .error-code {
-            color: #ff00ff;
-            font-size: 12px;
-            margin-top: 20px;
-        }
-
-        .blocked-content button {
-            margin-top: 20px;
-            padding: 10px 30px;
-            background: #ff0000;
-            color: #000;
-            border: none;
-            font-family: inherit;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: all 0.3s;
-        }
-
-        .blocked-content button:hover {
-            background: #ff00ff;
-            transform: scale(1.1);
-        }
-
-        @keyframes glitchIn {
-            0% { opacity: 0; transform: scale(0.9); }
-            50% { opacity: 1; transform: scale(1.1); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes blink {
-            0%, 50%, 100% { opacity: 1; }
-            25%, 75% { opacity: 0.5; }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
         /* Mobile adjustments for 393px iPhone viewport */
         @media (max-width: 393px) {
             /* Center portal more on screen */
@@ -489,6 +429,16 @@
                 bottom: -15px;
             }
             
+            /* PS2 case mobile sizing */
+            #ps2-case {
+                width: 90px;
+                height: 60px;
+            }
+            
+            #ps2-case::after {
+                font-size: 8px;
+            }
+            
             /* Distribute cases around the screen more evenly */
             #confused-case {
                 top: 20%;
@@ -509,32 +459,17 @@
                 transform: rotate(-5deg);
             }
             
-            #robot-case {
+            #ps2-case {
                 top: 55%;
                 bottom: 14%;
                 right: 10%;
-                transform: rotate(20deg);
+                transform: rotate(8deg);
             }
             
             /* Smaller discs */
             .cd-disc {
                 width: 70px;
                 height: 70px;
-            }
-            
-            /* Blocked message adjustments */
-            .blocked-content {
-                padding: 20px;
-                margin: 20px;
-                max-width: 90%;
-            }
-            
-            .blocked-content h2 {
-                font-size: 18px;
-            }
-            
-            .blocked-content p {
-                font-size: 12px;
             }
         }
 
@@ -547,6 +482,11 @@
             .cd-case {
                 width: 100px;
                 height: 100px;
+            }
+            
+            #ps2-case {
+                width: 120px;
+                height: 80px;
             }
             
             .cd-disc {
@@ -597,8 +537,8 @@ body {
     <div class="cd-case" id="resident-case" data-disc="resident">
         <img src="assets/entrance/resident-case.png" alt="Resident Portal">
     </div>
-    <div class="cd-case" id="robot-case" data-disc="robot">
-        <img src="assets/entrance/robot-case.png" alt="Robot Portal">
+    <div class="cd-case" id="ps2-case" data-disc="startgame">
+        <img src="assets/entrance/start-game.png" alt="Start Game">
     </div>
 
     <!-- CD Discs (hidden until case clicked) -->
@@ -611,8 +551,8 @@ body {
     <div class="cd-disc" id="resident-disc" data-portal="resident">
         <img src="assets/entrance/resident-disc.png" alt="Resident Disc">
     </div>
-    <div class="cd-disc" id="robot-disc" data-portal="robot">
-        <img src="assets/entrance/robot-disk.png" alt="Robot Disc">
+    <div class="cd-disc" id="startgame-disc" data-portal="gallery">
+        <img src="assets/entrance/start-game-disc.png" alt="Start Game Disc">
     </div>
 
     <!-- Portal Vortex -->
@@ -724,7 +664,7 @@ body {
             confused: './confused/',
             curious: './curious/',
             resident: './resident/',
-            robot: './robot-room/'
+            gallery: './gallery/'
         };
 
         // CD case click handler
@@ -770,6 +710,13 @@ body {
                     }, 500);
                 }, 50);
             });
+        });
+
+        // Update PS2 case to show open state
+        document.getElementById('ps2-case').addEventListener('click', function() {
+            // Update image to open state when clicked
+            const img = this.querySelector('img');
+            img.src = 'assets/entrance/start-game-open.png';
         });
 
         // Dragging functionality
@@ -883,12 +830,6 @@ body {
 
         // Portal activation
         function activatePortal(portalType) {
-            // Block robot room with mysterious message
-            if (portalType === 'robot') {
-                showBlockedMessage();
-                return; // Don't navigate
-            }
-            
             // Clean up before navigation
             // Stop all sounds
             Object.values(sounds).forEach(sound => {
@@ -908,22 +849,6 @@ body {
             setTimeout(() => {
                 window.location.href = portals[portalType];
             }, 1000);
-        }
-
-        // Blocked message function
-        function showBlockedMessage() {
-            const blockedDiv = document.createElement('div');
-            blockedDiv.className = 'blocked-message';
-            blockedDiv.innerHTML = `
-                <div class="blocked-content">
-                    <h2>ACCESS DENIED</h2>
-                    <p>this portal requires special clearance</p>
-                    <p class="hint">perhaps a secret phrase unlocks it...</p>
-                    <p class="error-code">ERROR_CODE: 8lo0M</p>
-                    <button onclick="this.parentElement.parentElement.remove()">OK</button>
-                </div>
-            `;
-            document.body.appendChild(blockedDiv);
         }
     </script>
 </body>

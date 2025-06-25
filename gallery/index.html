@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>adopt-a-founder-adopt-a-thon!</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="nokia-glow"></div>
+    
+    <!-- Intro Modal -->
+    <div class="intro-modal" id="introModal">
+        <div class="intro-content">
+            <h2 class="intro-title">adopt-a-founder-adopt-a-thon!</h2>
+            <p class="intro-tagline">welcome to the worksucks.net adoption agency for tech founders who desperately need adopting</p>
+            
+            <div class="intro-instructions">
+                <div class="instruction-step">
+                    <span class="step-number">1</span>
+                    <span class="step-text">choose a founder to adopt</span>
+                </div>
+                <div class="instruction-step">
+                    <span class="step-number">2</span>
+                    <span class="step-text">browse special adoption gifts (optional!)</span>
+                </div>
+                <div class="instruction-step">
+                    <span class="step-number">3</span>
+                    <span class="step-text">receive player kit</span>
+                </div>
+            </div>
+            
+            <p class="intro-disclaimer">some bite, some don't. twins come as twins - ain't no 2 for 1.</p>
+            
+            <button class="intro-start-btn" onclick="startExperience()">
+                ENTER ADOPTION CENTER →
+            </button>
+        </div>
+    </div>
+    
+    <header>
+        <h1 class="glitch-title">adopt-a-founder-adopt-a-thon!</h1>
+    </header>
+
+    <main class="orphanage-container" id="orphanageContainer">
+        <!-- Founders will be populated here by JavaScript -->
+    </main>
+
+    <div class="tama-modal" id="tamaModal">
+        <div class="tama-device">
+            <span class="tama-close" onclick="document.getElementById('tamaModal').style.display='none'">&times;</span>
+            <div class="tama-screen">
+                <!-- Content populated by JavaScript -->
+            </div>
+            <div class="tama-buttons">
+                <button class="tama-btn" id="addToCartBtn">+</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bear Selection Modal - Toy Box -->
+    <div class="bear-modal" id="bearModal">
+        <div class="toy-box-container">
+            <span class="modal-close" onclick="closeBearModal()">&times;</span>
+            
+            <div class="toy-box-header">
+                <h2>✨ special adoption gifts! ✨</h2>
+                <p>treat <span id="founderNamePreview"></span> to something special</p>
+                <p class="optional-note">(totally optional - just for fun!)</p>
+            </div>
+            
+            <div class="founder-preview">
+                <img id="founderPreviewImg" src="" alt="">
+                <div class="preview-sparkles">✨</div>
+            </div>
+            
+            <div class="bear-grid" id="bearGrid">
+                <!-- Bears populated by JavaScript -->
+            </div>
+            
+            <div class="toy-box-footer">
+                <button class="start-over-btn" onclick="startOver()">← START OVER</button>
+                <div class="bear-total">
+                    <span class="total-label">add-ons:</span>
+                    <span class="total-amount" id="bearTotal">0</span>
+                </div>
+                <button class="bear-continue" onclick="proceedToCheckout()">
+                    <span class="btn-text">CHECKOUT</span>
+                    <span class="btn-subtext">(or skip gifts)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="checkout-modal" id="checkoutModal">
+        <div class="checkout-container">
+            <span class="modal-close" onclick="closeCheckoutModal()">&times;</span>
+            
+            <div class="checkout-header">
+                <h2>ready to adopt!</h2>
+                <p class="checkout-subtitle">your new family members:</p>
+            </div>
+            
+            <div class="checkout-visual">
+                <div class="checkout-founder-preview" id="checkoutFounderPreview">
+                    <!-- Founder image populated by JS -->
+                </div>
+                <div class="checkout-bears-preview" id="checkoutBearsPreview">
+                    <!-- Bear images populated by JS -->
+                </div>
+            </div>
+            
+            <div class="checkout-items" id="checkoutItems">
+                <!-- Items populated by JavaScript -->
+            </div>
+            
+            <div class="checkout-total">
+                <div class="total-line">
+                    <span class="total-text">adoption fee:</span>
+                    <span class="total-amount" id="checkoutTotal">0</span>
+                </div>
+            </div>
+            
+            <div class="payment-section">
+                <p class="payment-instruction">choose how to send love:</p>
+                <div class="payment-options">
+                    <button class="payment-btn" onclick="selectPayment('venmo')">
+                        venmo
+                    </button>
+                    <button class="payment-btn" onclick="selectPayment('zelle')">
+                        zelle
+                    </button>
+                    <button class="payment-btn" onclick="selectPayment('paypal')">
+                        paypal
+                    </button>
+                </div>
+            </div>
+            
+            <div class="checkout-actions">
+                <button class="checkout-back" onclick="backToBears()">← back to gifts</button>
+                <button class="start-over-btn" onclick="startOver()">start fresh</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Instructions Modal -->
+    <div class="payment-modal" id="paymentModal">
+        <div class="payment-container">
+            <span class="modal-close" onclick="document.getElementById('paymentModal').style.display='none'">&times;</span>
+            
+            <h3 id="paymentTitle">Payment Instructions</h3>
+            <div id="paymentInstructions">
+                <!-- Instructions populated by JavaScript -->
+            </div>
+            <button class="payment-done" onclick="completeOrder()">payment sent! ✨</button>
+        </div>
+    </div>
+
+    <script src="../shared/cart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
