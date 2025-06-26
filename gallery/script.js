@@ -97,7 +97,7 @@ const founders = [
     { id: '48_sam_bankman-fried', name: 'Sam Bankman-Fried', price: 25, company: 'FTX', warning: 'Previous adoption fell through' },
     { id: '32_kevin_systrom', name: 'Kevin Systrom', price: 25, company: 'Instagram' },
     { id: '38_juul', name: 'James Monsees & Adam Bowen', price: 75, company: 'Juul', twins: true, warning: 'Package deal - both extremely vapey' },
-    { id: '01_marc_andreessen', name: 'Marc Andreessen', price: 25, company: 'a16z' },
+    { id: '01_marc_andreessen', name: 'Marc Andreessen', price: 25, company: 'Netscape' },
     { id: '27_travis_kalanick', name: 'Travis Kalanick', price: 25, company: 'Uber' },
     { id: '19_vitalik_buterin', name: 'Vitalik Buterin', price: 25, company: 'Ethereum' },
     { id: '28_adam_neumann', name: 'Adam Neumann', price: 25, company: 'WeWork', warning: 'Requires constant supervision' },
