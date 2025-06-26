@@ -564,7 +564,9 @@
             },
             founders: founders,
             achievements: {},
-            draggedFounder: null
+            draggedFounder: null,
+            draggedElement: null,
+            dragOffset: null
         };
 
         // Create founder card
@@ -642,16 +644,23 @@
         function handleDragStart(e) {
             const founderId = e.currentTarget.dataset.founder;
             gameState.draggedFounder = founderId;
+            gameState.draggedElement = e.currentTarget;
             e.currentTarget.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
             
-            // Debug log
-            console.log('Dragging:', founderId);
+            // Store the offset of where the user clicked on the card
+            const rect = e.currentTarget.getBoundingClientRect();
+            gameState.dragOffset = {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
         }
 
         function handleDragEnd(e) {
             e.currentTarget.classList.remove('dragging');
             gameState.draggedFounder = null;
+            gameState.draggedElement = null;
+            gameState.dragOffset = null;
         }
 
         function handleDragOver(e) {
@@ -687,9 +696,26 @@
         function handleDropToPlaypen(e) {
             e.preventDefault();
             
-            if (!gameState.draggedFounder) return;
+            if (!gameState.draggedElement || !gameState.draggedFounder) return;
             
-            // No need to handle zone removal since we're not keeping them in zones
+            const playpen = document.getElementById('playpenContainer');
+            const rect = playpen.getBoundingClientRect();
+            
+            // Calculate new position relative to playpen
+            let x = e.clientX - rect.left - (gameState.dragOffset?.x || 50);
+            let y = e.clientY - rect.top - (gameState.dragOffset?.y || 60);
+            
+            // Keep card within bounds
+            x = Math.max(0, Math.min(x, rect.width - 100));
+            y = Math.max(0, Math.min(y, rect.height - 120));
+            
+            // Update card position
+            gameState.draggedElement.style.left = x + 'px';
+            gameState.draggedElement.style.top = y + 'px';
+            
+            // Optional: Add a fun rotation
+            const rotation = -15 + Math.random() * 30;
+            gameState.draggedElement.style.transform = `rotate(${rotation}deg)`;
         }
 
         function handleFounderClick(e) {

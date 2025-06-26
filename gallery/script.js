@@ -139,6 +139,7 @@ const adoptedFounders = [
     '15_jack_ma',
     '03_dom_hofmann',
     '23_drew_houston',
+    '08_elon_musk', 
     '45_sean_rad',
     '29_sean_parker',
     '11_google_founders',
