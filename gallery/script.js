@@ -155,6 +155,7 @@ const adoptedFounders = [
     '37_steve_wozniak',
     '47_daniel_ek',
     '53_youtube',
+    '19_vitalik_buterin',
     '13_jensen_huang',
     '14_peter_thiel',
     '51_zhang_yiming',
