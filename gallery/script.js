@@ -155,6 +155,7 @@ const adoptedFounders = [
     '53_youtube',
     '13_jensen_huang',
     '51_zhang_yiming',
+    '32_kevin_systrom',
     '20_jack_dorsey',
     '30_john_mckafee',
     '40_craig_newmark',
