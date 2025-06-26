@@ -147,6 +147,7 @@ const adoptedFounders = [
     '27_travis_kalanick',
     '25_elizabeth_holmes',
     '43_sophia_amoruso',
+    '49_reed_hastings',
     '47_daniel_ek',
     '53_youtube',
     '51_zhang_yiming',
