@@ -150,6 +150,7 @@ const adoptedFounders = [
     '47_daniel_ek',
     '20_jack_dorsey',
     '30_john_mckafee',
+    '18_steve_jobs',
     '40_craig_newmark',
     '36_alexis_ohanian',
     '46_dread_pirate',
