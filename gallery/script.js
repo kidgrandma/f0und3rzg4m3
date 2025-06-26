@@ -104,6 +104,8 @@ const founders = [
     { id: '50_jessica_alba', name: 'Jessica Alba', price: 25, company: 'Honest Co.' },
     { id: '04_brian_armstrong', name: 'Brian Armstrong', price: 25, company: 'Coinbase' },
     { id: '26_evan_spiegel', name: 'Evan Spiegel', price: 25, company: 'Snapchat' },
+    { id: '63_winklevoss', name: 'Winklevoss Twins', price: 25, company: 'Facebook' },
+    { id: '67_kim_dot_com', name: 'Kim Dotcom', price: 25, company: 'MegaUpload' },
     { id: '33_martin_shkreli', name: 'Martin Shkreli', price: 25, company: 'Pharma', warning: 'No returns accepted' },
     { id: '05_keith_rabois', name: 'Keith Rabois', price: 25, company: 'PayPal' },
     { id: '51_zhang_yiming', name: 'Zhang Yiming', price: 25, company: 'TikTok' },
