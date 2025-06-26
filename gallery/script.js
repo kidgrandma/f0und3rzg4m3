@@ -156,6 +156,7 @@ const adoptedFounders = [
     '47_daniel_ek',
     '53_youtube',
     '13_jensen_huang',
+    '14_peter_thiel',
     '51_zhang_yiming',
     '32_kevin_systrom',
     '20_jack_dorsey',

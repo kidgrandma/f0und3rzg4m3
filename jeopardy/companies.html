@@ -159,6 +159,7 @@
             background: rgba(255,255,255,0.02);
             border-radius: 20px;
             padding: 20px;
+            overflow: hidden;
         }
 
         /* FOUNDER CARDS - Draggable */
@@ -171,6 +172,7 @@
             transition: transform 0.2s ease;
             user-select: none;
             -webkit-user-drag: element;
+            touch-action: none;
         }
 
         .founder-card:active {
@@ -278,17 +280,6 @@
             opacity: 0.8;
         }
 
-        /* TIMEOUT ZONE */
-        .timeout-zone {
-            border-color: #ffff00;
-            background: rgba(255,255,0,0.05);
-        }
-
-        .timeout-zone .zone-title {
-            color: #ffff00;
-            text-shadow: 0 0 10px #ffff00;
-        }
-
         /* ZONE CONTENTS */
         .zone-contents {
             display: flex;
@@ -296,21 +287,6 @@
             gap: 10px;
             justify-content: center;
             min-height: 60px;
-        }
-
-        .zone .founder-card {
-            position: relative;
-            width: 70px;
-            height: 90px;
-        }
-
-        .zone .founder-image {
-            width: 40px;
-            height: 40px;
-        }
-
-        .zone .founder-name {
-            font-size: 8px;
         }
 
         /* FOUNDER DETAILS POPUP */
@@ -411,25 +387,52 @@
             
             .zones-container {
                 width: 100%;
-                flex-direction: row;
-                overflow-x: auto;
+                margin-bottom: 20px;
             }
             
             .zone {
-                min-width: 200px;
-            }
-            
-            .founder-card {
-                position: relative !important;
-                display: inline-block;
-                margin: 5px;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
             }
             
             .playpen-container {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                min-height: auto;
+                min-height: 500px;
+                position: relative;
+                padding: 10px;
+            }
+            
+            /* Smaller cards on mobile */
+            .founder-card {
+                width: 70px !important;
+                height: 85px !important;
+            }
+            
+            .founder-card-inner {
+                padding: 5px;
+            }
+            
+            .founder-card .founder-image {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .founder-card .founder-name {
+                font-size: 7px;
+                line-height: 1;
+            }
+            
+            .company-score {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            
+            .company-name {
+                font-size: 14px;
+            }
+            
+            .company-valuation {
+                font-size: 20px;
             }
         }
 
@@ -441,6 +444,12 @@
             margin: 100px 0;
             text-transform: uppercase;
             text-shadow: 2px 2px 0 var(--purple);
+        }
+
+        /* Toast notifications */
+        @keyframes slide-up {
+            0% { transform: translate(-50%, 100%); opacity: 0; }
+            100% { transform: translate(-50%, 0); opacity: 1; }
         }
     </style>
 </head>
@@ -592,31 +601,61 @@
 
         // Render founders with scattered positions
         function renderFounders() {
-            const container = document.getElementById('playpenContainer');
-            const isMobile = window.innerWidth <= 768;
+    const container = document.getElementById('playpenContainer');
+    const isMobile = window.innerWidth <= 768;
+    
+    container.innerHTML = '';
+    
+    // Render all founders
+    gameState.founders.forEach((founder, index) => {
+        const card = document.createElement('div');
+        card.innerHTML = createFounderCard(founder);
+        const founderEl = card.firstElementChild;
+        
+        // Position cards even on mobile, but in a tighter grid
+        if (isMobile) {
+            // Create a grid pattern on mobile
+            const containerWidth = container.offsetWidth;
+            const cardWidth = 70;
+            const cardHeight = 85;
+            const gap = 10;
+            const cols = Math.floor(containerWidth / (cardWidth + gap));
+            const col = index % cols;
+            const row = Math.floor(index / cols);
             
-            container.innerHTML = '';
+            const x = gap + (col * (cardWidth + gap));
+            const y = gap + (row * (cardHeight + gap));
             
-            // Render all founders
-            gameState.founders.forEach((founder, index) => {
-                const card = document.createElement('div');
-                card.innerHTML = createFounderCard(founder);
-                const founderEl = card.firstElementChild;
-                
-                if (!isMobile) {
-                    // Random position for desktop
-                    const x = 5 + (Math.random() * 85);
-                    const y = 5 + (Math.random() * 85);
-                    founderEl.style.left = `${x}%`;
-                    founderEl.style.top = `${y}%`;
-                }
-                
-                container.appendChild(founderEl);
-            });
+            founderEl.style.left = `${x}px`;
+            founderEl.style.top = `${y}px`;
+            founderEl.style.transform = `rotate(${-5 + Math.random() * 10}deg)`;
             
-            // Add drag event listeners
-            addDragListeners();
+            // Calculate and set proper container height for mobile
+            const totalRows = Math.ceil(gameState.founders.length / cols);
+            const requiredHeight = gap + (totalRows * (cardHeight + gap)) + 50; // 50px extra padding
+            container.style.minHeight = `${Math.max(500, requiredHeight)}px`;
+            
+        } else {
+            // Random position for desktop
+            const x = 5 + (Math.random() * 85);
+            const y = 5 + (Math.random() * 85);
+            founderEl.style.left = `${x}%`;
+            founderEl.style.top = `${y}%`;
+            // Reset container height for desktop
+            container.style.minHeight = '400px';
         }
+        
+        container.appendChild(founderEl);
+    });
+    
+    // Add drag event listeners
+    addDragListeners();
+    
+    // Add touch event support for mobile
+    if (isMobile) {
+        addTouchListeners();
+    }
+}
 
         // Drag and Drop functionality
         function addDragListeners() {
@@ -624,12 +663,25 @@
             const zones = document.querySelectorAll('.zone');
             
             cards.forEach(card => {
+                // Remove existing listeners to prevent duplicates
+                card.removeEventListener('dragstart', handleDragStart);
+                card.removeEventListener('dragend', handleDragEnd);
+                card.removeEventListener('click', handleFounderClick);
+                
+                // Add fresh listeners
                 card.addEventListener('dragstart', handleDragStart);
                 card.addEventListener('dragend', handleDragEnd);
                 card.addEventListener('click', handleFounderClick);
+                
+                // Ensure draggable is set
+                card.setAttribute('draggable', 'true');
             });
             
             zones.forEach(zone => {
+                zone.removeEventListener('dragover', handleDragOver);
+                zone.removeEventListener('drop', handleDrop);
+                zone.removeEventListener('dragleave', handleDragLeave);
+                
                 zone.addEventListener('dragover', handleDragOver);
                 zone.addEventListener('drop', handleDrop);
                 zone.addEventListener('dragleave', handleDragLeave);
@@ -637,6 +689,9 @@
             
             // Also allow dropping back in playpen
             const playpen = document.getElementById('playpenContainer');
+            playpen.removeEventListener('dragover', handleDragOver);
+            playpen.removeEventListener('drop', handleDropToPlaypen);
+            
             playpen.addEventListener('dragover', handleDragOver);
             playpen.addEventListener('drop', handleDropToPlaypen);
         }
@@ -726,6 +781,74 @@
             }
         }
 
+        // Add touch support for mobile
+        function addTouchListeners() {
+            const cards = document.querySelectorAll('.founder-card');
+            
+            cards.forEach(card => {
+                let touchItem = null;
+                let touchOffset = null;
+                let activeCard = null;
+                
+                card.addEventListener('touchstart', (e) => {
+                    touchItem = e.currentTarget;
+                    activeCard = e.currentTarget;
+                    const touch = e.touches[0];
+                    const rect = touchItem.getBoundingClientRect();
+                    touchOffset = {
+                        x: touch.clientX - rect.left,
+                        y: touch.clientY - rect.top
+                    };
+                    touchItem.classList.add('dragging');
+                    e.preventDefault();
+                }, {passive: false});
+                
+                card.addEventListener('touchmove', (e) => {
+                    if (!touchItem) return;
+                    const touch = e.touches[0];
+                    const playpen = document.getElementById('playpenContainer');
+                    const rect = playpen.getBoundingClientRect();
+                    
+                    let x = touch.clientX - rect.left - touchOffset.x;
+                    let y = touch.clientY - rect.top - touchOffset.y;
+                    
+                    // Keep within bounds
+                    x = Math.max(0, Math.min(x, rect.width - 80));
+                    y = Math.max(0, Math.min(y, rect.height - 100));
+                    
+                    touchItem.style.left = x + 'px';
+                    touchItem.style.top = y + 'px';
+                    touchItem.style.transform = 'scale(1.1) rotate(0deg)';
+                    e.preventDefault();
+                }, {passive: false});
+                
+                card.addEventListener('touchend', (e) => {
+                    if (!touchItem) return;
+                    
+                    touchItem.classList.remove('dragging');
+                    const rotation = -15 + Math.random() * 30;
+                    touchItem.style.transform = `rotate(${rotation}deg)`;
+                    
+                    // Check if dropped on IRS zone
+                    const touch = e.changedTouches[0];
+                    const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                    
+                    if (elementBelow && elementBelow.closest('.irs-zone')) {
+                        const founderId = activeCard.dataset.founder;
+                        const founder = gameState.founders.find(f => f.id === founderId);
+                        if (founder) {
+                            showFounderDetails(founder);
+                            showToast(`Checking ${founder.name}'s records... 📊`);
+                        }
+                    }
+                    
+                    touchItem = null;
+                    touchOffset = null;
+                    activeCard = null;
+                }, {passive: false});
+            });
+        }
+
         // Render zones (now just for visual, not storing founders)
         function renderZones() {
             // IRS zone stays empty - it's just a drop target
@@ -744,7 +867,7 @@
                 this.src = `https://via.placeholder.com/80/${founder.team === 1 ? '00ff00' : 'ffa500'}/ffffff?text=${encodeURIComponent(founder.name.split(' ')[0])}`;
             };
             document.getElementById('detailsName').textContent = founder.name;
-            document.getElementById('detailsWealth').textContent = `${(founder.wealth || 0).toLocaleString()}`;
+            document.getElementById('detailsWealth').textContent = `$${(founder.wealth || 0).toLocaleString()}`;
             
             const achievementsList = document.getElementById('achievementsList');
             if (achievements.length > 0) {
@@ -819,6 +942,20 @@
             liminalBg.style.backgroundImage = `url('assets/backgrounds/${selectedBg}')`;
         }
 
+        // Make playpen itself a drop zone for free positioning
+        function setupPlaypenDrop() {
+            const playpen = document.getElementById('playpenContainer');
+            
+            // Allow drag over entire playpen
+            playpen.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+            });
+            
+            // Track mouse position during drag for smooth dropping
+            playpen.addEventListener('drop', handleDropToPlaypen);
+        }
+
         // Setup Firebase listeners
         function setupListeners() {
             database.ref('game/companies').on('value', (snapshot) => {
@@ -850,26 +987,13 @@
             renderZones();
             setupListeners();
             updateValuations();
-            
-            // Debug: Check how many cards are draggable
-            setTimeout(() => {
-                const cards = document.querySelectorAll('.founder-card');
-                console.log(`Total founder cards: ${cards.length}`);
-                cards.forEach(card => {
-                    console.log(`${card.dataset.founder}: draggable=${card.draggable}`);
-                });
-            }, 1000);
+            setupPlaypenDrop();
         };
 
-        // Add slide-up animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slide-up {
-                0% { transform: translate(-50%, 100%); opacity: 0; }
-                100% { transform: translate(-50%, 0); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
+        // Handle resize
+        window.addEventListener('resize', () => {
+            renderFounders();
+        });
     </script>
 </body>
 </html>
