@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F0UND3RZ G4M3 - Company Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #00ff00;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            text-shadow: 0 0 20px rgba(0,255,0,0.8);
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            background: rgba(0,255,0,0.1);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 10px 20px;
+        }
+
+        .companies-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .company {
+            background: #1a1a1a;
+            border: 3px solid #00ff00;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0,255,0,0.3);
+        }
+
+        .company.active {
+            border-color: #ffff00;
+            box-shadow: 0 0 40px rgba(255,255,0,0.5);
+        }
+
+        .company-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #00ff00;
+        }
+
+        .company-name {
+            font-size: 2em;
+            color: #00ff00;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(0,255,0,0.5);
+        }
+
+        .company-valuation {
+            font-size: 3em;
+            color: #ffff00;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(255,255,0,0.5);
+        }
+
+        .founders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .founder-card {
+            background: #0f0f0f;
+            border: 2px solid #444;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .founder-card:hover {
+            border-color: #00ff00;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,255,0,0.3);
+        }
+
+        .founder-card.mvp {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255,215,0,0.5);
+        }
+
+        .founder-card.blocked {
+            opacity: 0.5;
+            border-color: #ff0000;
+        }
+
+        .founder-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            border: 2px solid #00ff00;
+            object-fit: cover;
+        }
+
+        .founder-name {
+            font-size: 0.9em;
+            color: #00ff00;
+            margin-bottom: 5px;
+            word-break: break-word;
+        }
+
+        .founder-wealth {
+            font-size: 1.1em;
+            color: #ffff00;
+            font-weight: bold;
+        }
+
+        .founder-status {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+        }
+
+        /* Special Effects */
+        .power-up {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            background: #ff6600;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            box-shadow: 0 0 10px rgba(255,102,0,0.8);
+        }
+
+        /* Activity Feed */
+        .activity-feed {
+            margin-top: 30px;
+            background: #0f0f0f;
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-feed h3 {
+            color: #00ff00;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .activity-item {
+            padding: 10px;
+            border-bottom: 1px solid #333;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item.recent {
+            color: #00ff00;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .companies-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .founders-grid {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                gap: 10px;
+            }
+            
+            .founder-card {
+                padding: 8px;
+            }
+            
+            .founder-image {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .founder-name {
+                font-size: 0.8em;
+            }
+            
+            .company-valuation {
+                font-size: 2em;
+            }
+        }
+
+        /* Animations */
+        @keyframes moneyRain {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .money-particle {
+            position: fixed;
+            font-size: 2em;
+            animation: moneyRain 3s linear;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 50px 0;
+            color: #00ff00;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏢 COMPANY DASHBOARD 🏢</h1>
+        <div class="stats">
+            <div class="stat">
+                <strong>Total Founders:</strong> <span id="totalFounders">0</span>
+            </div>
+            <div class="stat">
+                <strong>Combined Valuation:</strong> <span id="totalValuation">$0</span>
+            </div>
+            <div class="stat">
+                <strong>Active Challenges:</strong> <span id="activeChallenges">0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="companies-container">
+        <div class="company" id="company1">
+            <div class="company-header">
+                <h2 class="company-name">Company Alpha</h2>
+                <div class="company-valuation" id="valuation1">$0</div>
+            </div>
+            <div class="founders-grid" id="founders1">
+                <div class="loading">Loading founders</div>
+            </div>
+        </div>
+
+        <div class="company" id="company2">
+            <div class="company-header">
+                <h2 class="company-name">Company Beta</h2>
+                <div class="company-valuation" id="valuation2">$0</div>
+            </div>
+            <div class="founders-grid" id="founders2">
+                <div class="loading">Loading founders</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="activity-feed">
+        <h3>Recent Activity</h3>
+        <div id="activityList">
+            <div class="activity-item">Game started!</div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+    apiKey: "AIzaSyDnHE2Ay2wqZVC4Xf2PsHHppVoVfNPk0hI",
+    authDomain: "f0und3rzg4m3-b04rd.firebaseapp.com",
+    databaseURL: "https://f0und3rzg4m3-b04rd-default-rtdb.firebaseio.com",
+    projectId: "f0und3rzg4m3-b04rd",
+    storageBucket: "f0und3rzg4m3-b04rd.firebasestorage.app",
+    messagingSenderId: "484982613831",
+    appId: "1:484982613831:web:9b655b3d66d66b3b5e8e62",
+    measurementId: "G-MPN2LP1Q6X"
+};
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Founder data structure
+        const founders = [
+            // Company 1 (25 founders)
+            { id: '01_marc_andreessen', name: 'Marc Andreessen', company: 1, wealth: 0, image: '01_marc_andreessen.png' },
+            { id: '02_sheryl_sandberg', name: 'Sheryl Sandberg', company: 1, wealth: 0, image: '02_sheryl_sandberg.png' },
+            { id: '03_dom_hofmann', name: 'Dom Hofmann', company: 1, wealth: 0, image: '03_dom_hofmann.png' },
+            { id: '04_brian_armstrong', name: 'Brian Armstrong', company: 1, wealth: 0, image: '04_brian_armstrong.png' },
+            { id: '05_keith_rabois', name: 'Keith Rabois', company: 1, wealth: 0, image: '05_keith_rabois.png' },
+            { id: '06_brian_chesky', name: 'Brian Chesky', company: 1, wealth: 0, image: '06_brian_chesky.png' },
+            { id: '07_tobias_lutke', name: 'Tobias Lütke', company: 1, wealth: 0, image: '07_tobias_lutke.png' },
+            { id: '08_elon_musk', name: 'Elon Musk', company: 1, wealth: 0, image: '08_elon_musk.png' },
+            { id: '09_jeff_bezos', name: 'Jeff Bezos', company: 1, wealth: 0, image: '09_jeff_bezos.png' },
+            { id: '10_mark_zuckerberg', name: 'Mark Zuckerberg', company: 1, wealth: 0, image: '10_mark_zuckerberg.png' },
+            { id: '11_google_founders', name: 'Google Founders', company: 1, wealth: 0, image: '11_google_founders.png' },
+            { id: '12_bill_gates', name: 'Bill Gates', company: 1, wealth: 0, image: '12_bill_gates.png' },
+            { id: '13_jensen_huang', name: 'Jensen Huang', company: 1, wealth: 0, image: '13_jensen_huang.png' },
+            { id: '14_peter_thiel', name: 'Peter Thiel', company: 1, wealth: 0, image: '14_peter_thiel.png' },
+            { id: '15_jack_ma', name: 'Jack Ma', company: 1, wealth: 0, image: '15_jack_ma.png' },
+            { id: '16_sudhar_pichai', name: 'Sundar Pichai', company: 1, wealth: 0, image: '16_sudhar_pichai.png' },
+            { id: '17_sam_altman', name: 'Sam Altman', company: 1, wealth: 0, image: '17_sam_altman.png' },
+            { id: '18_steve_jobs', name: 'Steve Jobs', company: 1, wealth: 0, image: '18_steve_jobs.png' },
+            { id: '19_vitalik_buterin', name: 'Vitalik Buterin', company: 1, wealth: 0, image: '19_vitalik_buterin.png' },
+            { id: '20_jack_dorsey', name: 'Jack Dorsey', company: 1, wealth: 0, image: '20_jack_dorsey.png' },
+            { id: '21_jimmy_wales', name: 'Jimmy Wales', company: 1, wealth: 0, image: '21_jimmy_wales.png' },
+            { id: '22_pavel_durov', name: 'Pavel Durov', company: 1, wealth: 0, image: '22_pavel_durov.png' },
+            { id: '23_drew_houston', name: 'Drew Houston', company: 1, wealth: 0, image: '23_drew_houston.png' },
+            { id: '24_larry_ellison', name: 'Larry Ellison', company: 1, wealth: 0, image: '24_larry_ellison.png' },
+            { id: '25_elizabeth_holmes', name: 'Elizabeth Holmes', company: 1, wealth: 0, image: '25_elizabeth_holmes.png' },
+            
+            // Company 2 (28 founders - based on the file list)
+            { id: '26_evan_spiegel', name: 'Evan Spiegel', company: 2, wealth: 0, image: '26_evan_spiegel.png' },
+            { id: '27_travis_kalanick', name: 'Travis Kalanick', company: 2, wealth: 0, image: '27_travis_kalanick.png' },
+            { id: '28_adam_neumann', name: 'Adam Neumann', company: 2, wealth: 0, image: '28_adam_neumann.png' },
+            { id: '29_sean_parker', name: 'Sean Parker', company: 2, wealth: 0, image: '29_sean_parker.png' },
+            { id: '30_john_mckafee', name: 'John McAfee', company: 2, wealth: 0, image: '30_john_mckafee.png' },
+            { id: '31_whitney_wolfe_herd', name: 'Whitney Wolfe Herd', company: 2, wealth: 0, image: '31_whitney_wolfe_herd.png' },
+            { id: '32_kevin_systrom', name: 'Kevin Systrom', company: 2, wealth: 0, image: '32_kevin_systrom.png' },
+            { id: '33_martin_shkreli', name: 'Martin Shkreli', company: 2, wealth: 0, image: '33_martin_shkreli.png' },
+            { id: '34_meg_whitman', name: 'Meg Whitman', company: 2, wealth: 0, image: '34_meg_whitman.png' },
+            { id: '35_tom_anderson', name: 'Tom Anderson', company: 2, wealth: 0, image: '35_tom_anderson.png' },
+            { id: '36_alexis_ohanian', name: 'Alexis Ohanian', company: 2, wealth: 0, image: '36_alexis_ohanian.png' },
+            { id: '37_steve_wozniak', name: 'Steve Wozniak', company: 2, wealth: 0, image: '37_steve_wozniak.png' },
+            { id: '38_jed_mccaleb', name: 'Jed McCaleb', company: 2, wealth: 0, image: '38_jed_mccaleb.png' },
+            { id: '39_ariana_huffington', name: 'Arianna Huffington', company: 2, wealth: 0, image: '39_ariana_huffington.png' },
+            { id: '40_craig_newmark', name: 'Craig Newmark', company: 2, wealth: 0, image: '40_craig_newmark.png' },
+            { id: '41_lucy_guo', name: 'Lucy Guo', company: 2, wealth: 0, image: '41_lucy_guo.png' },
+            { id: '42_jonah_peretti', name: 'Jonah Peretti', company: 2, wealth: 0, image: '42_jonah_peretti.png' },
+            { id: '43_sophia_amoruso', name: 'Sophia Amoruso', company: 2, wealth: 0, image: '43_sophia_amoruso.png' },
+            { id: '44_kevin_rose', name: 'Kevin Rose', company: 2, wealth: 0, image: '44_kevin_rose.png' },
+            { id: '45_sean_rad', name: 'Sean Rad', company: 2, wealth: 0, image: '45_sean_rad.png' },
+            { id: '46_dread_pirate', name: 'Dread Pirate Roberts', company: 2, wealth: 0, image: '46_dread_pirate.png' },
+            { id: '47_daniel_ek', name: 'Daniel Ek', company: 2, wealth: 0, image: '47_daniel_ek.png' },
+            { id: '48_sam_bankman_fried', name: 'Sam Bankman-Fried', company: 2, wealth: 0, image: '48_sam_bankman-fried.png' },
+            { id: '49_reed_hastings', name: 'Reed Hastings', company: 2, wealth: 0, image: '49_reed_hastings.png' },
+            { id: '50_jessica_alba', name: 'Jessica Alba', company: 2, wealth: 0, image: '50_jessica_alba.png' },
+            { id: '51_zhang_yiming', name: 'Zhang Yiming', company: 2, wealth: 0, image: '51_zhang_yiming.png' },
+            { id: '52_palmer_luckey', name: 'Palmer Luckey', company: 2, wealth: 0, image: '52_palmer_luckey.png' },
+            { id: '53_youtube', name: 'YouTube Founders', company: 2, wealth: 0, image: '53_youtube.png' }
+        ];
+
+        // Game state
+        let gameState = {
+            companies: {
+                1: { name: "Company Alpha", valuation: 0 },
+                2: { name: "Company Beta", valuation: 0 }
+            },
+            founders: founders,
+            currentTeam: 1,
+            activeChallenges: 0
+        };
+
+        // Create founder card HTML
+        function createFounderCard(founder) {
+            return `
+                <div class="founder-card ${founder.status || ''}" data-founder="${founder.id}">
+                    ${founder.powerUp ? `<div class="power-up" title="${founder.powerUp}">${getPowerUpIcon(founder.powerUp)}</div>` : ''}
+                    ${founder.blocked ? `<div class="founder-status" style="background: #ff0000;" title="Blocked">🚫</div>` : ''}
+                    ${founder.mvp ? `<div class="founder-status" style="background: #ffd700;" title="MVP">⭐</div>` : ''}
+                    <img src="/jeopardy/assets/founders/${founder.image}" alt="${founder.name}" class="founder-image" onerror="this.onerror=null; this.src='https://via.placeholder.com/80/00ff00/ffffff?text=' + encodeURIComponent(this.alt.split(' ')[0])">
+                    <div class="founder-name">${founder.name}</div>
+                    <div class="founder-wealth">${(founder.wealth || 0).toLocaleString()}</div>
+                </div>
+            `;
+        }
+
+        // Get power-up icon
+        function getPowerUpIcon(powerUp) {
+            const icons = {
+                'double': '2️⃣',
+                'block': '🚫',
+                'steal': '💸',
+                'shield': '🛡️',
+                'boost': '🚀'
+            };
+            return icons[powerUp] || '✨';
+        }
+
+        // Render founders
+        function renderFounders() {
+            // Company 1
+            const company1Founders = gameState.founders.filter(f => f.company === 1);
+            const founders1Grid = document.getElementById('founders1');
+            founders1Grid.innerHTML = company1Founders.map(createFounderCard).join('');
+            
+            // Company 2
+            const company2Founders = gameState.founders.filter(f => f.company === 2);
+            const founders2Grid = document.getElementById('founders2');
+            founders2Grid.innerHTML = company2Founders.map(createFounderCard).join('');
+            
+            // Update stats
+            document.getElementById('totalFounders').textContent = gameState.founders.length;
+        }
+
+        // Add activity to feed
+        function addActivity(message, isRecent = true) {
+            const activityList = document.getElementById('activityList');
+            const item = document.createElement('div');
+            item.className = `activity-item ${isRecent ? 'recent' : ''}`;
+            const time = new Date().toLocaleTimeString();
+            item.textContent = `[${time}] ${message}`;
+            
+            activityList.insertBefore(item, activityList.firstChild);
+            
+            // Keep only last 20 activities
+            while (activityList.children.length > 20) {
+                activityList.removeChild(activityList.lastChild);
+            }
+        }
+
+        // Money rain animation
+        function triggerMoneyRain(company) {
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const money = document.createElement('div');
+                    money.className = 'money-particle';
+                    money.textContent = '💰';
+                    money.style.left = Math.random() * window.innerWidth + 'px';
+                    document.body.appendChild(money);
+                    
+                    setTimeout(() => money.remove(), 3000);
+                }, i * 100);
+            }
+        }
+
+        // Update displays
+        function updateValuations() {
+            const val1 = gameState.companies[1].valuation;
+            const val2 = gameState.companies[2].valuation;
+            
+            document.getElementById('valuation1').textContent = `${val1.toLocaleString()}`;
+            document.getElementById('valuation2').textContent = `${val2.toLocaleString()}`;
+            document.getElementById('totalValuation').textContent = `${(val1 + val2).toLocaleString()}`;
+        }
+
+        function updateActiveCompany() {
+            document.querySelectorAll('.company').forEach((el, idx) => {
+                if (idx + 1 === gameState.currentTeam) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+        }
+
+        // Setup Firebase listeners
+        function setupListeners() {
+            // Company valuations
+            database.ref('game/companies').on('value', (snapshot) => {
+                const companies = snapshot.val();
+                if (companies) {
+                    // Check for valuation increases
+                    Object.keys(companies).forEach(key => {
+                        const oldVal = gameState.companies[key]?.valuation || 0;
+                        const newVal = companies[key].valuation || 0;
+                        if (newVal > oldVal) {
+                            addActivity(`Company ${key} gained ${newVal - oldVal}!`);
+                            triggerMoneyRain(key);
+                        }
+                    });
+                    
+                    gameState.companies = companies;
+                    updateValuations();
+                }
+            });
+
+            // Current team
+            database.ref('game/currentTeam').on('value', (snapshot) => {
+                gameState.currentTeam = snapshot.val() || 1;
+                updateActiveCompany();
+            });
+
+            // Founder updates
+            database.ref('game/founders').on('value', (snapshot) => {
+                const foundersData = snapshot.val();
+                if (foundersData) {
+                    gameState.founders = Object.values(foundersData);
+                    renderFounders();
+                }
+            });
+
+            // Activity feed
+            database.ref('game/activity').limitToLast(1).on('child_added', (snapshot) => {
+                const activity = snapshot.val();
+                if (activity) {
+                    addActivity(activity.message);
+                }
+            });
+
+            // Active challenges count
+            database.ref('game/activeChallenges').on('value', (snapshot) => {
+                const active = snapshot.val();
+                gameState.activeChallenges = active ? active.challenges.filter(c => !c.completed).length : 0;
+                document.getElementById('activeChallenges').textContent = gameState.activeChallenges;
+            });
+        }
+
+        // Initialize
+        window.onload = () => {
+            renderFounders();
+            setupListeners();
+            updateValuations();
+            updateActiveCompany();
+            
+            // Initialize founders in Firebase if needed
+            database.ref('game/founders').once('value', (snapshot) => {
+                if (!snapshot.exists()) {
+                    const foundersObj = {};
+                    founders.forEach(f => {
+                        foundersObj[f.id] = f;
+                    });
+                    database.ref('game/founders').set(foundersObj);
+                }
+            });
+            
+            addActivity('Dashboard loaded!');
+        };
+
+        // Handle founder clicks
+        document.addEventListener('click', (e) => {
+            const founderCard = e.target.closest('.founder-card');
+            if (founderCard) {
+                const founderId = founderCard.dataset.founder;
+                const founder = gameState.founders.find(f => f.id === founderId);
+                if (founder) {
+                    addActivity(`Clicked on ${founder.name}`);
+                    // Add more interaction here if needed
+                }
+            }
+        });
+    </script>
+</body>
+</html>

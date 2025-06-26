@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F0UND3RZ G4M3 - Moderator Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #00ff00;
+            text-shadow: 0 0 20px rgba(0,255,0,0.8);
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .panel {
+            background: #1a1a1a;
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(0,255,0,0.2);
+        }
+
+        .panel h2 {
+            color: #00ff00;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-shadow: 0 0 10px rgba(0,255,0,0.5);
+        }
+
+        .company-control {
+            background: #0f0f0f;
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .company-control h3 {
+            color: #ffff00;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .valuation-display {
+            font-size: 2em;
+            color: #ffff00;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255,255,0,0.5);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+
+        button:hover {
+            background: #00cc00;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0,255,0,0.5);
+        }
+
+        button.danger {
+            background: #ff3333;
+            color: white;
+        }
+
+        button.danger:hover {
+            background: #cc0000;
+        }
+
+        button.secondary {
+            background: #666;
+            color: white;
+        }
+
+        button.secondary:hover {
+            background: #555;
+        }
+
+        button.active {
+            background: #ffaa00;
+            color: #000;
+        }
+
+        /* Pending Selection */
+        .pending-selection {
+            background: #1f1f00;
+            border: 2px solid #ffff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { border-color: #ffff00; }
+            50% { border-color: #ffaa00; }
+            100% { border-color: #ffff00; }
+        }
+
+        .pending-selection h3 {
+            color: #ffff00;
+            margin-bottom: 15px;
+        }
+
+        /* Challenge Management */
+        .challenge-manager {
+            background: #0f0f0f;
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .challenge-item {
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .challenge-item:hover {
+            border-color: #00ff00;
+        }
+
+        .challenge-item.completed {
+            opacity: 0.6;
+            border-color: #666;
+        }
+
+        .challenge-item h4 {
+            color: #ffff00;
+            margin-bottom: 10px;
+        }
+
+        .challenge-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        /* Founder Assignment */
+        .founder-select {
+            background: #1a1a1a;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 8px;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Log */
+        .log {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .log-entry.success {
+            color: #00ff00;
+        }
+
+        .log-entry.error {
+            color: #ff3333;
+        }
+
+        /* Special Tools */
+        .tools-panel {
+            background: #1f0f0f;
+            border: 2px solid #ff6600;
+        }
+
+        .tool-button {
+            background: #ff6600;
+            color: white;
+        }
+
+        .tool-button:hover {
+            background: #ff4400;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 3px solid #00ff00;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,255,0,0.3);
+            border-radius: 50%;
+            border-top-color: #00ff00;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎮 STARTUP JEOPARDY CONTROL 🎮</h1>
+        <p>Manage challenges, valuations, and founder assignments</p>
+    </div>
+
+    <div class="controls">
+        <!-- Company Valuations -->
+        <div class="panel">
+            <h2>💰 Company Valuations</h2>
+            <div class="company-control">
+                <h3>
+                    Company Alpha
+                    <span class="valuation-display" id="valuation1">$0</span>
+                </h3>
+                <div class="button-group">
+                    <button onclick="addValuation(1, 100)">+$100</button>
+                    <button onclick="addValuation(1, 200)">+$200</button>
+                    <button onclick="addValuation(1, 300)">+$300</button>
+                    <button onclick="addValuation(1, 400)">+$400</button>
+                    <button onclick="addValuation(1, 500)">+$500</button>
+                </div>
+                <div class="button-group">
+                    <button class="danger" onclick="addValuation(1, -100)">-$100</button>
+                    <button class="secondary" onclick="setActiveCompany(1)">Set Active</button>
+                </div>
+            </div>
+
+            <div class="company-control">
+                <h3>
+                    Company Beta
+                    <span class="valuation-display" id="valuation2">$0</span>
+                </h3>
+                <div class="button-group">
+                    <button onclick="addValuation(2, 100)">+$100</button>
+                    <button onclick="addValuation(2, 200)">+$200</button>
+                    <button onclick="addValuation(2, 300)">+$300</button>
+                    <button onclick="addValuation(2, 400)">+$400</button>
+                    <button onclick="addValuation(2, 500)">+$500</button>
+                </div>
+                <div class="button-group">
+                    <button class="danger" onclick="addValuation(2, -100)">-$100</button>
+                    <button class="secondary" onclick="setActiveCompany(2)">Set Active</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Challenge Control -->
+        <div class="panel">
+            <h2>🎯 Challenge Control</h2>
+            <div id="pendingSelection">
+                <p style="color: #666;">No pending category selection</p>
+            </div>
+            <div id="activeChallenges" style="display: none;">
+                <h3 style="color: #ffff00; margin-bottom: 15px;">Active Challenges</h3>
+                <div id="challengeList"></div>
+            </div>
+        </div>
+
+        <!-- Special Tools -->
+        <div class="panel tools-panel">
+            <h2>🔧 Special Tools</h2>
+            <div class="quick-actions">
+                <button class="tool-button" onclick="activateTool('block')">🚫 Block Player</button>
+                <button class="tool-button" onclick="activateTool('secret')">🔐 Get Secret</button>
+                <button class="tool-button" onclick="activateTool('steal')">💸 Steal Money</button>
+                <button class="tool-button" onclick="activateTool('swap')">🔄 Swap Founders</button>
+                <button class="tool-button" onclick="activateTool('double')">2️⃣ Double Points</button>
+                <button class="tool-button" onclick="activateTool('freeze')">🧊 Freeze Team</button>
+            </div>
+            <div class="log" id="toolLog"></div>
+        </div>
+
+        <!-- Game Control -->
+        <div class="panel">
+            <h2>🎮 Game Control</h2>
+            <div class="quick-actions">
+                <button onclick="switchCompanies()">Switch Active Company</button>
+                <button onclick="showFounderManager()">Manage Founders</button>
+                <button class="secondary" onclick="pauseGame()">Pause Game</button>
+                <button class="secondary" onclick="resumeGame()">Resume Game</button>
+            </div>
+            <div style="margin-top: 20px;">
+                <h3 style="color: #ffff00; margin-bottom: 10px;">Reset Options</h3>
+                <div class="quick-actions">
+                    <button class="danger" onclick="resetValuations()">Reset Valuations</button>
+                    <button class="danger" onclick="resetBoard()">Reset Board</button>
+                    <button class="danger" onclick="resetAll()">Reset Everything</button>
+                </div>
+            </div>
+            <div class="log" id="gameLog"></div>
+        </div>
+    </div>
+
+    <!-- Founder Manager Modal -->
+    <div class="modal" id="founderModal">
+        <div class="modal-content">
+            <h2 style="color: #00ff00; margin-bottom: 20px;">Founder Management</h2>
+            <div id="founderList"></div>
+            <button onclick="closeModal('founderModal')" style="margin-top: 20px; width: 100%;">Close</button>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnHE2Ay2wqZVC4Xf2PsHHppVoVfNPk0hI",
+            authDomain: "f0und3rzg4m3-b04rd.firebaseapp.com",
+            databaseURL: "https://f0und3rzg4m3-b04rd-default-rtdb.firebaseio.com",
+            projectId: "f0und3rzg4m3-b04rd",
+            storageBucket: "f0und3rzg4m3-b04rd.firebasestorage.app",
+            messagingSenderId: "484982613831",
+            appId: "1:484982613831:web:9b655b3d66d66b3b5e8e62",
+            measurementId: "G-MPN2LP1Q6X"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // State
+        let currentCompanies = { 1: { valuation: 0 }, 2: { valuation: 0 } };
+        let currentTeam = 1;
+        let pendingSelection = null;
+        let activeChallenges = null;
+
+        // Example challenges database
+        const challengeDatabase = {
+            "doom scroll nation": {
+                100: [
+                    { description: "Find any founder's controversial tweet", value: 100 },
+                    { description: "Collect 15 event flyers (must be current)", value: 100 },
+                    { description: "Find Tom from MySpace's Facebook page", value: 100 }
+                ],
+                200: [
+                    { description: "Put together every winner of Jonathan Gold's 101 best restaurants since inception", value: 200 },
+                    { description: "Find the entire family tree of your founder's socials", value: 200 }
+                ]
+            },
+            "meme-me-up-scotty": {
+                100: [
+                    { description: "Create a meme using your founder's photo", value: 100 },
+                    { description: "Find the oldest meme in your camera roll", value: 100 }
+                ],
+                200: [
+                    { description: "Recreate a classic meme with your team", value: 200 }
+                ]
+            }
+            // Add more as needed
+        };
+
+        // Logging
+        function log(message, type = 'normal', targetLog = 'gameLog') {
+            const logDiv = document.getElementById(targetLog);
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const time = new Date().toLocaleTimeString();
+            entry.textContent = `[${time}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // Valuation management
+        function addValuation(company, amount) {
+            currentCompanies[company].valuation += amount;
+            database.ref(`game/companies/${company}/valuation`).set(currentCompanies[company].valuation);
+            log(`Company ${company}: ${amount > 0 ? '+' : ''}$${amount}`, 'success');
+        }
+
+        function setActiveCompany(company) {
+            currentTeam = company;
+            database.ref('game/currentTeam').set(company);
+            log(`Set active company to ${company}`, 'success');
+        }
+
+        function switchCompanies() {
+            const newTeam = currentTeam === 1 ? 2 : 1;
+            setActiveCompany(newTeam);
+        }
+
+        // Category selection handling
+        function approveSelection() {
+            if (!pendingSelection) return;
+            
+            const { category, value } = pendingSelection;
+            const challenges = challengeDatabase[category]?.[value] || [
+                { description: `Challenge 1 for ${category} $${value}`, value: value },
+                { description: `Challenge 2 for ${category} $${value}`, value: value },
+                { description: `Challenge 3 for ${category} $${value}`, value: value }
+            ];
+
+            // Set active challenges
+            database.ref('game/activeChallenges').set({
+                category,
+                value,
+                team: pendingSelection.team,
+                challenges: challenges.map(c => ({ ...c, completed: false }))
+            });
+
+            // Mark cell as selected
+            database.ref(`game/board/${category}-${value}`).set({
+                selected: true,
+                team: pendingSelection.team,
+                challenges: challenges.map(c => ({ ...c, completed: false }))
+            });
+
+            // Clear pending
+            database.ref('game/pendingSelection').remove();
+            log(`Approved: ${category} $${value} for Company ${pendingSelection.team}`, 'success');
+        }
+
+        function rejectSelection() {
+            if (!pendingSelection) return;
+            database.ref('game/pendingSelection').remove();
+            log(`Rejected category selection`, 'error');
+        }
+
+        // Challenge completion
+        function completeChallenge(index, founderName = null) {
+            if (!activeChallenges) return;
+            
+            const challenge = activeChallenges.challenges[index];
+            if (challenge.completed) return;
+
+            // Update challenge status
+            challenge.completed = true;
+            challenge.completedBy = founderName || `Company ${activeChallenges.team}`;
+            
+            // Award points
+            addValuation(activeChallenges.team, challenge.value);
+            
+            // Update Firebase
+            database.ref(`game/activeChallenges/challenges/${index}`).update({
+                completed: true,
+                completedBy: challenge.completedBy
+            });
+
+            // Update board state
+            const boardKey = `${activeChallenges.category}-${activeChallenges.value}`;
+            database.ref(`game/board/${boardKey}/challenges/${index}`).update({
+                completed: true,
+                completedBy: challenge.completedBy
+            });
+
+            // Check if all completed
+            const allCompleted = activeChallenges.challenges.every(c => c.completed);
+            if (allCompleted) {
+                database.ref(`game/board/${boardKey}/allCompleted`).set(true);
+                database.ref('game/activeChallenges').remove();
+                log(`All challenges completed for ${activeChallenges.category} $${activeChallenges.value}!`, 'success');
+            }
+
+            log(`Challenge completed by ${challenge.completedBy} (+$${challenge.value})`, 'success');
+        }
+
+        // Special tools
+        function activateTool(tool) {
+            const tools = {
+                'block': 'Block Player - Select a founder to block for 1 turn',
+                'secret': 'Get Secret - Reveal hidden information',
+                'steal': 'Steal Money - Transfer $100 between companies',
+                'swap': 'Swap Founders - Exchange founders between companies',
+                'double': 'Double Points - Next challenge worth 2x',
+                'freeze': 'Freeze Team - Skip opponent\'s next turn'
+            };
+            
+            log(`Activated: ${tools[tool]}`, 'success', 'toolLog');
+            // Implement tool logic here
+        }
+
+        // Reset functions
+        function resetValuations() {
+            if (confirm('Reset all company valuations to $0?')) {
+                database.ref('game/companies').set({
+                    1: { name: "Company Alpha", valuation: 0 },
+                    2: { name: "Company Beta", valuation: 0 }
+                });
+                log('Valuations reset', 'success');
+            }
+        }
+
+        function resetBoard() {
+            if (confirm('Clear all board progress?')) {
+                database.ref('game/board').remove();
+                database.ref('game/activeChallenges').remove();
+                log('Board reset', 'success');
+            }
+        }
+
+        function resetAll() {
+            if (confirm('Reset EVERYTHING? This cannot be undone!')) {
+                database.ref('game').set({
+                    currentTeam: 1,
+                    companies: {
+                        1: { name: "Company Alpha", valuation: 0 },
+                        2: { name: "Company Beta", valuation: 0 }
+                    }
+                });
+                log('Game completely reset', 'success');
+            }
+        }
+
+        // Modal functions
+        function showFounderManager() {
+            document.getElementById('founderModal').style.display = 'flex';
+            // Load founder data here
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Game control
+        function pauseGame() {
+            database.ref('game/paused').set(true);
+            log('Game paused', 'error');
+        }
+
+        function resumeGame() {
+            database.ref('game/paused').set(false);
+            log('Game resumed', 'success');
+        }
+
+        // Setup listeners
+        function setupListeners() {
+            // Company valuations
+            database.ref('game/companies').on('value', (snapshot) => {
+                const companies = snapshot.val() || {};
+                currentCompanies = companies;
+                document.getElementById('valuation1').textContent = `$${(companies[1]?.valuation || 0).toLocaleString()}`;
+                document.getElementById('valuation2').textContent = `$${(companies[2]?.valuation || 0).toLocaleString()}`;
+            });
+
+            // Current team
+            database.ref('game/currentTeam').on('value', (snapshot) => {
+                currentTeam = snapshot.val() || 1;
+                document.querySelectorAll('.company-control').forEach((el, idx) => {
+                    if (idx + 1 === currentTeam) {
+                        el.style.borderColor = '#00ff00';
+                        el.style.boxShadow = '0 0 20px rgba(0,255,0,0.5)';
+                    } else {
+                        el.style.borderColor = '#00ff00';
+                        el.style.boxShadow = 'none';
+                    }
+                });
+            });
+
+            // Pending selection
+            database.ref('game/pendingSelection').on('value', (snapshot) => {
+                pendingSelection = snapshot.val();
+                const div = document.getElementById('pendingSelection');
+                
+                if (pendingSelection) {
+                    div.innerHTML = `
+                        <div class="pending-selection">
+                            <h3>Pending Selection</h3>
+                            <p>Company ${pendingSelection.team} wants:</p>
+                            <p style="font-size: 1.5em; color: #ffff00;">
+                                ${pendingSelection.category.replace(/-/g, ' ').toUpperCase()} - $${pendingSelection.value}
+                            </p>
+                            <div class="button-group" style="margin-top: 15px;">
+                                <button onclick="approveSelection()">✓ Approve & Show Challenges</button>
+                                <button class="danger" onclick="rejectSelection()">✗ Reject</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    div.innerHTML = '<p style="color: #666;">No pending category selection</p>';
+                }
+            });
+
+            // Active challenges
+            database.ref('game/activeChallenges').on('value', (snapshot) => {
+                activeChallenges = snapshot.val();
+                const div = document.getElementById('activeChallenges');
+                const list = document.getElementById('challengeList');
+                
+                if (activeChallenges && activeChallenges.challenges) {
+                    div.style.display = 'block';
+                    list.innerHTML = activeChallenges.challenges.map((challenge, idx) => `
+                        <div class="challenge-item ${challenge.completed ? 'completed' : ''}">
+                            <h4>Challenge ${idx + 1} - $${challenge.value}</h4>
+                            <p>${challenge.description}</p>
+                            ${challenge.completed ? 
+                                `<p style="color: #666; margin-top: 5px;">✓ Completed by: ${challenge.completedBy}</p>` :
+                                `<div class="challenge-controls">
+                                    <select class="founder-select" id="founder-${idx}">
+                                        <option value="">Select Founder...</option>
+                                        <option value="Founder 1">Founder 1</option>
+                                        <option value="Founder 2">Founder 2</option>
+                                        <!-- Add actual founders here -->
+                                    </select>
+                                    <button onclick="completeChallenge(${idx}, document.getElementById('founder-${idx}').value)">
+                                        ✓ Complete
+                                    </button>
+                                </div>`
+                            }
+                        </div>
+                    `).join('');
+                } else {
+                    div.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize
+        window.onload = () => {
+            setupListeners();
+            log('Moderator panel initialized', 'success');
+        };
+    </script>
+</body>
+</html>

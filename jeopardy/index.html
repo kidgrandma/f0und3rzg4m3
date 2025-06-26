@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F0UND3RZ G4M3 - Startup Jeopardy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #00ff00;
+            box-shadow: 0 4px 20px rgba(0,255,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0,255,0,0.8);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(0,255,0,0.8); }
+            to { text-shadow: 0 0 30px rgba(0,255,0,1), 0 0 40px rgba(0,255,0,0.6); }
+        }
+
+        .companies {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .company {
+            background: rgba(0,255,0,0.1);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 20px 40px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .company.active {
+            background: rgba(0,255,0,0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0,255,0,0.5);
+        }
+
+        .company h2 {
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            color: #00ff00;
+        }
+
+        .valuation {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #ffff00;
+            text-shadow: 0 0 10px rgba(255,255,0,0.5);
+        }
+
+        .board-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .category {
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            padding: 20px 10px;
+            text-align: center;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 2px solid #00ff00;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #00ff00;
+            text-shadow: 0 0 5px rgba(0,255,0,0.5);
+        }
+
+        .cell {
+            background: #1a1a1a;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.8em;
+            font-weight: bold;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cell:hover:not(.empty):not(.pending) {
+            background: rgba(0,255,0,0.1);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0,255,0,0.5);
+        }
+
+        .cell .value {
+            font-size: 1.5em;
+            color: #ffff00;
+            margin-bottom: 10px;
+        }
+
+        .cell .challenges {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .challenge-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #444;
+            border: 1px solid #666;
+            transition: all 0.3s ease;
+        }
+
+        .challenge-dot.active {
+            background: #00ff00;
+            box-shadow: 0 0 5px rgba(0,255,0,0.8);
+        }
+
+        .challenge-dot.completed {
+            background: #666;
+        }
+
+        .cell.empty {
+            background: #0a0a0a;
+            cursor: not-allowed;
+            opacity: 0.3;
+            color: #444;
+        }
+
+        .cell.pending {
+            background: #ffaa00;
+            animation: pulse 1s infinite;
+        }
+
+        .cell.selected {
+            background: rgba(0,255,0,0.2);
+            border-color: #ffff00;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Challenge Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .challenge-modal {
+            background: #1a1a1a;
+            border: 3px solid #00ff00;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            box-shadow: 0 0 50px rgba(0,255,0,0.5);
+        }
+
+        .challenge-modal h2 {
+            color: #00ff00;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2em;
+            text-shadow: 0 0 10px rgba(0,255,0,0.5);
+        }
+
+        .challenge-list {
+            margin: 20px 0;
+        }
+
+        .challenge-item {
+            background: rgba(0,255,0,0.05);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .challenge-item:hover {
+            background: rgba(0,255,0,0.1);
+        }
+
+        .challenge-item.completed {
+            opacity: 0.5;
+            border-color: #666;
+        }
+
+        .challenge-item h3 {
+            color: #ffff00;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .challenge-value {
+            font-size: 1.5em;
+        }
+
+        .challenge-description {
+            color: #ccc;
+            line-height: 1.5;
+        }
+
+        .close-button {
+            background: #ff3333;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            font-size: 1.2em;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover {
+            background: #ff5555;
+            transform: scale(1.05);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .board {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .board {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .category {
+                font-size: 0.9em;
+                padding: 15px 5px;
+                min-height: 80px;
+            }
+            
+            .cell {
+                font-size: 1.2em;
+                padding: 15px;
+                min-height: 80px;
+            }
+            
+            .cell .value {
+                font-size: 1.2em;
+            }
+            
+            .valuation {
+                font-size: 1.8em;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            text-align: center;
+            color: #00ff00;
+            font-size: 1.5em;
+            margin: 50px 0;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💰 F0UND3RZ STARTUP JEOPARDY 💰</h1>
+        <div class="companies">
+            <div class="company" id="company1">
+                <h2>Company Alpha</h2>
+                <div class="valuation" id="valuation1">$0</div>
+            </div>
+            <div class="company" id="company2">
+                <h2>Company Beta</h2>
+                <div class="valuation" id="valuation2">$0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="board-container">
+        <div class="loading" id="loading">Initializing startup ecosystem</div>
+        <div class="board" id="board" style="display: none;">
+            <!-- Board will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Challenge Modal -->
+    <div class="modal" id="challengeModal">
+        <div class="challenge-modal">
+            <h2 id="challengeTitle">Challenges</h2>
+            <div class="challenge-list" id="challengeList">
+                <!-- Challenges will be populated here -->
+            </div>
+            <button class="close-button" onclick="closeChallengeModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnHE2Ay2wqZVC4Xf2PsHHppVoVfNPk0hI",
+            authDomain: "f0und3rzg4m3-b04rd.firebaseapp.com",
+            databaseURL: "https://f0und3rzg4m3-b04rd-default-rtdb.firebaseio.com",
+            projectId: "f0und3rzg4m3-b04rd",
+            storageBucket: "f0und3rzg4m3-b04rd.firebasestorage.app",
+            messagingSenderId: "484982613831",
+            appId: "1:484982613831:web:9b655b3d66d66b3b5e8e62",
+            measurementId: "G-MPN2LP1Q6X"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Game configuration
+        const categories = [
+            "meme-me-up-scotty",
+            "doom scroll nation",
+            "web 1.0",
+            "netbangers",
+            "paizleys-robot",
+            "em0ti0nz"
+        ];
+
+        const values = [100, 200, 300, 400, 500];
+
+        // Game state
+        let gameState = {
+            currentTeam: 1,
+            companies: {
+                1: { name: "Company Alpha", valuation: 0 },
+                2: { name: "Company Beta", valuation: 0 }
+            },
+            board: {},
+            selectedCategory: null
+        };
+
+        // Initialize board
+        function initializeBoard() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+
+            // Add categories
+            categories.forEach(cat => {
+                const catDiv = document.createElement('div');
+                catDiv.className = 'category';
+                catDiv.innerHTML = cat.replace(/-/g, '<br>');
+                board.appendChild(catDiv);
+            });
+
+            // Add cells
+            values.forEach(value => {
+                categories.forEach((cat, catIndex) => {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.category = cat;
+                    cell.dataset.value = value;
+                    cell.onclick = () => selectCategory(cat, value);
+                    
+                    // Create cell content
+                    const valueDiv = document.createElement('div');
+                    valueDiv.className = 'value';
+                    valueDiv.textContent = `$${value}`;
+                    
+                    const challengesDiv = document.createElement('div');
+                    challengesDiv.className = 'challenges';
+                    
+                    // Add challenge dots (3-5 per cell for now)
+                    const numChallenges = 3 + Math.floor(Math.random() * 3);
+                    for (let i = 0; i < numChallenges; i++) {
+                        const dot = document.createElement('div');
+                        dot.className = 'challenge-dot';
+                        challengesDiv.appendChild(dot);
+                    }
+                    
+                    cell.appendChild(valueDiv);
+                    cell.appendChild(challengesDiv);
+                    board.appendChild(cell);
+                });
+            });
+
+            // Hide loading, show board
+            document.getElementById('loading').style.display = 'none';
+            board.style.display = 'grid';
+        }
+
+        // Select category
+        function selectCategory(category, value) {
+            const cellKey = `${category}-${value}`;
+            const cellState = gameState.board[cellKey];
+            
+            if (cellState && cellState.completed) {
+                return; // Cell already completed
+            }
+
+            // Send selection to Firebase
+            database.ref(`game/pendingSelection`).set({
+                category,
+                value,
+                team: gameState.currentTeam,
+                timestamp: Date.now()
+            });
+        }
+
+        // Show challenges modal
+        function showChallenges(category, value, challenges) {
+            const modal = document.getElementById('challengeModal');
+            const title = document.getElementById('challengeTitle');
+            const list = document.getElementById('challengeList');
+            
+            title.textContent = `${category.replace(/-/g, ' ').toUpperCase()} - $${value}`;
+            
+            // Populate challenges
+            list.innerHTML = challenges.map((challenge, index) => `
+                <div class="challenge-item ${challenge.completed ? 'completed' : ''}" id="challenge-${index}">
+                    <h3>
+                        <span>Challenge ${index + 1}</span>
+                        <span class="challenge-value">$${challenge.value || value}</span>
+                    </h3>
+                    <div class="challenge-description">${challenge.description}</div>
+                    ${challenge.completedBy ? `<div style="color: #666; margin-top: 10px;">Completed by: ${challenge.completedBy}</div>` : ''}
+                </div>
+            `).join('');
+            
+            modal.style.display = 'flex';
+        }
+
+        // Close challenge modal
+        function closeChallengeModal() {
+            document.getElementById('challengeModal').style.display = 'none';
+        }
+
+        // Update displays
+        function updateCompanyDisplay() {
+            document.querySelectorAll('.company').forEach((el, index) => {
+                const companyNum = index + 1;
+                if (companyNum === gameState.currentTeam) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+        }
+
+        function updateValuations() {
+            document.getElementById('valuation1').textContent = `$${gameState.companies[1].valuation.toLocaleString()}`;
+            document.getElementById('valuation2').textContent = `$${gameState.companies[2].valuation.toLocaleString()}`;
+        }
+
+        function updateBoard() {
+            document.querySelectorAll('.cell').forEach(cell => {
+                const category = cell.dataset.category;
+                const value = cell.dataset.value;
+                const key = `${category}-${value}`;
+                const state = gameState.board[key];
+
+                cell.classList.remove('empty', 'pending', 'selected');
+                
+                if (state) {
+                    if (state.allCompleted) {
+                        cell.classList.add('empty');
+                        cell.querySelector('.value').textContent = '✓';
+                        cell.querySelector('.challenges').style.display = 'none';
+                    } else if (state.selected) {
+                        cell.classList.add('selected');
+                        // Update challenge dots
+                        const dots = cell.querySelectorAll('.challenge-dot');
+                        state.challenges?.forEach((challenge, idx) => {
+                            if (dots[idx]) {
+                                dots[idx].classList.toggle('completed', challenge.completed);
+                                dots[idx].classList.toggle('active', !challenge.completed);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        // Setup Firebase listeners
+        function setupListeners() {
+            // Company valuations
+            database.ref('game/companies').on('value', (snapshot) => {
+                const companies = snapshot.val();
+                if (companies) {
+                    gameState.companies = companies;
+                    updateValuations();
+                }
+            });
+
+            // Current team
+            database.ref('game/currentTeam').on('value', (snapshot) => {
+                gameState.currentTeam = snapshot.val() || 1;
+                updateCompanyDisplay();
+            });
+
+            // Board state
+            database.ref('game/board').on('value', (snapshot) => {
+                gameState.board = snapshot.val() || {};
+                updateBoard();
+            });
+
+            // Active challenges
+            database.ref('game/activeChallenges').on('value', (snapshot) => {
+                const active = snapshot.val();
+                if (active) {
+                    showChallenges(active.category, active.value, active.challenges || []);
+                }
+            });
+        }
+
+        // Initialize on load
+        window.onload = () => {
+            initializeBoard();
+            setupListeners();
+            
+            // Initialize game state in Firebase if needed
+            database.ref('game').once('value', (snapshot) => {
+                if (!snapshot.exists()) {
+                    database.ref('game').set({
+                        currentTeam: 1,
+                        companies: {
+                            1: { name: "Company Alpha", valuation: 0 },
+                            2: { name: "Company Beta", valuation: 0 }
+                        }
+                    });
+                }
+            });
+        };
+
+        // Close modal on click outside
+        window.onclick = (event) => {
+            const modal = document.getElementById('challengeModal');
+            if (event.target === modal) {
+                closeChallengeModal();
+            }
+        };
+    </script>
+</body>
+</html>
