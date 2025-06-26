@@ -3,8 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F0UND3RZ G4M3 - Company Dashboard</title>
+    <title>The Playpen - F0UND3RZ G4M3</title>
     <style>
+        /* CSS VARIABLES */
+        :root {
+            --purple: #8A2BE2;
+            --cyan: #00FFFF;
+            --yellow: #FFFF00;
+            --pink: #FF69B4;
+            --apple-color: #00FF00;
+            --orange-color: #FFA500;
+            --glass: rgba(255,255,255,0.08);
+            --blur: 10px;
+        }
+
+        /* FONTS */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
@@ -12,311 +27,476 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
-            background: #0a0a0a;
-            color: #00ff00;
+            font-family: 'Orbitron', 'Arial', sans-serif;
+            background: #000;
+            color: #fff;
             min-height: 100vh;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #00ff00;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            text-shadow: 0 0 20px rgba(0,255,0,0.8);
-            margin-bottom: 10px;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .stat {
-            background: rgba(0,255,0,0.1);
-            border: 1px solid #00ff00;
-            border-radius: 10px;
-            padding: 10px 20px;
-        }
-
-        .companies-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-
-        .company {
-            background: #1a1a1a;
-            border: 3px solid #00ff00;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 0 30px rgba(0,255,0,0.3);
-        }
-
-        .company.active {
-            border-color: #ffff00;
-            box-shadow: 0 0 40px rgba(255,255,0,0.5);
-        }
-
-        .company-header {
-            text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #00ff00;
-        }
-
-        .company-name {
-            font-size: 2em;
-            color: #00ff00;
-            margin-bottom: 10px;
-            text-shadow: 0 0 15px rgba(0,255,0,0.5);
-        }
-
-        .company-valuation {
-            font-size: 3em;
-            color: #ffff00;
-            font-weight: bold;
-            text-shadow: 0 0 20px rgba(255,255,0,0.5);
-        }
-
-        .founders-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .founder-card {
-            background: #0f0f0f;
-            border: 2px solid #444;
-            border-radius: 10px;
-            padding: 10px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            overflow-x: hidden;
             position: relative;
         }
 
-        .founder-card:hover {
-            border-color: #00ff00;
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0,255,0,0.3);
+        /* BACKGROUND - Same as main game */
+        .liminal-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background-color: #000;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
-        .founder-card.mvp {
-            border-color: #ffd700;
-            box-shadow: 0 0 20px rgba(255,215,0,0.5);
+        /* PLAYFUL HEADER */
+        .header {
+            background: linear-gradient(135deg, rgba(255,105,180,0.9) 0%, rgba(138,43,226,0.9) 100%);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 3px solid #fff;
+            box-shadow: 0 5px 30px rgba(255,105,180,0.5);
         }
 
-        .founder-card.blocked {
-            opacity: 0.5;
-            border-color: #ff0000;
+        .header::before {
+            content: '🎈🎮🎪🎨🎭🎪🎮🎈';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            font-size: 20px;
+            opacity: 0.3;
+            animation: slide 10s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { left: -200px; }
+            100% { left: 100%; }
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 
+                0 0 20px rgba(255,255,255,0.5),
+                3px 3px 0 #000;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: wobble 2s ease-in-out infinite;
+        }
+
+        @keyframes wobble {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        /* SCORE DISPLAY */
+        .scores {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px;
+            flex-wrap: wrap;
+        }
+
+        .company-score {
+            background: var(--glass);
+            backdrop-filter: blur(var(--blur));
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transform: rotate(-2deg);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .company-score:nth-child(1) {
+            border-color: var(--apple-color);
+        }
+
+        .company-score:nth-child(2) {
+            border-color: var(--orange-color);
+            transform: rotate(2deg);
+        }
+
+        .company-score:hover {
+            transform: rotate(0deg) scale(1.05);
+        }
+
+        .company-name {
+            font-size: 18px;
+            color: var(--cyan);
+            text-shadow: 0 0 10px var(--cyan);
+        }
+
+        .company-valuation {
+            font-size: 28px;
+            color: var(--yellow);
+            text-shadow: 0 0 15px var(--yellow);
+            font-weight: 900;
+        }
+
+        /* MAIN LAYOUT */
+        .game-area {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            min-height: calc(100vh - 250px);
+        }
+
+        /* PLAYPEN CONTAINER */
+        .playpen-container {
+            flex: 1;
+            position: relative;
+            min-height: 400px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        /* FOUNDER CARDS - Draggable */
+        .founder-card {
+            position: absolute;
+            width: 100px;
+            height: 120px;
+            cursor: move;
+            cursor: grab;
+            transition: transform 0.2s ease;
+            user-select: none;
+            -webkit-user-drag: element;
+        }
+
+        .founder-card:active {
+            cursor: grabbing;
+        }
+
+        .founder-card.dragging {
+            z-index: 1000;
+            transform: scale(1.1) rotate(0deg) !important;
+            opacity: 0.8;
+        }
+
+        .founder-card-inner {
+            width: 100%;
+            height: 100%;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 3px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .founder-card.team-1 .founder-card-inner {
+            border-color: var(--apple-color);
+            background: rgba(0,255,0,0.1);
+        }
+
+        .founder-card.team-2 .founder-card-inner {
+            border-color: var(--orange-color);
+            background: rgba(255,165,0,0.1);
         }
 
         .founder-image {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            margin-bottom: 10px;
-            border: 2px solid #00ff00;
+            border: 2px solid rgba(255,255,255,0.5);
+            margin-bottom: 5px;
             object-fit: cover;
         }
 
         .founder-name {
-            font-size: 0.9em;
-            color: #00ff00;
-            margin-bottom: 5px;
-            word-break: break-word;
+            font-size: 9px;
+            color: #fff;
+            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+            line-height: 1.1;
         }
 
-        .founder-wealth {
-            font-size: 1.1em;
+        /* ZONES */
+        .zones-container {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .zone {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 20px;
+            min-height: 150px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .zone.drag-over {
+            border-color: var(--yellow);
+            background: rgba(255,255,0,0.1);
+            transform: scale(1.02);
+        }
+
+        .zone-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+            color: var(--cyan);
+            text-shadow: 0 0 10px var(--cyan);
+        }
+
+        /* IRS ZONE */
+        .irs-zone {
+            border-color: #ff0000;
+            background: rgba(255,0,0,0.05);
+        }
+
+        .irs-zone .zone-title {
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        .irs-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 10px;
+            display: block;
+            opacity: 0.8;
+        }
+
+        /* TIMEOUT ZONE */
+        .timeout-zone {
+            border-color: #ffff00;
+            background: rgba(255,255,0,0.05);
+        }
+
+        .timeout-zone .zone-title {
             color: #ffff00;
+            text-shadow: 0 0 10px #ffff00;
+        }
+
+        /* ZONE CONTENTS */
+        .zone-contents {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            min-height: 60px;
+        }
+
+        .zone .founder-card {
+            position: relative;
+            width: 70px;
+            height: 90px;
+        }
+
+        .zone .founder-image {
+            width: 40px;
+            height: 40px;
+        }
+
+        .zone .founder-name {
+            font-size: 8px;
+        }
+
+        /* FOUNDER DETAILS POPUP */
+        .founder-details {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            border: 3px solid var(--cyan);
+            border-radius: 20px;
+            padding: 30px;
+            z-index: 2000;
+            max-width: 400px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        .founder-details.active {
+            display: block;
+            animation: popup 0.3s ease-out;
+        }
+
+        @keyframes popup {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .details-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .details-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--cyan);
+        }
+
+        .details-info h3 {
+            color: var(--cyan);
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .details-wealth {
+            color: var(--yellow);
+            font-size: 24px;
             font-weight: bold;
         }
 
-        .founder-status {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8em;
+        .achievements-list {
+            margin-top: 20px;
         }
 
-        /* Special Effects */
-        .power-up {
-            position: absolute;
-            bottom: 5px;
-            left: 5px;
-            background: #ff6600;
-            color: white;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9em;
-            box-shadow: 0 0 10px rgba(255,102,0,0.8);
+        .achievements-list h4 {
+            color: var(--pink);
+            margin-bottom: 10px;
         }
 
-        /* Activity Feed */
-        .activity-feed {
-            margin-top: 30px;
-            background: #0f0f0f;
-            border: 1px solid #00ff00;
+        .achievement-item {
+            background: rgba(138,43,226,0.2);
             border-radius: 10px;
-            padding: 20px;
-            max-height: 300px;
-            overflow-y: auto;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            font-size: 14px;
         }
 
-        .activity-feed h3 {
-            color: #00ff00;
-            margin-bottom: 15px;
-            text-align: center;
+        .close-details {
+            background: var(--pink);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            font-weight: bold;
+            transition: all 0.3s ease;
         }
 
-        .activity-item {
-            padding: 10px;
-            border-bottom: 1px solid #333;
-            color: #888;
-            font-size: 0.9em;
+        .close-details:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255,105,180,0.5);
         }
 
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-
-        .activity-item.recent {
-            color: #00ff00;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 1024px) {
-            .companies-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
+        /* MOBILE ADJUSTMENTS */
         @media (max-width: 768px) {
-            .founders-grid {
-                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-                gap: 10px;
+            .header h1 { font-size: 24px; }
+            
+            .game-area {
+                flex-direction: column;
+            }
+            
+            .zones-container {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
+            }
+            
+            .zone {
+                min-width: 200px;
             }
             
             .founder-card {
-                padding: 8px;
+                position: relative !important;
+                display: inline-block;
+                margin: 5px;
             }
             
-            .founder-image {
-                width: 60px;
-                height: 60px;
-            }
-            
-            .founder-name {
-                font-size: 0.8em;
-            }
-            
-            .company-valuation {
-                font-size: 2em;
+            .playpen-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                min-height: auto;
             }
         }
 
-        /* Animations */
-        @keyframes moneyRain {
-            0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-        }
-
-        .money-particle {
-            position: fixed;
-            font-size: 2em;
-            animation: moneyRain 3s linear;
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        /* Loading */
+        /* LOADING */
         .loading {
             text-align: center;
-            font-size: 1.5em;
-            margin: 50px 0;
-            color: #00ff00;
-        }
-
-        .loading::after {
-            content: '...';
-            animation: dots 1.5s steps(4, end) infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: ''; }
-            40% { content: '.'; }
-            60% { content: '..'; }
-            80%, 100% { content: '...'; }
+            font-size: 24px;
+            color: var(--pink);
+            margin: 100px 0;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0 var(--purple);
         }
     </style>
 </head>
 <body>
+    <!-- BACKGROUND - Same as main game -->
+    <div class="liminal-bg"></div>
+
+    <!-- HEADER -->
     <div class="header">
-        <h1>🏢 COMPANY DASHBOARD 🏢</h1>
-        <div class="stats">
-            <div class="stat">
-                <strong>Total Founders:</strong> <span id="totalFounders">0</span>
-            </div>
-            <div class="stat">
-                <strong>Combined Valuation:</strong> <span id="totalValuation">$0</span>
-            </div>
-            <div class="stat">
-                <strong>Active Challenges:</strong> <span id="activeChallenges">0</span>
+        <h1>🎪 THE PLAYPEN 🎪</h1>
+    </div>
+
+    <!-- COMPANY SCORES -->
+    <div class="scores">
+        <div class="company-score">
+            <span class="company-name">APPLE INC.</span>
+            <span class="company-valuation" id="valuation1">$0</span>
+        </div>
+        <div class="company-score">
+            <span class="company-name">ORANGE INC.</span>
+            <span class="company-valuation" id="valuation2">$0</span>
+        </div>
+    </div>
+
+    <!-- GAME AREA -->
+    <div class="game-area">
+        <!-- PLAYPEN CONTAINER -->
+        <div class="playpen-container" id="playpenContainer">
+            <div class="loading">Loading founders...</div>
+        </div>
+
+        <!-- ZONES -->
+        <div class="zones-container">
+            <!-- IRS ZONE -->
+            <div class="zone irs-zone" id="irsZone">
+                <div class="zone-title">AUDIT BBY</div>
+                <img src="assets/founders/irs.png" alt="IRS" class="irs-logo">
+                <div class="zone-contents"></div>
             </div>
         </div>
     </div>
 
-    <div class="companies-container">
-        <div class="company" id="company1">
-            <div class="company-header">
-                <h2 class="company-name">Company Alpha</h2>
-                <div class="company-valuation" id="valuation1">$0</div>
-            </div>
-            <div class="founders-grid" id="founders1">
-                <div class="loading">Loading founders</div>
-            </div>
-        </div>
-
-        <div class="company" id="company2">
-            <div class="company-header">
-                <h2 class="company-name">Company Beta</h2>
-                <div class="company-valuation" id="valuation2">$0</div>
-            </div>
-            <div class="founders-grid" id="founders2">
-                <div class="loading">Loading founders</div>
+    <!-- FOUNDER DETAILS POPUP -->
+    <div class="founder-details" id="founderDetails">
+        <div class="details-header">
+            <img class="details-image" id="detailsImage" src="" alt="">
+            <div class="details-info">
+                <h3 id="detailsName"></h3>
+                <div class="details-wealth" id="detailsWealth">$0</div>
             </div>
         </div>
-    </div>
-
-    <div class="activity-feed">
-        <h3>Recent Activity</h3>
-        <div id="activityList">
-            <div class="activity-item">Game started!</div>
+        <div class="achievements-list">
+            <h4>🏆 Achievements</h4>
+            <div id="achievementsList"></div>
         </div>
+        <button class="close-details" onclick="closeDetails()">Close</button>
     </div>
 
     <!-- Firebase -->
@@ -326,23 +506,23 @@
     <script>
         // Firebase config
         const firebaseConfig = {
-    apiKey: "AIzaSyDnHE2Ay2wqZVC4Xf2PsHHppVoVfNPk0hI",
-    authDomain: "f0und3rzg4m3-b04rd.firebaseapp.com",
-    databaseURL: "https://f0und3rzg4m3-b04rd-default-rtdb.firebaseio.com",
-    projectId: "f0und3rzg4m3-b04rd",
-    storageBucket: "f0und3rzg4m3-b04rd.firebasestorage.app",
-    messagingSenderId: "484982613831",
-    appId: "1:484982613831:web:9b655b3d66d66b3b5e8e62",
-    measurementId: "G-MPN2LP1Q6X"
-};
+            apiKey: "AIzaSyDnHE2Ay2wqZVC4Xf2PsHHppVoVfNPk0hI",
+            authDomain: "f0und3rzg4m3-b04rd.firebaseapp.com",
+            databaseURL: "https://f0und3rzg4m3-b04rd-default-rtdb.firebaseio.com",
+            projectId: "f0und3rzg4m3-b04rd",
+            storageBucket: "f0und3rzg4m3-b04rd.firebasestorage.app",
+            messagingSenderId: "484982613831",
+            appId: "1:484982613831:web:9b655b3d66d66b3b5e8e62",
+            measurementId: "G-MPN2LP1Q6X"
+        };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Founder data structure
+        // Founder data with random team assignment
         const founders = [
-            // Company 1 (25 founders)
+            // Company 1 (Apple Inc.)
             { id: '01_marc_andreessen', name: 'Marc Andreessen', company: 1, wealth: 0, image: '01_marc_andreessen.png' },
             { id: '02_sheryl_sandberg', name: 'Sheryl Sandberg', company: 1, wealth: 0, image: '02_sheryl_sandberg.png' },
             { id: '03_dom_hofmann', name: 'Dom Hofmann', company: 1, wealth: 0, image: '03_dom_hofmann.png' },
@@ -355,19 +535,8 @@
             { id: '11_google_founders', name: 'Google Founders', company: 1, wealth: 0, image: '11_google_founders.png' },
             { id: '12_bill_gates', name: 'Bill Gates', company: 1, wealth: 0, image: '12_bill_gates.png' },
             { id: '13_jensen_huang', name: 'Jensen Huang', company: 1, wealth: 0, image: '13_jensen_huang.png' },
-            { id: '14_peter_thiel', name: 'Peter Thiel', company: 1, wealth: 0, image: '14_peter_thiel.png' },
-            { id: '15_jack_ma', name: 'Jack Ma', company: 1, wealth: 0, image: '15_jack_ma.png' },
-            { id: '17_sam_altman', name: 'Sam Altman', company: 1, wealth: 0, image: '17_sam_altman.png' },
-            { id: '18_steve_jobs', name: 'Steve Jobs', company: 1, wealth: 0, image: '18_steve_jobs.png' },
-            { id: '19_vitalik_buterin', name: 'Vitalik Buterin', company: 1, wealth: 0, image: '19_vitalik_buterin.png' },
-            { id: '20_jack_dorsey', name: 'Jack Dorsey', company: 1, wealth: 0, image: '20_jack_dorsey.png' },
-            { id: '21_jimmy_wales', name: 'Jimmy Wales', company: 1, wealth: 0, image: '21_jimmy_wales.png' },
-            { id: '22_pavel_durov', name: 'Pavel Durov', company: 1, wealth: 0, image: '22_pavel_durov.png' },
-            { id: '23_drew_houston', name: 'Drew Houston', company: 1, wealth: 0, image: '23_drew_houston.png' },
-            { id: '24_larry_ellison', name: 'Larry Ellison', company: 1, wealth: 0, image: '24_larry_ellison.png' },
-            { id: '25_elizabeth_holmes', name: 'Elizabeth Holmes', company: 1, wealth: 0, image: '25_elizabeth_holmes.png' },
             
-            // Company 2 (28 founders - based on the file list)
+            // Company 2 (Orange Inc.)
             { id: '26_evan_spiegel', name: 'Evan Spiegel', company: 2, wealth: 0, image: '26_evan_spiegel.png' },
             { id: '27_travis_kalanick', name: 'Travis Kalanick', company: 2, wealth: 0, image: '27_travis_kalanick.png' },
             { id: '28_adam_neumann', name: 'Adam Neumann', company: 2, wealth: 0, image: '28_adam_neumann.png' },
@@ -379,202 +548,302 @@
             { id: '35_tom_anderson', name: 'Tom Anderson', company: 2, wealth: 0, image: '35_tom_anderson.png' },
             { id: '36_alexis_ohanian', name: 'Alexis Ohanian', company: 2, wealth: 0, image: '36_alexis_ohanian.png' },
             { id: '37_steve_wozniak', name: 'Steve Wozniak', company: 2, wealth: 0, image: '37_steve_wozniak.png' },
-            { id: '39_ariana_huffington', name: 'Arianna Huffington', company: 2, wealth: 0, image: '39_ariana_huffington.png' },
-            { id: '40_craig_newmark', name: 'Craig Newmark', company: 2, wealth: 0, image: '40_craig_newmark.png' },
-            { id: '41_lucy_guo', name: 'Lucy Guo', company: 2, wealth: 0, image: '41_lucy_guo.png' },
-            { id: '42_jonah_peretti', name: 'Jonah Peretti', company: 2, wealth: 0, image: '42_jonah_peretti.png' },
-            { id: '43_sophia_amoruso', name: 'Sophia Amoruso', company: 2, wealth: 0, image: '43_sophia_amoruso.png' },
-            { id: '44_kevin_rose', name: 'Kevin Rose', company: 2, wealth: 0, image: '44_kevin_rose.png' },
-            { id: '45_sean_rad', name: 'Sean Rad', company: 2, wealth: 0, image: '45_sean_rad.png' },
-            { id: '47_daniel_ek', name: 'Daniel Ek', company: 2, wealth: 0, image: '47_daniel_ek.png' },
-            { id: '49_reed_hastings', name: 'Reed Hastings', company: 2, wealth: 0, image: '49_reed_hastings.png' },
-            { id: '50_jessica_alba', name: 'Jessica Alba', company: 2, wealth: 0, image: '50_jessica_alba.png' },
-            { id: '51_zhang_yiming', name: 'Zhang Yiming', company: 2, wealth: 0, image: '51_zhang_yiming.png' },
-            { id: '52_palmer_luckey', name: 'Palmer Luckey', company: 2, wealth: 0, image: '52_palmer_luckey.png' },
-            { id: '53_youtube', name: 'YouTube Founders', company: 2, wealth: 0, image: '53_youtube.png' }
+            { id: '47_daniel_ek', name: 'Daniel Ek', company: 2, wealth: 0, image: '47_daniel_ek.png' }
         ];
+
+        // Randomly assign teams
+        founders.forEach(founder => {
+            founder.team = Math.random() > 0.5 ? 1 : 2;
+        });
 
         // Game state
         let gameState = {
             companies: {
-                1: { name: "Company Alpha", valuation: 0 },
-                2: { name: "Company Beta", valuation: 0 }
+                1: { name: "Apple Inc.", valuation: 0 },
+                2: { name: "Orange Inc.", valuation: 0 }
             },
             founders: founders,
-            currentTeam: 1,
-            activeChallenges: 0
+            achievements: {},
+            draggedFounder: null
         };
 
-        // Create founder card HTML
-        function createFounderCard(founder) {
+        // Create founder card
+        function createFounderCard(founder, isInZone = false) {
+            const teamClass = `team-${founder.team}`;
+            const style = isInZone ? '' : `style="transform: rotate(${-15 + Math.random() * 30}deg);"`;
+            
             return `
-                <div class="founder-card ${founder.status || ''}" data-founder="${founder.id}">
-                    ${founder.powerUp ? `<div class="power-up" title="${founder.powerUp}">${getPowerUpIcon(founder.powerUp)}</div>` : ''}
-                    ${founder.blocked ? `<div class="founder-status" style="background: #ff0000;" title="Blocked">🚫</div>` : ''}
-                    ${founder.mvp ? `<div class="founder-status" style="background: #ffd700;" title="MVP">⭐</div>` : ''}
-                    <img src="/jeopardy/assets/founders/${founder.image}" alt="${founder.name}" class="founder-image" onerror="this.onerror=null; this.src='https://via.placeholder.com/80/00ff00/ffffff?text=' + encodeURIComponent(this.alt.split(' ')[0])">
-                    <div class="founder-name">${founder.name}</div>
-                    <div class="founder-wealth">${(founder.wealth || 0).toLocaleString()}</div>
+                <div class="founder-card ${teamClass}" 
+                     data-founder="${founder.id}"
+                     draggable="true"
+                     ${style}>
+                    <div class="founder-card-inner">
+                        <img src="assets/founders/${founder.image}" 
+                             alt="${founder.name}" 
+                             class="founder-image" 
+                             onerror="this.src='https://via.placeholder.com/60/${founder.team === 1 ? '00ff00' : 'ffa500'}/ffffff?text=${encodeURIComponent(founder.name.split(' ')[0])}'">
+                        <div class="founder-name">${founder.name}</div>
+                    </div>
                 </div>
             `;
         }
 
-        // Get power-up icon
-        function getPowerUpIcon(powerUp) {
-            const icons = {
-                'double': '2️⃣',
-                'block': '🚫',
-                'steal': '💸',
-                'shield': '🛡️',
-                'boost': '🚀'
-            };
-            return icons[powerUp] || '✨';
-        }
-
-        // Render founders
+        // Render founders with scattered positions
         function renderFounders() {
-            // Company 1
-            const company1Founders = gameState.founders.filter(f => f.company === 1);
-            const founders1Grid = document.getElementById('founders1');
-            founders1Grid.innerHTML = company1Founders.map(createFounderCard).join('');
+            const container = document.getElementById('playpenContainer');
+            const isMobile = window.innerWidth <= 768;
             
-            // Company 2
-            const company2Founders = gameState.founders.filter(f => f.company === 2);
-            const founders2Grid = document.getElementById('founders2');
-            founders2Grid.innerHTML = company2Founders.map(createFounderCard).join('');
+            container.innerHTML = '';
             
-            // Update stats
-            document.getElementById('totalFounders').textContent = gameState.founders.length;
-        }
-
-        // Add activity to feed
-        function addActivity(message, isRecent = true) {
-            const activityList = document.getElementById('activityList');
-            const item = document.createElement('div');
-            item.className = `activity-item ${isRecent ? 'recent' : ''}`;
-            const time = new Date().toLocaleTimeString();
-            item.textContent = `[${time}] ${message}`;
-            
-            activityList.insertBefore(item, activityList.firstChild);
-            
-            // Keep only last 20 activities
-            while (activityList.children.length > 20) {
-                activityList.removeChild(activityList.lastChild);
-            }
-        }
-
-        // Money rain animation
-        function triggerMoneyRain(company) {
-            for (let i = 0; i < 10; i++) {
-                setTimeout(() => {
-                    const money = document.createElement('div');
-                    money.className = 'money-particle';
-                    money.textContent = '💰';
-                    money.style.left = Math.random() * window.innerWidth + 'px';
-                    document.body.appendChild(money);
-                    
-                    setTimeout(() => money.remove(), 3000);
-                }, i * 100);
-            }
-        }
-
-        // Update displays
-        function updateValuations() {
-            const val1 = gameState.companies[1].valuation;
-            const val2 = gameState.companies[2].valuation;
-            
-            document.getElementById('valuation1').textContent = `${val1.toLocaleString()}`;
-            document.getElementById('valuation2').textContent = `${val2.toLocaleString()}`;
-            document.getElementById('totalValuation').textContent = `${(val1 + val2).toLocaleString()}`;
-        }
-
-        function updateActiveCompany() {
-            document.querySelectorAll('.company').forEach((el, idx) => {
-                if (idx + 1 === gameState.currentTeam) {
-                    el.classList.add('active');
-                } else {
-                    el.classList.remove('active');
+            // Render all founders
+            gameState.founders.forEach((founder, index) => {
+                const card = document.createElement('div');
+                card.innerHTML = createFounderCard(founder);
+                const founderEl = card.firstElementChild;
+                
+                if (!isMobile) {
+                    // Random position for desktop
+                    const x = 5 + (Math.random() * 85);
+                    const y = 5 + (Math.random() * 85);
+                    founderEl.style.left = `${x}%`;
+                    founderEl.style.top = `${y}%`;
                 }
+                
+                container.appendChild(founderEl);
             });
+            
+            // Add drag event listeners
+            addDragListeners();
+        }
+
+        // Drag and Drop functionality
+        function addDragListeners() {
+            const cards = document.querySelectorAll('.founder-card');
+            const zones = document.querySelectorAll('.zone');
+            
+            cards.forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+                card.addEventListener('click', handleFounderClick);
+            });
+            
+            zones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragleave', handleDragLeave);
+            });
+            
+            // Also allow dropping back in playpen
+            const playpen = document.getElementById('playpenContainer');
+            playpen.addEventListener('dragover', handleDragOver);
+            playpen.addEventListener('drop', handleDropToPlaypen);
+        }
+
+        function handleDragStart(e) {
+            const founderId = e.currentTarget.dataset.founder;
+            gameState.draggedFounder = founderId;
+            e.currentTarget.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            
+            // Debug log
+            console.log('Dragging:', founderId);
+        }
+
+        function handleDragEnd(e) {
+            e.currentTarget.classList.remove('dragging');
+            gameState.draggedFounder = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            if (e.currentTarget.classList.contains('zone')) {
+                e.currentTarget.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.currentTarget.classList.contains('zone')) {
+                e.currentTarget.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            if (!gameState.draggedFounder) return;
+            
+            const zoneId = e.currentTarget.id;
+            const founder = gameState.founders.find(f => f.id === gameState.draggedFounder);
+            
+            if (founder && zoneId === 'irsZone') {
+                // Show founder details instead of keeping them in zone
+                showFounderDetails(founder);
+                showToast(`Checking ${founder.name}'s records... 📊`);
+            }
+        }
+
+        function handleDropToPlaypen(e) {
+            e.preventDefault();
+            
+            if (!gameState.draggedFounder) return;
+            
+            // No need to handle zone removal since we're not keeping them in zones
+        }
+
+        function handleFounderClick(e) {
+            const founderId = e.currentTarget.dataset.founder;
+            const founder = gameState.founders.find(f => f.id === founderId);
+            if (founder) {
+                showFounderDetails(founder);
+            }
+        }
+
+        // Render zones (now just for visual, not storing founders)
+        function renderZones() {
+            // IRS zone stays empty - it's just a drop target
+            const irsZone = document.getElementById('irsZone');
+            const contents = irsZone.querySelector('.zone-contents');
+            contents.innerHTML = '<div style="color: #ff0000; text-align: center; opacity: 0.6;">Drop a founder here to check their score</div>';
+        }
+
+        // Show founder details
+        function showFounderDetails(founder) {
+            const details = document.getElementById('founderDetails');
+            const achievements = gameState.achievements[founder.id] || [];
+            
+            document.getElementById('detailsImage').src = `assets/founders/${founder.image}`;
+            document.getElementById('detailsImage').onerror = function() {
+                this.src = `https://via.placeholder.com/80/${founder.team === 1 ? '00ff00' : 'ffa500'}/ffffff?text=${encodeURIComponent(founder.name.split(' ')[0])}`;
+            };
+            document.getElementById('detailsName').textContent = founder.name;
+            document.getElementById('detailsWealth').textContent = `${(founder.wealth || 0).toLocaleString()}`;
+            
+            const achievementsList = document.getElementById('achievementsList');
+            if (achievements.length > 0) {
+                achievementsList.innerHTML = achievements.map(a => 
+                    `<div class="achievement-item">${a}</div>`
+                ).join('');
+            } else {
+                achievementsList.innerHTML = '<div class="achievement-item">No achievements yet!</div>';
+            }
+            
+            details.classList.add('active');
+        }
+
+        function closeDetails() {
+            document.getElementById('founderDetails').classList.remove('active');
+        }
+
+        // Toast notifications
+        function showToast(message) {
+            // Simple toast implementation
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(255,255,255,0.9);
+                color: #000;
+                padding: 15px 30px;
+                border-radius: 30px;
+                font-weight: bold;
+                z-index: 3000;
+                animation: slide-up 0.3s ease-out;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Update valuations
+        function updateValuations() {
+            document.getElementById('valuation1').textContent = 
+                `$${gameState.companies[1].valuation.toLocaleString()}`;
+            document.getElementById('valuation2').textContent = 
+                `$${gameState.companies[2].valuation.toLocaleString()}`;
+        }
+
+        // Load random background
+        function loadRandomBackground() {
+            const backgrounds = [
+                { file: 'game-bg-1.jpg', weight: 3 },
+                { file: 'game-bg-2.jpg', weight: 3 },
+                { file: 'game-bg-3.jpg', weight: 2 },
+                { file: 'game-bg-4.jpg', weight: 1 },
+                { file: 'game-bg-5.jpg', weight: 1 }
+            ];
+            
+            const totalWeight = backgrounds.reduce((sum, bg) => sum + bg.weight, 0);
+            let random = Math.random() * totalWeight;
+            let selectedBg = backgrounds[0].file;
+            
+            for (const bg of backgrounds) {
+                random -= bg.weight;
+                if (random <= 0) {
+                    selectedBg = bg.file;
+                    break;
+                }
+            }
+            
+            const liminalBg = document.querySelector('.liminal-bg');
+            liminalBg.style.backgroundImage = `url('assets/backgrounds/${selectedBg}')`;
         }
 
         // Setup Firebase listeners
         function setupListeners() {
-            // Company valuations
             database.ref('game/companies').on('value', (snapshot) => {
                 const companies = snapshot.val();
                 if (companies) {
-                    // Check for valuation increases
-                    Object.keys(companies).forEach(key => {
-                        const oldVal = gameState.companies[key]?.valuation || 0;
-                        const newVal = companies[key].valuation || 0;
-                        if (newVal > oldVal) {
-                            addActivity(`Company ${key} gained ${newVal - oldVal}!`);
-                            triggerMoneyRain(key);
-                        }
-                    });
-                    
                     gameState.companies = companies;
                     updateValuations();
                 }
             });
 
-            // Current team
-            database.ref('game/currentTeam').on('value', (snapshot) => {
-                gameState.currentTeam = snapshot.val() || 1;
-                updateActiveCompany();
+            database.ref('game/founderWealth').on('value', (snapshot) => {
+                const wealthData = snapshot.val() || {};
+                gameState.founders.forEach(founder => {
+                    if (wealthData[founder.id]) {
+                        founder.wealth = wealthData[founder.id];
+                    }
+                });
             });
 
-
-            // Activity feed
-            database.ref('game/activity').limitToLast(1).on('child_added', (snapshot) => {
-                const activity = snapshot.val();
-                if (activity) {
-                    addActivity(activity.message);
-                }
-            });
-
-            // Active challenges count
-            database.ref('game/activeChallenges').on('value', (snapshot) => {
-                const active = snapshot.val();
-                gameState.activeChallenges = active ? active.challenges.filter(c => !c.completed).length : 0;
-                document.getElementById('activeChallenges').textContent = gameState.activeChallenges;
+            database.ref('game/achievements').on('value', (snapshot) => {
+                gameState.achievements = snapshot.val() || {};
             });
         }
 
         // Initialize
         window.onload = () => {
+            loadRandomBackground();
             renderFounders();
+            renderZones();
             setupListeners();
             updateValuations();
-            updateActiveCompany();
             
-            // Initialize founders in Firebase if needed
-            database.ref('game/founders').once('value', (snapshot) => {
-                if (!snapshot.exists()) {
-                    const foundersObj = {};
-                    founders.forEach(f => {
-                        foundersObj[f.id] = f;
-                    });
-                    database.ref('game/founders').set(foundersObj);
-                }
-            });
-            
-            addActivity('Dashboard loaded!');
+            // Debug: Check how many cards are draggable
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.founder-card');
+                console.log(`Total founder cards: ${cards.length}`);
+                cards.forEach(card => {
+                    console.log(`${card.dataset.founder}: draggable=${card.draggable}`);
+                });
+            }, 1000);
         };
 
-        // Handle founder clicks
-        document.addEventListener('click', (e) => {
-            const founderCard = e.target.closest('.founder-card');
-            if (founderCard) {
-                const founderId = founderCard.dataset.founder;
-                const founder = gameState.founders.find(f => f.id === founderId);
-                if (founder) {
-                    addActivity(`Clicked on ${founder.name}`);
-                    // Add more interaction here if needed
-                }
+        // Add slide-up animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slide-up {
+                0% { transform: translate(-50%, 100%); opacity: 0; }
+                100% { transform: translate(-50%, 0); opacity: 1; }
             }
-        });
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>

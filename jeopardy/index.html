@@ -3,8 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F0UND3RZ G4M3 - Startup Jeopardy</title>
+    <title>WORKSUCKS.NET INTERNET OLYMPICS</title>
     <style>
+        /* CSS VARIABLES */
+        :root {
+            --purple: #8A2BE2;
+            --cyan: #00FFFF;
+            --yellow: #FFFF00;
+            --white-trans: rgba(255,255,255,0.1);
+            --dark-trans: rgba(20,20,40,0.5);
+            --border-white: rgba(255,255,255,0.3);
+            --blur: 5px;
+        }
+
+        /* FONTS */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
@@ -12,182 +26,243 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
-            background: #0a0a0a;
-            color: #00ff00;
+            font-family: 'Orbitron', 'Arial', sans-serif;
+            background: #000;
+            color: #fff;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
             overflow-x: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-            padding: 20px;
-            text-align: center;
-            border-bottom: 3px solid #00ff00;
-            box-shadow: 0 4px 20px rgba(0,255,0,0.3);
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(0,255,0,0.8);
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-            from { text-shadow: 0 0 20px rgba(0,255,0,0.8); }
-            to { text-shadow: 0 0 30px rgba(0,255,0,1), 0 0 40px rgba(0,255,0,0.6); }
-        }
-
-        .companies {
-            display: flex;
-            justify-content: center;
-            gap: 50px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        .company {
-            background: rgba(0,255,0,0.1);
-            border: 2px solid #00ff00;
-            border-radius: 15px;
-            padding: 20px 40px;
-            transition: all 0.3s ease;
             position: relative;
         }
 
+        /* BACKGROUND */
+        .liminal-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background-color: #000;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(180deg, rgba(138,43,226,0.9) 0%, rgba(75,0,130,0.9) 100%);
+            backdrop-filter: blur(10px);
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 3px solid #fff;
+            box-shadow: 0 5px 30px rgba(138,43,226,0.5);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: scan 3s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 900;
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5), 2px 2px 0 #000;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* COMPANIES */
+        .companies {
+            display: flex;
+            gap: 20px;
+            padding: 8px;
+            margin-top: 8px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .company {
+            background: var(--dark-trans);
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            border: 2px solid rgba(255,255,255,0.5);
+            padding: 8px 16px;
+            box-shadow: 0 0 15px rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .company.active {
-            background: rgba(0,255,0,0.2);
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(0,255,0,0.5);
+            border-color: var(--yellow);
+            background: rgba(255,255,0,0.1);
+            box-shadow: 0 0 30px rgba(255,255,0,0.4);
         }
 
         .company h2 {
-            font-size: 1.4em;
-            margin-bottom: 10px;
-            color: #00ff00;
+            font-size: 12px;
+            font-weight: 700;
+            margin: 0;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0,255,255,0.5);
         }
 
         .valuation {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #ffff00;
-            text-shadow: 0 0 10px rgba(255,255,0,0.5);
+            font-size: 20px;
+            color: var(--yellow);
+            text-shadow: 0 0 15px var(--yellow);
+            font-weight: 900;
+            margin: 0;
         }
 
+        /* BOARD */
         .board-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            flex: 1;
+            padding: 5px;
+            position: relative;
+            min-height: calc(100vh - 150px);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
 
         .board {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .category {
-            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-            padding: 20px 10px;
-            text-align: center;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
-            text-transform: uppercase;
-            border: 2px solid #00ff00;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            color: #00ff00;
-            text-shadow: 0 0 5px rgba(0,255,0,0.5);
-        }
-
-        .cell {
-            background: #1a1a1a;
-            border: 2px solid #00ff00;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.8em;
-            font-weight: bold;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px;
             position: relative;
-            overflow: hidden;
+            z-index: 10;
+            width: 100%;
+            max-width: 380px;
+            margin: 0 auto;
         }
 
-        .cell:hover:not(.empty):not(.pending) {
-            background: rgba(0,255,0,0.1);
+        /* CATEGORIES */
+        .category {
+            background: rgba(138,43,226,0.4);
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(138,43,226,0.8);
+            padding: 6px 2px;
+            text-align: center;
+            font-size: 8px;
+            text-transform: uppercase;
+            color: #fff;
+            min-height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-word;
+            line-height: 1;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(138,43,226,0.4);
+            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+
+        /* CELLS */
+        .cell {
+            background: var(--dark-trans);
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            border: 1px solid var(--border-white);
+            padding: 6px 2px;
+            text-align: center;
+            min-height: 45px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255,255,255,0.1);
+            cursor: pointer;
+        }
+
+        .cell:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: var(--yellow);
             transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(0,255,0,0.5);
+            box-shadow: 0 0 30px rgba(255,255,0,0.4);
         }
 
         .cell .value {
-            font-size: 1.5em;
-            color: #ffff00;
-            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--cyan);
+            text-shadow: 0 0 8px var(--cyan);
+            font-weight: 700;
+            margin-bottom: 2px;
         }
 
-        .cell .challenges {
+        .challenges {
             display: flex;
-            gap: 5px;
-            justify-content: center;
+            gap: 2px;
+            margin-top: 2px;
         }
 
         .challenge-dot {
-            width: 12px;
-            height: 12px;
+            width: 5px;
+            height: 5px;
+            background: var(--border-white);
+            border: 1px solid rgba(255,255,255,0.6);
             border-radius: 50%;
-            background: #444;
-            border: 1px solid #666;
-            transition: all 0.3s ease;
+            box-shadow: 0 0 3px rgba(255,255,255,0.3);
         }
 
         .challenge-dot.active {
-            background: #00ff00;
-            box-shadow: 0 0 5px rgba(0,255,0,0.8);
+            background: var(--yellow);
+            border-color: var(--yellow);
+            box-shadow: 0 0 8px var(--yellow);
         }
 
-        .challenge-dot.completed {
-            background: #666;
-        }
-
+        /* CELL STATES */
         .cell.empty {
-            background: #0a0a0a;
-            cursor: not-allowed;
+            background: rgba(50,50,50,0.2);
             opacity: 0.3;
-            color: #444;
+            pointer-events: none;
+            box-shadow: none;
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .cell.empty .value {
+            color: rgba(255,255,255,0.3);
+            text-shadow: none;
         }
 
         .cell.pending {
-            background: #ffaa00;
-            animation: pulse 1s infinite;
+            animation: bounce 0.5s ease-in-out infinite;
+            background: rgba(255,255,0,0.2);
+            border-color: var(--yellow);
+            box-shadow: 0 0 30px rgba(255,255,0,0.5);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         .cell.selected {
-            background: rgba(0,255,0,0.2);
-            border-color: #ffff00;
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.2);
+            transform: scale(0.95);
+            opacity: 0.6;
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-
-        /* Challenge Modal */
+        /* MODAL */
         .modal {
             display: none;
             position: fixed;
@@ -195,179 +270,212 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0,0,0,0.85);
             z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
         }
 
         .challenge-modal {
-            background: #1a1a1a;
-            border: 3px solid #00ff00;
+            background: linear-gradient(135deg, #fff 0%, #ffb6c1 100%);
+            border: 5px solid #ff1493;
             border-radius: 20px;
+            max-width: 600px;
+            margin: 50px auto;
             padding: 30px;
-            max-width: 90%;
-            max-height: 90%;
-            overflow-y: auto;
-            box-shadow: 0 0 50px rgba(0,255,0,0.5);
+            position: relative;
+            box-shadow: 10px 10px 0 #ff69b4;
+            animation: modal-bounce 0.5s ease-out;
+        }
+
+        @keyframes modal-bounce {
+            0% { transform: scale(0) rotate(180deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+            100% { transform: scale(1) rotate(0deg); }
         }
 
         .challenge-modal h2 {
-            color: #00ff00;
-            margin-bottom: 20px;
+            color: #ff1493;
+            font-size: 32px;
             text-align: center;
-            font-size: 2em;
-            text-shadow: 0 0 10px rgba(0,255,0,0.5);
-        }
-
-        .challenge-list {
-            margin: 20px 0;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0 #ff69b4;
         }
 
         .challenge-item {
-            background: rgba(0,255,0,0.05);
-            border: 1px solid #00ff00;
-            border-radius: 10px;
-            padding: 20px;
+            background: rgba(255,255,255,0.7);
+            border: 2px solid #ff69b4;
+            border-radius: 15px;
+            padding: 15px;
             margin-bottom: 15px;
             transition: all 0.3s ease;
         }
 
         .challenge-item:hover {
-            background: rgba(0,255,0,0.1);
+            transform: translateX(10px);
+            box-shadow: -5px 5px 10px rgba(0,0,0,0.2);
         }
 
         .challenge-item.completed {
-            opacity: 0.5;
-            border-color: #666;
+            opacity: 0.6;
+            background: rgba(200,200,200,0.5);
         }
 
         .challenge-item h3 {
-            color: #ffff00;
-            margin-bottom: 10px;
+            color: #ff1493;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 10px;
         }
 
         .challenge-value {
-            font-size: 1.5em;
+            font-size: 28px;
+            color: #ff69b4;
+            text-shadow: 1px 1px 0 #fff;
         }
 
         .challenge-description {
-            color: #ccc;
-            line-height: 1.5;
+            color: #333;
+            line-height: 1.6;
         }
 
         .close-button {
-            background: #ff3333;
-            color: white;
-            border: none;
-            padding: 10px 30px;
-            font-size: 1.2em;
-            border-radius: 5px;
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+            color: #fff;
+            border: 3px solid #fff;
+            border-radius: 25px;
+            padding: 15px 40px;
+            font-size: 20px;
             cursor: pointer;
-            margin-top: 20px;
-            display: block;
             width: 100%;
-            transition: all 0.3s ease;
+            margin-top: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 5px 0 #ff1493;
+            transition: all 0.1s ease;
         }
 
         .close-button:hover {
-            background: #ff5555;
-            transform: scale(1.05);
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #ff1493;
         }
 
-        /* Mobile Responsive */
-        @media (max-width: 1024px) {
-            .board {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8em;
-            }
-            
-            .board {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-            }
-            
-            .category {
-                font-size: 0.9em;
-                padding: 15px 5px;
-                min-height: 80px;
-            }
-            
-            .cell {
-                font-size: 1.2em;
-                padding: 15px;
-                min-height: 80px;
-            }
-            
-            .cell .value {
-                font-size: 1.2em;
-            }
-            
-            .valuation {
-                font-size: 1.8em;
-            }
-        }
-
-        /* Loading animation */
+        /* LOADING */
         .loading {
             text-align: center;
-            color: #00ff00;
-            font-size: 1.5em;
-            margin: 50px 0;
+            font-size: 28px;
+            color: #ff1493;
+            margin: 100px 0;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0 #ff69b4;
         }
 
         .loading::after {
             content: '...';
-            animation: dots 1.5s steps(4, end) infinite;
+            animation: loading-dots 1.5s steps(4, end) infinite;
         }
 
-        @keyframes dots {
+        @keyframes loading-dots {
             0%, 20% { content: ''; }
             40% { content: '.'; }
             60% { content: '..'; }
             80%, 100% { content: '...'; }
         }
+
+        /* FLOATING ELEMENTS */
+        .butterfly {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="70" font-size="70">🦋</text></svg>') no-repeat center;
+            background-size: contain;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.7;
+            animation: fly 15s linear infinite;
+        }
+
+        @keyframes fly {
+            0% { transform: translate(-100px, 100vh) rotate(0deg); }
+            25% { transform: translate(25vw, 75vh) rotate(90deg); }
+            50% { transform: translate(50vw, 25vh) rotate(180deg); }
+            75% { transform: translate(75vw, 50vh) rotate(270deg); }
+            100% { transform: translate(100vw, -100px) rotate(360deg); }
+        }
+
+        /* TABLET AND DESKTOP */
+        @media (min-width: 768px) {
+            .header h1 { font-size: 42px; }
+            .company h2 { font-size: 22px; }
+            .valuation { font-size: 42px; }
+            
+            .board {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 8px;
+                max-width: 1200px;
+            }
+            
+            .category {
+                font-size: 12px;
+                min-height: 70px;
+                padding: 10px;
+            }
+            
+            .cell {
+                min-height: 80px;
+                padding: 12px 5px;
+            }
+            
+            .cell .value { font-size: 20px; }
+            .challenge-dot { width: 8px; height: 8px; }
+            
+            /* Additional butterflies on larger screens */
+            .butterfly:nth-child(2) { animation-delay: 5s; }
+            .butterfly:nth-child(3) { animation-delay: 10s; }
+        }
     </style>
 </head>
 <body>
+    <!-- BACKGROUND -->
+    <div class="liminal-bg"></div>
+
+    <!-- BUTTERFLIES -->
+    <div class="butterfly"></div>
+    <div class="butterfly" style="animation-delay: 5s;"></div>
+    <div class="butterfly" style="animation-delay: 10s;"></div>
+
+    <!-- HEADER -->
     <div class="header">
-        <h1>💰 F0UND3RZ STARTUP JEOPARDY 💰</h1>
-        <div class="companies">
-            <div class="company" id="company1">
-                <h2>Company Alpha</h2>
-                <div class="valuation" id="valuation1">$0</div>
-            </div>
-            <div class="company" id="company2">
-                <h2>Company Beta</h2>
-                <div class="valuation" id="valuation2">$0</div>
-            </div>
+        <h1>🌐 WORKSUCKS.NET INTERNET OLYMPICS 💿</h1>
+    </div>
+
+    <!-- COMPANY SCORES -->
+    <div class="companies">
+        <div class="company" id="company1">
+            <h2>APPLE INC.</h2>
+            <div class="valuation" id="valuation1">$0</div>
+        </div>
+        <div class="company" id="company2">
+            <h2>ORANGE INC.</h2>
+            <div class="valuation" id="valuation2">$0</div>
         </div>
     </div>
 
+    <!-- GAME BOARD -->
     <div class="board-container">
-        <div class="loading" id="loading">Initializing startup ecosystem</div>
-        <div class="board" id="board" style="display: none;">
-            <!-- Board will be populated by JavaScript -->
-        </div>
+        <div class="loading" id="loading">LOADING LIMINAL SPACE...</div>
+        <div class="board" id="board" style="display: none;"></div>
     </div>
 
-    <!-- Challenge Modal -->
+    <!-- CHALLENGE MODAL -->
     <div class="modal" id="challengeModal">
         <div class="challenge-modal">
-            <h2 id="challengeTitle">Challenges</h2>
-            <div class="challenge-list" id="challengeList">
-                <!-- Challenges will be populated here -->
-            </div>
-            <button class="close-button" onclick="closeChallengeModal()">Close</button>
+            <h2 id="challengeTitle">CHALLENGES</h2>
+            <div class="challenge-list" id="challengeList"></div>
+            <button class="close-button" onclick="closeChallengeModal()">CLOSE</button>
         </div>
     </div>
 
@@ -388,80 +496,113 @@
             measurementId: "G-MPN2LP1Q6X"
         };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        // Initialize Firebase with error handling
+        let database;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+        }
 
         // Game configuration
-        const categories = [
-            "meme-me-up-scotty",
-            "doom scroll nation",
-            "web 1.0",
-            "netbangers",
-            "paizleys-robot",
-            "em0ti0nz"
-        ];
-
+        const categories = ["meme-me-up", "doom-scroll", "web-1.0", "netbangers", "robot-time", "em0ti0nz"];
         const values = [100, 200, 300, 400, 500];
 
         // Game state
         let gameState = {
             currentTeam: 1,
             companies: {
-                1: { name: "Company Alpha", valuation: 0 },
-                2: { name: "Company Beta", valuation: 0 }
+                1: { name: "Apple Inc.", valuation: 0 },
+                2: { name: "Orange Inc.", valuation: 0 }
             },
             board: {},
             selectedCategory: null
         };
 
+        // Create cell element
+        function createCell(cat, value) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.category = cat;
+            cell.dataset.value = value;
+            cell.onclick = () => selectCategory(cat, value);
+            
+            const valueDiv = document.createElement('div');
+            valueDiv.className = 'value';
+            valueDiv.textContent = `$${value}`;
+            
+            const challengesDiv = document.createElement('div');
+            challengesDiv.className = 'challenges';
+            
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'challenge-dot';
+                challengesDiv.appendChild(dot);
+            }
+            
+            cell.appendChild(valueDiv);
+            cell.appendChild(challengesDiv);
+            return cell;
+        }
+
         // Initialize board
         function initializeBoard() {
             const board = document.getElementById('board');
             board.innerHTML = '';
-
-            // Add categories
-            categories.forEach(cat => {
-                const catDiv = document.createElement('div');
-                catDiv.className = 'category';
-                catDiv.innerHTML = cat.replace(/-/g, '<br>');
-                board.appendChild(catDiv);
-            });
-
-            // Add cells
-            values.forEach(value => {
-                categories.forEach((cat, catIndex) => {
-                    const cell = document.createElement('div');
-                    cell.className = 'cell';
-                    cell.dataset.category = cat;
-                    cell.dataset.value = value;
-                    cell.onclick = () => selectCategory(cat, value);
-                    
-                    // Create cell content
-                    const valueDiv = document.createElement('div');
-                    valueDiv.className = 'value';
-                    valueDiv.textContent = `$${value}`;
-                    
-                    const challengesDiv = document.createElement('div');
-                    challengesDiv.className = 'challenges';
-                    
-                    // Add challenge dots (3-5 per cell for now)
-                    const numChallenges = 3 + Math.floor(Math.random() * 3);
-                    for (let i = 0; i < numChallenges; i++) {
-                        const dot = document.createElement('div');
-                        dot.className = 'challenge-dot';
-                        challengesDiv.appendChild(dot);
-                    }
-                    
-                    cell.appendChild(valueDiv);
-                    cell.appendChild(challengesDiv);
-                    board.appendChild(cell);
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // Mobile: 3x2 layout
+                // First row of categories
+                categories.slice(0, 3).forEach(cat => {
+                    const catDiv = document.createElement('div');
+                    catDiv.className = 'category';
+                    catDiv.innerHTML = cat.replace(/-/g, ' ');
+                    board.appendChild(catDiv);
                 });
-            });
+                
+                // Values for first 3
+                values.forEach(value => {
+                    categories.slice(0, 3).forEach(cat => {
+                        board.appendChild(createCell(cat, value));
+                    });
+                });
+                
+                // Second row of categories
+                categories.slice(3, 6).forEach(cat => {
+                    const catDiv = document.createElement('div');
+                    catDiv.className = 'category';
+                    catDiv.innerHTML = cat.replace(/-/g, ' ');
+                    board.appendChild(catDiv);
+                });
+                
+                // Values for second 3
+                values.forEach(value => {
+                    categories.slice(3, 6).forEach(cat => {
+                        board.appendChild(createCell(cat, value));
+                    });
+                });
+            } else {
+                // Desktop: 6 column layout
+                categories.forEach(cat => {
+                    const catDiv = document.createElement('div');
+                    catDiv.className = 'category';
+                    catDiv.innerHTML = cat.replace(/-/g, ' ');
+                    board.appendChild(catDiv);
+                });
 
-            // Hide loading, show board
-            document.getElementById('loading').style.display = 'none';
-            board.style.display = 'grid';
+                values.forEach(value => {
+                    categories.forEach(cat => {
+                        board.appendChild(createCell(cat, value));
+                    });
+                });
+            }
+
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                board.style.display = 'grid';
+            }, 1000);
         }
 
         // Select category
@@ -469,17 +610,27 @@
             const cellKey = `${category}-${value}`;
             const cellState = gameState.board[cellKey];
             
-            if (cellState && cellState.completed) {
-                return; // Cell already completed
-            }
+            if (cellState && cellState.completed) return;
 
-            // Send selection to Firebase
-            database.ref(`game/pendingSelection`).set({
-                category,
-                value,
-                team: gameState.currentTeam,
-                timestamp: Date.now()
-            });
+            const cell = document.querySelector(`[data-category="${category}"][data-value="${value}"]`);
+            cell.classList.add('pending');
+
+            if (database) {
+                database.ref(`game/pendingSelection`).set({
+                    category,
+                    value,
+                    team: gameState.currentTeam,
+                    timestamp: Date.now()
+                });
+            } else {
+                setTimeout(() => {
+                    showChallenges(category, value, [
+                        { description: `Challenge 1 for ${category} $${value}`, value: value },
+                        { description: `Challenge 2 for ${category} $${value}`, value: value },
+                        { description: `Challenge 3 for ${category} $${value}`, value: value }
+                    ]);
+                }, 500);
+            }
         }
 
         // Show challenges modal
@@ -490,7 +641,6 @@
             
             title.textContent = `${category.replace(/-/g, ' ').toUpperCase()} - $${value}`;
             
-            // Populate challenges
             list.innerHTML = challenges.map((challenge, index) => `
                 <div class="challenge-item ${challenge.completed ? 'completed' : ''}" id="challenge-${index}">
                     <h3>
@@ -498,23 +648,25 @@
                         <span class="challenge-value">$${challenge.value || value}</span>
                     </h3>
                     <div class="challenge-description">${challenge.description}</div>
-                    ${challenge.completedBy ? `<div style="color: #666; margin-top: 10px;">Completed by: ${challenge.completedBy}</div>` : ''}
+                    ${challenge.completedBy ? `<div style="color: #999; margin-top: 10px;">✓ Completed by: ${challenge.completedBy}</div>` : ''}
                 </div>
             `).join('');
             
-            modal.style.display = 'flex';
+            modal.style.display = 'block';
         }
 
         // Close challenge modal
         function closeChallengeModal() {
             document.getElementById('challengeModal').style.display = 'none';
+            document.querySelectorAll('.cell.pending').forEach(cell => {
+                cell.classList.remove('pending');
+            });
         }
 
         // Update displays
         function updateCompanyDisplay() {
             document.querySelectorAll('.company').forEach((el, index) => {
-                const companyNum = index + 1;
-                if (companyNum === gameState.currentTeam) {
+                if (index + 1 === gameState.currentTeam) {
                     el.classList.add('active');
                 } else {
                     el.classList.remove('active');
@@ -543,7 +695,6 @@
                         cell.querySelector('.challenges').style.display = 'none';
                     } else if (state.selected) {
                         cell.classList.add('selected');
-                        // Update challenge dots
                         const dots = cell.querySelectorAll('.challenge-dot');
                         state.challenges?.forEach((challenge, idx) => {
                             if (dots[idx]) {
@@ -558,7 +709,8 @@
 
         // Setup Firebase listeners
         function setupListeners() {
-            // Company valuations
+            if (!database) return;
+
             database.ref('game/companies').on('value', (snapshot) => {
                 const companies = snapshot.val();
                 if (companies) {
@@ -567,47 +719,95 @@
                 }
             });
 
-            // Current team
             database.ref('game/currentTeam').on('value', (snapshot) => {
                 gameState.currentTeam = snapshot.val() || 1;
                 updateCompanyDisplay();
             });
 
-            // Board state
             database.ref('game/board').on('value', (snapshot) => {
                 gameState.board = snapshot.val() || {};
                 updateBoard();
             });
 
-            // Active challenges
             database.ref('game/activeChallenges').on('value', (snapshot) => {
                 const active = snapshot.val();
-                if (active) {
-                    showChallenges(active.category, active.value, active.challenges || []);
+                if (active && active.challenges && active.challenges.length > 0) {
+                    setTimeout(() => {
+                        showChallenges(active.category, active.value, active.challenges || []);
+                    }, 100);
+                } else {
+                    closeChallengeModal();
                 }
             });
         }
 
-        // Initialize on load
+        // Load random background
+        function loadRandomBackground() {
+            const backgrounds = [
+                { file: 'game-bg-1.jpg', weight: 3 },
+                { file: 'game-bg-2.jpg', weight: 3 },
+                { file: 'game-bg-3.jpg', weight: 2 },
+                { file: 'game-bg-4.jpg', weight: 1 },
+                { file: 'game-bg-5.jpg', weight: 1 }
+            ];
+            
+            const totalWeight = backgrounds.reduce((sum, bg) => sum + bg.weight, 0);
+            let random = Math.random() * totalWeight;
+            let selectedBg = backgrounds[0].file;
+            
+            for (const bg of backgrounds) {
+                random -= bg.weight;
+                if (random <= 0) {
+                    selectedBg = bg.file;
+                    break;
+                }
+            }
+            
+            const img = new Image();
+            img.onload = () => {
+                const liminalBg = document.querySelector('.liminal-bg');
+                liminalBg.style.backgroundImage = `url('/assets/backgrounds/${selectedBg}')`;
+                liminalBg.classList.add('bg-loaded');
+            };
+            img.onerror = () => {
+                const liminalBg = document.querySelector('.liminal-bg');
+                liminalBg.style.backgroundImage = `url('assets/backgrounds/${selectedBg}')`;
+            };
+            img.src = `/assets/backgrounds/${selectedBg}`;
+        }
+
+        // Initialize
         window.onload = () => {
             initializeBoard();
             setupListeners();
+            updateCompanyDisplay();
+            updateValuations();
+            loadRandomBackground();
             
-            // Initialize game state in Firebase if needed
-            database.ref('game').once('value', (snapshot) => {
-                if (!snapshot.exists()) {
-                    database.ref('game').set({
-                        currentTeam: 1,
-                        companies: {
-                            1: { name: "Company Alpha", valuation: 0 },
-                            2: { name: "Company Beta", valuation: 0 }
-                        }
-                    });
-                }
-            });
+            if (database) {
+                database.ref('game').once('value', (snapshot) => {
+                    if (!snapshot.exists()) {
+                        database.ref('game').set({
+                            currentTeam: 1,
+                            companies: {
+                                1: { name: "Apple Inc.", valuation: 0 },
+                                2: { name: "Orange Inc.", valuation: 0 }
+                            }
+                        });
+                    }
+                });
+            }
         };
 
-        // Close modal on click outside
+        // Handle resize
+        window.addEventListener('resize', () => {
+            const board = document.getElementById('board');
+            if (board.style.display !== 'none') {
+                initializeBoard();
+            }
+        });
+
+        // Close modal on outside click
         window.onclick = (event) => {
             const modal = document.getElementById('challengeModal');
             if (event.target === modal) {

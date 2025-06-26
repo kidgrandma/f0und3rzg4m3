@@ -151,6 +151,7 @@ const adoptedFounders = [
     '43_sophia_amoruso',
     '31_whitney_wolfe_herd',
     '49_reed_hastings',
+    '37_steve_wozniak',
     '47_daniel_ek',
     '53_youtube',
     '13_jensen_huang',
