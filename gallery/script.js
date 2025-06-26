@@ -148,6 +148,7 @@ const adoptedFounders = [
     '25_elizabeth_holmes',
     '43_sophia_amoruso',
     '47_daniel_ek',
+    '51_zhang_yiming',
     '20_jack_dorsey',
     '30_john_mckafee',
     '18_steve_jobs',
