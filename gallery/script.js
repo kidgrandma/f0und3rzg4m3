@@ -151,6 +151,7 @@ const adoptedFounders = [
     '49_reed_hastings',
     '47_daniel_ek',
     '53_youtube',
+    '13_jensen_huang',
     '51_zhang_yiming',
     '20_jack_dorsey',
     '30_john_mckafee',
