@@ -352,7 +352,6 @@
             { id: '07_tobias_lutke', name: 'Tobias Lütke', company: 1, wealth: 0, image: '07_tobias_lutke.png' },
             { id: '08_elon_musk', name: 'Elon Musk', company: 1, wealth: 0, image: '08_elon_musk.png' },
             { id: '09_jeff_bezos', name: 'Jeff Bezos', company: 1, wealth: 0, image: '09_jeff_bezos.png' },
-            { id: '10_mark_zuckerberg', name: 'Mark Zuckerberg', company: 1, wealth: 0, image: '10_mark_zuckerberg.png' },
             { id: '11_google_founders', name: 'Google Founders', company: 1, wealth: 0, image: '11_google_founders.png' },
             { id: '12_bill_gates', name: 'Bill Gates', company: 1, wealth: 0, image: '12_bill_gates.png' },
             { id: '13_jensen_huang', name: 'Jensen Huang', company: 1, wealth: 0, image: '13_jensen_huang.png' },
@@ -526,14 +525,6 @@
                 updateActiveCompany();
             });
 
-            // Founder updates
-            database.ref('game/founders').on('value', (snapshot) => {
-                const foundersData = snapshot.val();
-                if (foundersData) {
-                    gameState.founders = Object.values(foundersData);
-                    renderFounders();
-                }
-            });
 
             // Activity feed
             database.ref('game/activity').limitToLast(1).on('child_added', (snapshot) => {
