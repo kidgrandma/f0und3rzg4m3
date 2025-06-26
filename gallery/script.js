@@ -138,7 +138,9 @@ const adoptedFounders = [
     '03_dom_hofmann',
     '23_drew_houston',
     '45_sean_rad',
+    '29_sean_parker',
     '42_jonah_peretti',
+    '21_jimmy_wales',
     '24_larry_ellison',
     '50_jessica_alba',
     '34_meg_whitman',
@@ -534,10 +536,6 @@ function selectPayment(method) {
         showPaymentInstructions('venmo', '@worksucksdotnet', total, memo);
     } else if (method === 'zelle') {
         showPaymentInstructions('zelle', 'ask kidgrandma DM', total, memo);
-    } else if (method === 'paypal') {
-        const paypalUrl = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paizley@worksucks.net&amount=${total}&currency_code=USD&item_name=${encodeURIComponent(memo)}`;
-        window.open(paypalUrl, '_blank');
-        
         // Show instructions as fallback
         showPaymentInstructions('paypal', 'paizley@worksucks.net', total, memo);
     }
