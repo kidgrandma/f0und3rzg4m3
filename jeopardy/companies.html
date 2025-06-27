@@ -11,8 +11,8 @@
             --cyan: #00FFFF;
             --yellow: #FFFF00;
             --pink: #FF69B4;
-            --apple-color: #00FF00;
-            --orange-color: #FFA500;
+            --team1-color: #FFA500; /* Orange */
+            --team2-color: #4169E1; /* Royal Blue */
             --glass: rgba(255,255,255,0.08);
             --blur: 10px;
         }
@@ -62,14 +62,14 @@
         }
 
         .header::before {
-            content: '🎈🎮🎪🎨🎭🎪🎮🎈';
+            content: '🧸🧩🎈🚂🪀🏗️🎨🎯🧸🧩🎈🚂🪀🏗️🎨🎯';
             position: absolute;
             top: 50%;
             left: 0;
             transform: translateY(-50%);
             font-size: 20px;
             opacity: 0.3;
-            animation: slide 10s linear infinite;
+            animation: slide 15s linear infinite;
         }
 
         @keyframes slide {
@@ -118,12 +118,22 @@
         }
 
         .company-score:nth-child(1) {
-            border-color: var(--apple-color);
+            border-color: var(--team1-color);
+        }
+
+        .company-score:nth-child(1) .company-name {
+            color: var(--team1-color);
+            text-shadow: 0 0 10px var(--team1-color);
         }
 
         .company-score:nth-child(2) {
-            border-color: var(--orange-color);
+            border-color: var(--team2-color);
             transform: rotate(2deg);
+        }
+
+        .company-score:nth-child(2) .company-name {
+            color: var(--team2-color);
+            text-shadow: 0 0 10px var(--team2-color);
         }
 
         .company-score:hover {
@@ -132,8 +142,7 @@
 
         .company-name {
             font-size: 18px;
-            color: var(--cyan);
-            text-shadow: 0 0 10px var(--cyan);
+            /* Color will be set by team-specific selectors above */
         }
 
         .company-valuation {
@@ -202,13 +211,13 @@
         }
 
         .founder-card.team-1 .founder-card-inner {
-            border-color: var(--apple-color);
-            background: rgba(0,255,0,0.1);
+            border-color: var(--team1-color);
+            background: rgba(255,165,0,0.1);
         }
 
         .founder-card.team-2 .founder-card-inner {
-            border-color: var(--orange-color);
-            background: rgba(255,165,0,0.1);
+            border-color: var(--team2-color);
+            background: rgba(65,105,225,0.1);
         }
 
         .founder-image {
@@ -400,6 +409,8 @@
                 min-height: 500px;
                 position: relative;
                 padding: 10px;
+                overflow-y: auto;
+                max-height: 70vh;
             }
             
             /* Smaller cards on mobile */
@@ -459,17 +470,17 @@
 
     <!-- HEADER -->
     <div class="header">
-        <h1>🎪 THE PLAYPEN 🎪</h1>
+        <h1>🧸 THE PLAYPEN 🧩</h1>
     </div>
 
     <!-- COMPANY SCORES -->
     <div class="scores">
         <div class="company-score">
-            <span class="company-name">APPLE INC.</span>
+            <span class="company-name">Y2KET CORP.</span>
             <span class="company-valuation" id="valuation1">$0</span>
         </div>
         <div class="company-score">
-            <span class="company-name">ORANGE INC.</span>
+            <span class="company-name">SERIES A(POCALYPSE)</span>
             <span class="company-valuation" id="valuation2">$0</span>
         </div>
     </div>
@@ -529,47 +540,49 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Founder data with random team assignment
+        // CORRECTED founder data - matching your exact file screenshot
         const founders = [
-            // Company 1 (Apple Inc.)
-            { id: '01_marc_andreessen', name: 'Marc Andreessen', company: 1, wealth: 0, image: '01_marc_andreessen.png' },
-            { id: '02_sheryl_sandberg', name: 'Sheryl Sandberg', company: 1, wealth: 0, image: '02_sheryl_sandberg.png' },
-            { id: '03_dom_hofmann', name: 'Dom Hofmann', company: 1, wealth: 0, image: '03_dom_hofmann.png' },
-            { id: '04_brian_armstrong', name: 'Brian Armstrong', company: 1, wealth: 0, image: '04_brian_armstrong.png' },
-            { id: '05_keith_rabois', name: 'Keith Rabois', company: 1, wealth: 0, image: '05_keith_rabois.png' },
-            { id: '06_brian_chesky', name: 'Brian Chesky', company: 1, wealth: 0, image: '06_brian_chesky.png' },
-            { id: '07_tobias_lutke', name: 'Tobias Lütke', company: 1, wealth: 0, image: '07_tobias_lutke.png' },
-            { id: '08_elon_musk', name: 'Elon Musk', company: 1, wealth: 0, image: '08_elon_musk.png' },
-            { id: '09_jeff_bezos', name: 'Jeff Bezos', company: 1, wealth: 0, image: '09_jeff_bezos.png' },
-            { id: '11_google_founders', name: 'Google Founders', company: 1, wealth: 0, image: '11_google_founders.png' },
-            { id: '12_bill_gates', name: 'Bill Gates', company: 1, wealth: 0, image: '12_bill_gates.png' },
-            { id: '13_jensen_huang', name: 'Jensen Huang', company: 1, wealth: 0, image: '13_jensen_huang.png' },
-            
-            // Company 2 (Orange Inc.)
-            { id: '26_evan_spiegel', name: 'Evan Spiegel', company: 2, wealth: 0, image: '26_evan_spiegel.png' },
-            { id: '27_travis_kalanick', name: 'Travis Kalanick', company: 2, wealth: 0, image: '27_travis_kalanick.png' },
-            { id: '28_adam_neumann', name: 'Adam Neumann', company: 2, wealth: 0, image: '28_adam_neumann.png' },
-            { id: '29_sean_parker', name: 'Sean Parker', company: 2, wealth: 0, image: '29_sean_parker.png' },
-            { id: '30_john_mckafee', name: 'John McAfee', company: 2, wealth: 0, image: '30_john_mckafee.png' },
-            { id: '32_kevin_systrom', name: 'Kevin Systrom', company: 2, wealth: 0, image: '32_kevin_systrom.png' },
-            { id: '33_martin_shkreli', name: 'Martin Shkreli', company: 2, wealth: 0, image: '33_martin_shkreli.png' },
-            { id: '34_meg_whitman', name: 'Meg Whitman', company: 2, wealth: 0, image: '34_meg_whitman.png' },
-            { id: '35_tom_anderson', name: 'Tom Anderson', company: 2, wealth: 0, image: '35_tom_anderson.png' },
-            { id: '36_alexis_ohanian', name: 'Alexis Ohanian', company: 2, wealth: 0, image: '36_alexis_ohanian.png' },
-            { id: '37_steve_wozniak', name: 'Steve Wozniak', company: 2, wealth: 0, image: '37_steve_wozniak.png' },
-            { id: '47_daniel_ek', name: 'Daniel Ek', company: 2, wealth: 0, image: '47_daniel_ek.png' }
-        ];
+            // Y2Ket Corp. (Team 1) - using ONLY files that exist in your screenshot
+            { id: '30_john_mckafee', name: 'John McAfee', team: 1, wealth: 0, image: '30_john_mckafee.png' },
+            { id: '13_jensen_huang', name: 'Jensen Huang', team: 1, wealth: 0, image: '13_jensen_huang.png' },
+            { id: '22_pavel_durov', name: 'Pavel Durov', team: 1, wealth: 0, image: '22_pavel_durov.png' },
+            { id: '32_kevin_systrom', name: 'Kevin Systrom', team: 1, wealth: 0, image: '32_kevin_systrom.png' },
+            { id: '35_tom_anderson', name: 'Tom Anderson', team: 1, wealth: 0, image: '35_tom_anderson.png' },
+            { id: '40_craig_newmark', name: 'Craig Newmark', team: 1, wealth: 0, image: '40_craig_newmark.png' },
+            { id: '20_jack_dorsey', name: 'Jack Dorsey', team: 1, wealth: 0, image: '20_jack_dorsey.png' },
+            { id: '07_tobias_lutke', name: 'Tobias Lütke', team: 1, wealth: 0, image: '07_tobias_lutke.png' },
+            { id: '14_peter_thiel', name: 'Peter Thiel', team: 1, wealth: 0, image: '14_peter_thiel.png' },
+            { id: '17_sam_altman', name: 'Sam Altman', team: 1, wealth: 0, image: '17_sam_altman.png' },
+            { id: '11_google_founders', name: 'Larry Page & Sergey Brin', team: 1, wealth: 0, image: '11_google_founders.png' },
+            { id: '15_jack_ma', name: 'Jack Ma', team: 1, wealth: 0, image: '15_jack_ma.png' },
+            { id: '03_dom_hofmann', name: 'Sean Rad', team: 1, wealth: 0, image: '03_dom_hofmann.png' },
+            { id: '08_elon_musk', name: 'Elon Musk', team: 1, wealth: 0, image: '08_elon_musk.png' },
+            { id: '04_brian_armstrong', name: 'Sean Parker', team: 1, wealth: 0, image: '04_brian_armstrong.png' },
+            { id: '19_vitalik_buterin', name: 'Vitalik Buterin', team: 1, wealth: 0, image: '19_vitalik_buterin.png' },
 
-        // Randomly assign teams
-        founders.forEach(founder => {
-            founder.team = Math.random() > 0.5 ? 1 : 2;
-        });
+            // Series A(pocalypse) (Team 2) - using ONLY files that exist in your screenshot
+            { id: '51_zhang_yiming', name: 'Zhang Yiming', team: 2, wealth: 0, image: '51_zhang_yiming.png' },
+            { id: '34_meg_whitman', name: 'Meg Whitman', team: 2, wealth: 0, image: '34_meg_whitman.png' },
+            { id: '48_sam_bankman_fried', name: 'Sam Bankman-Fried', team: 2, wealth: 0, image: '48_sam_bankman-fried.png' },
+            { id: '49_reed_hastings', name: 'Reed Hastings', team: 2, wealth: 0, image: '49_reed_hastings.png' },
+            { id: '24_larry_ellison', name: 'Larry Ellison', team: 2, wealth: 0, image: '24_larry_ellison.png' },
+            { id: '21_jimmy_wales', name: 'Jimmy Wales', team: 2, wealth: 0, image: '21_jimmy_wales.png' },
+            { id: '46_dread_pirate', name: 'Ross Ulbricht', team: 2, wealth: 0, image: '46_dread_pirate.png' },
+            { id: '25_elizabeth_holmes', name: 'Elizabeth Holmes', team: 2, wealth: 0, image: '25_elizabeth_holmes.png' },
+            { id: '47_daniel_ek', name: 'Daniel Ek', team: 2, wealth: 0, image: '47_daniel_ek.png' },
+            { id: '27_travis_kalanick', name: 'Travis Kalanick', team: 2, wealth: 0, image: '27_travis_kalanick.png' },
+            { id: '37_steve_wozniak', name: 'Steve Wozniak', team: 2, wealth: 0, image: '37_steve_wozniak.png' },
+            { id: '53_youtube', name: 'YouTube Founders', team: 2, wealth: 0, image: '53_youtube.png' },
+            { id: '31_whitney_wolfe_herd', name: 'Whitney Wolfe Herd', team: 2, wealth: 0, image: '31_whitney_wolfe_herd.png' },
+            { id: '36_alexis_ohanian', name: 'Alexis Ohanian', team: 2, wealth: 0, image: '36_alexis_ohanian.png' },
+            { id: '43_sophia_amoruso', name: 'Sophia Amoruso', team: 2, wealth: 0, image: '43_sophia_amoruso.png' }
+        ];
 
         // Game state
         let gameState = {
             companies: {
-                1: { name: "Apple Inc.", valuation: 0 },
-                2: { name: "Orange Inc.", valuation: 0 }
+                1: { name: "Y2Ket Corp.", valuation: 0 },
+                2: { name: "Series A(pocalypse)", valuation: 0 }
             },
             founders: founders,
             achievements: {},
@@ -591,71 +604,60 @@
                     <div class="founder-card-inner">
                         <img src="assets/founders/${founder.image}" 
                              alt="${founder.name}" 
-                             class="founder-image" 
-                             onerror="this.src='https://via.placeholder.com/60/${founder.team === 1 ? '00ff00' : 'ffa500'}/ffffff?text=${encodeURIComponent(founder.name.split(' ')[0])}'">
+                             class="founder-image">
                         <div class="founder-name">${founder.name}</div>
                     </div>
                 </div>
             `;
         }
 
-        // Render founders with scattered positions
+        // Render founders with scattered positions (IMPROVED MOBILE VERSION)
         function renderFounders() {
-    const container = document.getElementById('playpenContainer');
-    const isMobile = window.innerWidth <= 768;
-    
-    container.innerHTML = '';
-    
-    // Render all founders
-    gameState.founders.forEach((founder, index) => {
-        const card = document.createElement('div');
-        card.innerHTML = createFounderCard(founder);
-        const founderEl = card.firstElementChild;
-        
-        // Position cards even on mobile, but in a tighter grid
-        if (isMobile) {
-            // Create a grid pattern on mobile
-            const containerWidth = container.offsetWidth;
-            const cardWidth = 70;
-            const cardHeight = 85;
-            const gap = 10;
-            const cols = Math.floor(containerWidth / (cardWidth + gap));
-            const col = index % cols;
-            const row = Math.floor(index / cols);
+            const container = document.getElementById('playpenContainer');
+            const isMobile = window.innerWidth <= 768;
             
-            const x = gap + (col * (cardWidth + gap));
-            const y = gap + (row * (cardHeight + gap));
+            container.innerHTML = '';
             
-            founderEl.style.left = `${x}px`;
-            founderEl.style.top = `${y}px`;
-            founderEl.style.transform = `rotate(${-5 + Math.random() * 10}deg)`;
+            // Render all founders
+            gameState.founders.forEach((founder, index) => {
+                const card = document.createElement('div');
+                card.innerHTML = createFounderCard(founder);
+                const founderEl = card.firstElementChild;
+                
+                // Position cards even on mobile, but scattered like desktop
+                if (isMobile) {
+                    // Scatter cards randomly on mobile too, but in a smaller area
+                    const x = 5 + (Math.random() * 80); // Slightly more constrained than desktop
+                    const y = 5 + (Math.random() * 80);
+                    
+                    founderEl.style.left = `${x}%`;
+                    founderEl.style.top = `${y}%`;
+                    founderEl.style.transform = `rotate(${-15 + Math.random() * 30}deg)`;
+                    
+                    // Ensure container is tall enough for scattered cards
+                    container.style.minHeight = '600px';
+                    
+                } else {
+                    // Random position for desktop
+                    const x = 5 + (Math.random() * 85);
+                    const y = 5 + (Math.random() * 85);
+                    founderEl.style.left = `${x}%`;
+                    founderEl.style.top = `${y}%`;
+                    // Reset container height for desktop
+                    container.style.minHeight = '400px';
+                }
+                
+                container.appendChild(founderEl);
+            });
             
-            // Calculate and set proper container height for mobile
-            const totalRows = Math.ceil(gameState.founders.length / cols);
-            const requiredHeight = gap + (totalRows * (cardHeight + gap)) + 50; // 50px extra padding
-            container.style.minHeight = `${Math.max(500, requiredHeight)}px`;
+            // Add drag event listeners
+            addDragListeners();
             
-        } else {
-            // Random position for desktop
-            const x = 5 + (Math.random() * 85);
-            const y = 5 + (Math.random() * 85);
-            founderEl.style.left = `${x}%`;
-            founderEl.style.top = `${y}%`;
-            // Reset container height for desktop
-            container.style.minHeight = '400px';
+            // Add touch event support for mobile
+            if (isMobile) {
+                addTouchListeners();
+            }
         }
-        
-        container.appendChild(founderEl);
-    });
-    
-    // Add drag event listeners
-    addDragListeners();
-    
-    // Add touch event support for mobile
-    if (isMobile) {
-        addTouchListeners();
-    }
-}
 
         // Drag and Drop functionality
         function addDragListeners() {
@@ -863,9 +865,7 @@
             const achievements = gameState.achievements[founder.id] || [];
             
             document.getElementById('detailsImage').src = `assets/founders/${founder.image}`;
-            document.getElementById('detailsImage').onerror = function() {
-                this.src = `https://via.placeholder.com/80/${founder.team === 1 ? '00ff00' : 'ffa500'}/ffffff?text=${encodeURIComponent(founder.name.split(' ')[0])}`;
-            };
+            document.getElementById('detailsImage').onerror = null;
             document.getElementById('detailsName').textContent = founder.name;
             document.getElementById('detailsWealth').textContent = `$${(founder.wealth || 0).toLocaleString()}`;
             
