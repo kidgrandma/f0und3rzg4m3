@@ -107,6 +107,27 @@
             animation: none;
         }
 
+        /* Special styling for PSP */
+        #psp-case {
+            width: 160px;
+            height: 90px;
+        }
+
+        #psp-case::after {
+            content: 'PLAYERS ENTRANCE';
+            color: #ffff00;
+            font-weight: bold;
+            font-size: 11px;
+            text-shadow: 0 0 5px #ffff00;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        #psp-case.opened::after {
+            content: 'DROP IN VORTEX';
+            color: #ff00ff;
+            animation: none;
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
             50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
@@ -141,6 +162,13 @@
             bottom: 40%;
             right: 18%;
             transform: rotate(10deg);
+        }
+
+        /* PSP positioning - moved to top and tilted forward */
+        #psp-case {
+            top: 12%;
+            left: 50%;
+            transform: translateX(-50%) rotate(-5deg) rotateX(15deg);
         }
 
         /* CD Discs */
@@ -439,6 +467,16 @@
                 font-size: 8px;
             }
             
+            /* PSP mobile sizing */
+            #psp-case {
+                width: 80px;
+                height: 45px;
+            }
+            
+            #psp-case::after {
+                font-size: 7px;
+            }
+            
             /* Distribute cases around the screen more evenly */
             #confused-case {
                 top: 20%;
@@ -466,6 +504,13 @@
                 transform: rotate(8deg);
             }
             
+            /* PSP mobile positioning - moved to top and tilted forward */
+            #psp-case {
+                top: 8%;
+                left: 50%;
+                transform: translateX(-50%) rotate(-3deg) rotateX(15deg);
+            }
+            
             /* Smaller discs */
             .cd-disc {
                 width: 70px;
@@ -487,6 +532,11 @@
             #ps2-case {
                 width: 120px;
                 height: 80px;
+            }
+            
+            #psp-case {
+                width: 100px;
+                height: 60px;
             }
             
             .cd-disc {
@@ -540,6 +590,10 @@ body {
     <div class="cd-case" id="ps2-case" data-disc="startgame">
         <img src="assets/entrance/start-game.png" alt="Start Game">
     </div>
+    <!-- NEW PSP CASE -->
+    <div class="cd-case" id="psp-case" data-disc="psp">
+        <img src="assets/entrance/psp.png" alt="PSP Jeopardy">
+    </div>
 
     <!-- CD Discs (hidden until case clicked) -->
     <div class="cd-disc" id="confused-disc" data-portal="confused">
@@ -553,6 +607,10 @@ body {
     </div>
     <div class="cd-disc" id="startgame-disc" data-portal="gallery">
         <img src="assets/entrance/start-game-disc.png" alt="Start Game Disc">
+    </div>
+    <!-- NEW PSP DISC -->
+    <div class="cd-disc" id="psp-disc" data-portal="jeopardy">
+        <img src="assets/entrance/psp-disc.png" alt="PSP Disc">
     </div>
 
     <!-- Portal Vortex -->
@@ -664,7 +722,8 @@ body {
             confused: './confused/',
             curious: './curious/',
             resident: './resident/',
-            gallery: './gallery/'
+            gallery: './gallery/',
+            jeopardy: './jeopardy/companies.html'  // NEW: PSP leads to jeopardy companies page
         };
 
         // CD case click handler
@@ -717,6 +776,13 @@ body {
             // Update image to open state when clicked
             const img = this.querySelector('img');
             img.src = 'assets/entrance/start-game-open.png';
+        });
+
+        // NEW: Update PSP case to show open state
+        document.getElementById('psp-case').addEventListener('click', function() {
+            // Update image to open state when clicked
+            const img = this.querySelector('img');
+            img.src = 'assets/entrance/psp-open.png';
         });
 
         // Dragging functionality

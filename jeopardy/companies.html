@@ -11,8 +11,8 @@
             --cyan: #00FFFF;
             --yellow: #FFFF00;
             --pink: #FF69B4;
-            --team1-color: #FFA500; /* Orange */
-            --team2-color: #4169E1; /* Royal Blue */
+            --team1-color: #00BFFF; /* Deep Sky Blue - matching Y2Ket disc */
+            --team2-color: #DC143C; /* Crimson Red - matching Series-A disc */
             --glass: rgba(255,255,255,0.08);
             --blur: 10px;
         }
@@ -51,14 +51,12 @@
 
         /* PLAYFUL HEADER */
         .header {
-            background: linear-gradient(135deg, rgba(255,105,180,0.9) 0%, rgba(138,43,226,0.9) 100%);
-            backdrop-filter: blur(10px);
+            background: transparent;
             padding: 15px;
             text-align: center;
             position: relative;
             overflow: hidden;
             border-bottom: 3px solid #fff;
-            box-shadow: 0 5px 30px rgba(255,105,180,0.5);
         }
 
         .header::before {
@@ -115,6 +113,22 @@
             transform: rotate(-2deg);
             transition: all 0.3s ease;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        /* Team avatars */
+        .team-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid;
+            object-fit: cover;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
         }
 
         .company-score:nth-child(1) {
@@ -126,6 +140,11 @@
             text-shadow: 0 0 10px var(--team1-color);
         }
 
+        .company-score:nth-child(1) .team-avatar {
+            border-color: var(--team1-color);
+            box-shadow: 0 0 15px var(--team1-color);
+        }
+
         .company-score:nth-child(2) {
             border-color: var(--team2-color);
             transform: rotate(2deg);
@@ -134,6 +153,11 @@
         .company-score:nth-child(2) .company-name {
             color: var(--team2-color);
             text-shadow: 0 0 10px var(--team2-color);
+        }
+
+        .company-score:nth-child(2) .team-avatar {
+            border-color: var(--team2-color);
+            box-shadow: 0 0 15px var(--team2-color);
         }
 
         .company-score:hover {
@@ -212,12 +236,12 @@
 
         .founder-card.team-1 .founder-card-inner {
             border-color: var(--team1-color);
-            background: rgba(255,165,0,0.1);
+            background: rgba(0,191,255,0.1);
         }
 
         .founder-card.team-2 .founder-card-inner {
             border-color: var(--team2-color);
-            background: rgba(65,105,225,0.1);
+            background: rgba(220,20,60,0.1);
         }
 
         .founder-image {
@@ -445,6 +469,11 @@
             .company-valuation {
                 font-size: 20px;
             }
+
+            .team-avatar {
+                width: 35px;
+                height: 35px;
+            }
         }
 
         /* LOADING */
@@ -476,10 +505,12 @@
     <!-- COMPANY SCORES -->
     <div class="scores">
         <div class="company-score">
+            <img src="assets/founders/y2ket.png" alt="Y2Ket Team" class="team-avatar">
             <span class="company-name">Y2KET CORP.</span>
             <span class="company-valuation" id="valuation1">$0</span>
         </div>
         <div class="company-score">
+            <img src="assets/founders/series-a.png" alt="Series-A Team" class="team-avatar">
             <span class="company-name">SERIES A(POCALYPSE)</span>
             <span class="company-valuation" id="valuation2">$0</span>
         </div>
