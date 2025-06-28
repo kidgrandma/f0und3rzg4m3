@@ -17,9 +17,6 @@
             --blur: 10px;
         }
 
-        /* FONTS */
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-        
         * {
             margin: 0;
             padding: 0;
@@ -27,7 +24,7 @@
         }
 
         body {
-            font-family: 'Orbitron', 'Arial', sans-serif;
+            font-family: 'Arial', sans-serif;
             background: #000;
             color: #fff;
             min-height: 100vh;
@@ -91,6 +88,8 @@
             0%, 100% { transform: rotate(-2deg); }
             50% { transform: rotate(2deg); }
         }
+
+
 
         /* SCORE DISPLAY */
         .scores {
@@ -166,7 +165,6 @@
 
         .company-name {
             font-size: 18px;
-            /* Color will be set by team-specific selectors above */
         }
 
         .company-valuation {
@@ -491,11 +489,31 @@
             0% { transform: translate(-50%, 100%); opacity: 0; }
             100% { transform: translate(-50%, 0); opacity: 1; }
         }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 2px solid var(--cyan);
+            z-index: 10000;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,255,255,0.3);
+            backdrop-filter: blur(10px);
+            animation: slide-up 0.3s ease-out;
+        }
     </style>
 </head>
 <body>
     <!-- BACKGROUND - Same as main game -->
     <div class="liminal-bg"></div>
+
+
 
     <!-- HEADER -->
     <div class="header">
@@ -571,44 +589,47 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // CORRECTED founder data - matching your exact file screenshot
-        const founders = [
-            // Y2Ket Corp. (Team 1) - using ONLY files that exist in your screenshot
-            { id: '30_john_mckafee', name: 'John McAfee', team: 1, wealth: 0, image: '30_john_mckafee.png' },
-            { id: '13_jensen_huang', name: 'Jensen Huang', team: 1, wealth: 0, image: '13_jensen_huang.png' },
-            { id: '22_pavel_durov', name: 'Pavel Durov', team: 1, wealth: 0, image: '22_pavel_durov.png' },
-            { id: '32_kevin_systrom', name: 'Kevin Systrom', team: 1, wealth: 0, image: '32_kevin_systrom.png' },
-            { id: '35_tom_anderson', name: 'Tom Anderson', team: 1, wealth: 0, image: '35_tom_anderson.png' },
-            { id: '40_craig_newmark', name: 'Craig Newmark', team: 1, wealth: 0, image: '40_craig_newmark.png' },
-            { id: '20_jack_dorsey', name: 'Jack Dorsey', team: 1, wealth: 0, image: '20_jack_dorsey.png' },
-            { id: '50_jessica_alba', name: 'Jessica Alba', team: 1, wealth: 0, image: '50_jessica_alba.png' },
-            { id: '14_peter_thiel', name: 'Peter Thiel', team: 1, wealth: 0, image: '14_peter_thiel.png' },
-            { id: '17_sam_altman', name: 'Sam Altman', team: 1, wealth: 0, image: '17_sam_altman.png' },
-            { id: '11_google_founders', name: 'Larry Page & Sergey Brin', team: 1, wealth: 0, image: '11_google_founders.png' },
-            { id: '15_jack_ma', name: 'Jack Ma', team: 1, wealth: 0, image: '15_jack_ma.png' },
-            { id: '03_dom_hofmann', name: 'Sean Rad', team: 1, wealth: 0, image: '03_dom_hofmann.png' },
-            { id: '08_elon_musk', name: 'Elon Musk', team: 1, wealth: 0, image: '08_elon_musk.png' },
-            { id: '29_sean_parker', name: 'Sean Parker', team: 1, wealth: 0, image: '29_sean_parker' },
-            { id: '19_vitalik_buterin', name: 'Vitalik Buterin', team: 1, wealth: 0, image: '19_vitalik_buterin.png' },
+        // Default founder data with Instagram handles - will be loaded from Firebase if available
+        let founders = [
+            // Y2Ket Corp. (Team 1)
+            { id: '30_john_mckafee', name: 'John McAfee', team: 1, wealth: 0, image: '30_john_mckafee.png', handle: '@hauntyourownhouse', company: 'McAfee' },
+            { id: '13_jensen_huang', name: 'Jensen Huang', team: 1, wealth: 0, image: '13_jensen_huang.png', handle: '@caleb', company: 'NVIDIA' },
+            { id: '22_pavel_durov', name: 'Pavel Durov', team: 1, wealth: 0, image: '22_pavel_durov.png', handle: '@discoesq', company: 'Telegram' },
+            { id: '32_kevin_systrom', name: 'Kevin Systrom', team: 1, wealth: 0, image: '32_kevin_systrom.png', handle: '@dougdalton', company: 'Instagram' },
+            { id: '35_tom_anderson', name: 'Tom Anderson', team: 1, wealth: 0, image: '35_tom_anderson.png', handle: '@betwixt.frankie', company: 'MySpace' },
+            { id: '40_craig_newmark', name: 'Craig Newmark', team: 1, wealth: 0, image: '40_craig_newmark.png', handle: '@ladyhuss_', company: 'Craigslist' },
+            { id: '20_jack_dorsey', name: 'Jack Dorsey', team: 1, wealth: 0, image: '20_jack_dorsey.png', handle: '@jackhite', company: 'Twitter' },
+            { id: '50_jessica_alba', name: 'Jessica Alba', team: 1, wealth: 0, image: '50_jessica_alba.png', handle: '@jasche__', company: 'The Honest Company' },
+            { id: '14_peter_thiel', name: 'Peter Thiel', team: 1, wealth: 0, image: '14_peter_thiel.png', handle: '@jesushands', company: 'Palantir' },
+            { id: '17_sam_altman', name: 'Sam Altman', team: 1, wealth: 0, image: '17_sam_altman.png', handle: '@michaelmelwani', company: 'OpenAI' },
+            { id: '11_google_founders', name: 'Larry Page & Sergey Brin', team: 1, wealth: 0, image: '11_google_founders.png', handle: '@mfgarret + @nataliesomekh_', company: 'Google' },
+            { id: '15_jack_ma', name: 'Jack Ma', team: 1, wealth: 0, image: '15_jack_ma.png', handle: '@manolowashere', company: 'Alibaba' },
+            { id: '08_elon_musk', name: 'Elon Musk', team: 1, wealth: 0, image: '08_elon_musk.png', handle: '@vishaal.arya', company: 'Tesla/SpaceX' },
+            { id: '19_vitalik_buterin', name: 'Vitalik Buterin', team: 1, wealth: 0, image: '19_vitalik_buterin.png', handle: '@saulisgood', company: 'Ethereum' },
+            { id: '02_sheryl_sandberg', name: 'Sheryl Sandberg', team: 1, wealth: 0, image: '02_sheryl_sandberg.png', handle: '@aiiisound', company: 'Meta' },
+            { id: '04_brian_armstrong', name: 'Brian Armstrong', team: 1, wealth: 0, image: '04_brian_armstrong.png', handle: '@jenergizer', company: 'Coinbase' },
+            { id: '29_sean_parker', name: 'Sean Parker', team: 1, wealth: 0, image: '29_sean_parker.png', handle: '@mansweater', company: 'Napster' },
+            { id: '41_lucy_guo', name: 'Lucy Guo', team: 1, wealth: 0, image: '41_lucy_guo.png', handle: '@literatrix', company: 'Scale AI' },
+            { id: '63_winklevoss', name: 'Winklevoss Twins', team: 1, wealth: 0, image: '63_winklevoss.png', handle: '@whoiskaybrown', company: 'Gemini' },
 
-            // Series A(pocalypse) (Team 2) - using ONLY files that exist in your screenshot
-            { id: '51_zhang_yiming', name: 'Zhang Yiming', team: 2, wealth: 0, image: '51_zhang_yiming.png' },
-            { id: '34_meg_whitman', name: 'Meg Whitman', team: 2, wealth: 0, image: '34_meg_whitman.png' },
-            { id: '48_sam_bankman_fried', name: 'Sam Bankman-Fried', team: 2, wealth: 0, image: '48_sam_bankman-fried.png' },
-            { id: '49_reed_hastings', name: 'Reed Hastings', team: 2, wealth: 0, image: '49_reed_hastings.png' },
-            { id: '24_larry_ellison', name: 'Larry Ellison', team: 2, wealth: 0, image: '24_larry_ellison.png' },
-            { id: '21_jimmy_wales', name: 'Jimmy Wales', team: 2, wealth: 0, image: '21_jimmy_wales.png' },
-            { id: '46_dread_pirate', name: 'Ross Ulbricht', team: 2, wealth: 0, image: '46_dread_pirate.png' },
-            { id: '25_elizabeth_holmes', name: 'Elizabeth Holmes', team: 2, wealth: 0, image: '25_elizabeth_holmes.png' },
-            { id: '47_daniel_ek', name: 'Daniel Ek', team: 2, wealth: 0, image: '47_daniel_ek.png' },
-            { id: '27_travis_kalanick', name: 'Travis Kalanick', team: 2, wealth: 0, image: '27_travis_kalanick.png' },
-            { id: '04_brian_armstrong', name: 'Brian Armstrong', team: 2, wealth: 0, image: '04_brian_armstrong' },
-            { id: '39_ariana_huffington', name: 'Ariana Huffington', team: 2, wealth: 0, image: '39_ariana_huffington' },
-            { id: '37_steve_wozniak', name: 'Steve Wozniak', team: 2, wealth: 0, image: '37_steve_wozniak.png' },
-            { id: '53_youtube', name: 'YouTube Founders', team: 2, wealth: 0, image: '53_youtube.png' },
-            { id: '31_whitney_wolfe_herd', name: 'Whitney Wolfe Herd', team: 2, wealth: 0, image: '31_whitney_wolfe_herd.png' },
-            { id: '36_alexis_ohanian', name: 'Alexis Ohanian', team: 2, wealth: 0, image: '36_alexis_ohanian.png' },
-            { id: '43_sophia_amoruso', name: 'Sophia Amoruso', team: 2, wealth: 0, image: '43_sophia_amoruso.png' }
+            // Series A(pocalypse) (Team 2)
+            { id: '51_zhang_yiming', name: 'Zhang Yiming', team: 2, wealth: 0, image: '51_zhang_yiming.png', handle: '@aiiisound', company: 'ByteDance' },
+            { id: '34_meg_whitman', name: 'Meg Whitman', team: 2, wealth: 0, image: '34_meg_whitman.png', handle: '@bombchips', company: 'eBay' },
+            { id: '48_sam_bankman_fried', name: 'Sam Bankman-Fried', team: 2, wealth: 0, image: '48_sam_bankman-fried.png', handle: '@teamcoben', company: 'FTX' },
+            { id: '49_reed_hastings', name: 'Reed Hastings', team: 2, wealth: 0, image: '49_reed_hastings.png', handle: '@stan_jericho', company: 'Netflix' },
+            { id: '24_larry_ellison', name: 'Larry Ellison', team: 2, wealth: 0, image: '24_larry_ellison.png', handle: '@littleurbanachiever', company: 'Oracle' },
+            { id: '21_jimmy_wales', name: 'Jimmy Wales', team: 2, wealth: 0, image: '21_jimmy_wales.png', handle: '@danieldomange', company: 'Wikipedia' },
+            { id: '46_dread_pirate', name: 'Ross Ulbricht', team: 2, wealth: 0, image: '46_dread_pirate.png', handle: '@octavekitten', company: 'Silk Road' },
+            { id: '25_elizabeth_holmes', name: 'Elizabeth Holmes', team: 2, wealth: 0, image: '25_elizabeth_holmes.png', handle: '@seanpaulsartre_', company: 'Theranos' },
+            { id: '47_daniel_ek', name: 'Daniel Ek', team: 2, wealth: 0, image: '47_daniel_ek.png', handle: '@jacquesgreene', company: 'Spotify' },
+            { id: '27_travis_kalanick', name: 'Travis Kalanick', team: 2, wealth: 0, image: '27_travis_kalanick.png', handle: '@kunaalarya', company: 'Uber' },
+            { id: '37_steve_wozniak', name: 'Steve Wozniak', team: 2, wealth: 0, image: '37_steve_wozniak.png', handle: '@minibearbeats', company: 'Apple' },
+            { id: '53_youtube', name: 'YouTube Founders', team: 2, wealth: 0, image: '53_youtube.png', handle: '@plascu', company: 'YouTube' },
+            { id: '31_whitney_wolfe_herd', name: 'Whitney Wolfe Herd', team: 2, wealth: 0, image: '31_whitney_wolfe_herd.png', handle: '@steak.night', company: 'Bumble' },
+            { id: '36_alexis_ohanian', name: 'Alexis Ohanian', team: 2, wealth: 0, image: '36_alexis_ohanian.png', handle: '@taytaystay', company: 'Reddit' },
+            { id: '43_sophia_amoruso', name: 'Sophia Amoruso', team: 2, wealth: 0, image: '43_sophia_amoruso.png', handle: '@special_agent_long', company: 'Nasty Gal' },
+            { id: '39_ariana_huffington', name: 'Ariana Huffington', team: 2, wealth: 0, image: '39_ariana_huffington.png', handle: '@jubileedj', company: 'Huffington Post' },
+            { id: '33_martin_shkreli', name: 'Martin Shkreli', team: 2, wealth: 0, image: '33_martin_shkreli.png', handle: '@l2ex', company: 'Turing Pharmaceuticals' }
         ];
 
         // Game state
@@ -624,6 +645,260 @@
             dragOffset: null
         };
 
+        // Test Firebase connection and permissions
+        function testFirebaseConnection() {
+            console.log('Testing Firebase connection...');
+            showNotification('🔍 Testing Firebase connection...');
+            
+            // Test 1: Check if Firebase is initialized
+            if (!firebase || !database) {
+                console.error('Firebase not initialized');
+                showNotification('❌ Firebase not initialized');
+                return;
+            }
+            
+            // Test 2: Check connection status
+            database.ref('.info/connected').once('value', (snapshot) => {
+                if (snapshot.val() === true) {
+                    console.log('✅ Firebase connected');
+                    showNotification('✅ Firebase connected - testing permissions...');
+                    
+                    // Test 3: Try a simple write to test permissions
+                    const testData = {
+                        test: true,
+                        timestamp: Date.now(),
+                        message: 'Connection test from companies.html'
+                    };
+                    
+                    database.ref('test/connection').set(testData)
+                        .then(() => {
+                            console.log('✅ Write permission works');
+                            showNotification('✅ Firebase fully working!');
+                            
+                            // Clean up test data
+                            database.ref('test').remove();
+                        })
+                        .catch((error) => {
+                            console.error('❌ Write permission denied:', error);
+                            showNotification('❌ Permission denied: ' + error.message);
+                            showFirebaseRulesHelp();
+                        });
+                        
+                } else {
+                    console.error('❌ Firebase not connected');
+                    showNotification('❌ Firebase not connected to internet');
+                }
+            });
+        }
+        
+        function showFirebaseRulesHelp() {
+            const helpMessage = `
+🔧 FIREBASE RULES ISSUE DETECTED
+
+Your Firebase database rules are blocking writes. To fix:
+
+1. Go to Firebase Console: https://console.firebase.google.com
+2. Select your project: f0und3rzg4m3-b04rd
+3. Go to "Realtime Database" → "Rules"
+4. Change rules to:
+
+{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}
+
+5. Click "Publish"
+
+⚠️ Note: This allows all reads/writes. For production, use more restrictive rules.
+            `;
+            
+            console.log(helpMessage);
+            
+            // Show in a modal-like alert
+            if (confirm('Firebase permission denied. Click OK to see fix instructions in console.')) {
+                console.log('%c' + helpMessage, 'background: #f0f0f0; color: #000; padding: 10px;');
+            }
+        }
+
+        // Enhanced sync with permission checking
+        function syncToGameDatabase() {
+            console.log('Starting sync to Firebase...');
+            
+            if (!database) {
+                console.error('Firebase database not initialized');
+                showNotification('❌ Firebase not connected');
+                return;
+            }
+            
+            if (!gameState.founders || gameState.founders.length === 0) {
+                console.error('No founders to sync');
+                showNotification('❌ No founders to sync');
+                return;
+            }
+            
+            // First test permissions
+            database.ref('test/permission').set({ test: true })
+                .then(() => {
+                    console.log('✅ Permissions OK, proceeding with sync...');
+                    
+                    // Now do the actual sync
+                    performActualSync();
+                    
+                    // Clean up test
+                    database.ref('test').remove();
+                })
+                .catch((error) => {
+                    console.error('❌ Permission test failed:', error);
+                    showNotification('❌ Permission denied - check Firebase rules');
+                    showFirebaseRulesHelp();
+                });
+        }
+        
+        function performActualSync() {
+            try {
+                // Convert founders to both formats for maximum compatibility
+                const foundersForGame = { 1: [], 2: [] };
+                const companiesForGame = {};
+                
+                gameState.founders.forEach((founder, index) => {
+                    // Format for moderator panel founders section
+                    foundersForGame[founder.team].push({
+                        name: founder.name,
+                        company: founder.company || founder.name,
+                        image: founder.image,
+                        team: founder.team,
+                        id: founder.id,
+                        handle: founder.handle || '',
+                        wealth: founder.wealth || 0
+                    });
+                    
+                    // Format for companies section (for dynamic import)
+                    companiesForGame[founder.id] = {
+                        id: founder.id,
+                        name: founder.company || founder.name,
+                        founder: founder.name,
+                        image: founder.image,
+                        handle: founder.handle || '',
+                        team: founder.team,
+                        wealth: founder.wealth || 0
+                    };
+                });
+                
+                console.log('Prepared data for sync:', {
+                    foundersCount: gameState.founders.length,
+                    team1Count: foundersForGame[1].length,
+                    team2Count: foundersForGame[2].length
+                });
+                
+                // Save both formats to Firebase
+                Promise.all([
+                    database.ref('game/founders').set(foundersForGame),
+                    database.ref('companies').set(companiesForGame)
+                ]).then(() => {
+                    showNotification('✅ Founders synced to game database');
+                    console.log('Successfully synced founders to Firebase');
+                }).catch((error) => {
+                    console.error('Firebase sync error:', error);
+                    showNotification('❌ Sync failed: ' + error.message);
+                });
+                
+            } catch (error) {
+                console.error('Error preparing sync data:', error);
+                showNotification('❌ Sync preparation failed');
+            }
+        }
+
+        // Auto-sync to Firebase when page loads (so moderator can import)
+        function autoSyncOnLoad() {
+            console.log('Setting up auto-sync...');
+            
+            // First test Firebase, then sync
+            setTimeout(() => {
+                testFirebaseConnection();
+                
+                // Wait a bit more, then try to sync if founders are loaded
+                setTimeout(() => {
+                    if (gameState.founders && gameState.founders.length > 0) {
+                        console.log(`Auto-syncing ${gameState.founders.length} founders...`);
+                        syncToGameDatabase();
+                    } else {
+                        console.log('No founders loaded yet, skipping auto-sync');
+                    }
+                }, 2000);
+            }, 1000);
+        }
+
+        // Manual sync function for testing
+        function manualSync() {
+            console.log('Manual sync triggered');
+            syncToGameDatabase();
+        }
+
+        function loadFromGameDatabase() {
+            database.ref('game/founders').once('value', (snapshot) => {
+                const gameFounders = snapshot.val();
+                if (gameFounders) {
+                    // Convert back to playpen format
+                    const loadedFounders = [];
+                    
+                    Object.keys(gameFounders).forEach(teamNum => {
+                        gameFounders[teamNum].forEach(founder => {
+                            loadedFounders.push({
+                                id: founder.id || founder.name.toLowerCase().replace(/\s+/g, '_'),
+                                name: founder.name,
+                                team: founder.team,
+                                wealth: founder.wealth || 0,
+                                image: founder.image
+                            });
+                        });
+                    });
+                    
+                    // Update local founders
+                    gameState.founders = loadedFounders;
+                    renderFounders();
+                    showNotification('📥 Loaded founders from game database');
+                } else {
+                    showNotification('❌ No founder data found in game database');
+                }
+            });
+        }
+
+        function exportFounderData() {
+            const exportData = {
+                founders: gameState.founders,
+                teams: {
+                    1: gameState.founders.filter(f => f.team === 1),
+                    2: gameState.founders.filter(f => f.team === 2)
+                },
+                exported: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'founders_data.json';
+            link.click();
+            
+            showNotification('📋 Founder data exported');
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
+
         // Create founder card
         function createFounderCard(founder, isInZone = false) {
             const teamClass = `team-${founder.team}`;
@@ -637,14 +912,16 @@
                     <div class="founder-card-inner">
                         <img src="assets/founders/${founder.image}" 
                              alt="${founder.name}" 
-                             class="founder-image">
+                             class="founder-image"
+                             onerror="this.src='assets/founders/default.png'">
                         <div class="founder-name">${founder.name}</div>
+                        <div class="founder-handle" style="font-size: 7px; color: var(--cyan); margin-top: 2px;">${founder.handle || ''}</div>
                     </div>
                 </div>
             `;
         }
 
-        // Render founders with scattered positions (IMPROVED MOBILE VERSION)
+        // Render founders with scattered positions
         function renderFounders() {
             const container = document.getElementById('playpenContainer');
             const isMobile = window.innerWidth <= 768;
@@ -657,26 +934,20 @@
                 card.innerHTML = createFounderCard(founder);
                 const founderEl = card.firstElementChild;
                 
-                // Position cards even on mobile, but scattered like desktop
+                // Position cards
                 if (isMobile) {
-                    // Scatter cards randomly on mobile too, but in a smaller area
-                    const x = 5 + (Math.random() * 80); // Slightly more constrained than desktop
+                    const x = 5 + (Math.random() * 80);
                     const y = 5 + (Math.random() * 80);
                     
                     founderEl.style.left = `${x}%`;
                     founderEl.style.top = `${y}%`;
                     founderEl.style.transform = `rotate(${-15 + Math.random() * 30}deg)`;
-                    
-                    // Ensure container is tall enough for scattered cards
                     container.style.minHeight = '600px';
-                    
                 } else {
-                    // Random position for desktop
                     const x = 5 + (Math.random() * 85);
                     const y = 5 + (Math.random() * 85);
                     founderEl.style.left = `${x}%`;
                     founderEl.style.top = `${y}%`;
-                    // Reset container height for desktop
                     container.style.minHeight = '400px';
                 }
                 
@@ -698,17 +969,14 @@
             const zones = document.querySelectorAll('.zone');
             
             cards.forEach(card => {
-                // Remove existing listeners to prevent duplicates
                 card.removeEventListener('dragstart', handleDragStart);
                 card.removeEventListener('dragend', handleDragEnd);
                 card.removeEventListener('click', handleFounderClick);
                 
-                // Add fresh listeners
                 card.addEventListener('dragstart', handleDragStart);
                 card.addEventListener('dragend', handleDragEnd);
                 card.addEventListener('click', handleFounderClick);
                 
-                // Ensure draggable is set
                 card.setAttribute('draggable', 'true');
             });
             
@@ -722,7 +990,6 @@
                 zone.addEventListener('dragleave', handleDragLeave);
             });
             
-            // Also allow dropping back in playpen
             const playpen = document.getElementById('playpenContainer');
             playpen.removeEventListener('dragover', handleDragOver);
             playpen.removeEventListener('drop', handleDropToPlaypen);
@@ -738,7 +1005,6 @@
             e.currentTarget.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
             
-            // Store the offset of where the user clicked on the card
             const rect = e.currentTarget.getBoundingClientRect();
             gameState.dragOffset = {
                 x: e.clientX - rect.left,
@@ -777,7 +1043,6 @@
             const founder = gameState.founders.find(f => f.id === gameState.draggedFounder);
             
             if (founder && zoneId === 'irsZone') {
-                // Show founder details instead of keeping them in zone
                 showFounderDetails(founder);
                 showToast(`Checking ${founder.name}'s records... 📊`);
             }
@@ -791,19 +1056,15 @@
             const playpen = document.getElementById('playpenContainer');
             const rect = playpen.getBoundingClientRect();
             
-            // Calculate new position relative to playpen
             let x = e.clientX - rect.left - (gameState.dragOffset?.x || 50);
             let y = e.clientY - rect.top - (gameState.dragOffset?.y || 60);
             
-            // Keep card within bounds
             x = Math.max(0, Math.min(x, rect.width - 100));
             y = Math.max(0, Math.min(y, rect.height - 120));
             
-            // Update card position
             gameState.draggedElement.style.left = x + 'px';
             gameState.draggedElement.style.top = y + 'px';
             
-            // Optional: Add a fun rotation
             const rotation = -15 + Math.random() * 30;
             gameState.draggedElement.style.transform = `rotate(${rotation}deg)`;
         }
@@ -847,7 +1108,6 @@
                     let x = touch.clientX - rect.left - touchOffset.x;
                     let y = touch.clientY - rect.top - touchOffset.y;
                     
-                    // Keep within bounds
                     x = Math.max(0, Math.min(x, rect.width - 80));
                     y = Math.max(0, Math.min(y, rect.height - 100));
                     
@@ -864,7 +1124,6 @@
                     const rotation = -15 + Math.random() * 30;
                     touchItem.style.transform = `rotate(${rotation}deg)`;
                     
-                    // Check if dropped on IRS zone
                     const touch = e.changedTouches[0];
                     const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
                     
@@ -884,9 +1143,8 @@
             });
         }
 
-        // Render zones (now just for visual, not storing founders)
+        // Render zones
         function renderZones() {
-            // IRS zone stays empty - it's just a drop target
             const irsZone = document.getElementById('irsZone');
             const contents = irsZone.querySelector('.zone-contents');
             contents.innerHTML = '<div style="color: #ff0000; text-align: center; opacity: 0.6;">Drop a founder here to check their score</div>';
@@ -898,9 +1156,25 @@
             const achievements = gameState.achievements[founder.id] || [];
             
             document.getElementById('detailsImage').src = `assets/founders/${founder.image}`;
-            document.getElementById('detailsImage').onerror = null;
+            document.getElementById('detailsImage').onerror = function() { this.src = 'assets/founders/default.png'; };
             document.getElementById('detailsName').textContent = founder.name;
-            document.getElementById('detailsWealth').textContent = `$${(founder.wealth || 0).toLocaleString()}`;
+            document.getElementById('detailsWealth').textContent = `${(founder.wealth || 0).toLocaleString()}`;
+            
+            // Add handle and company info
+            const detailsInfo = document.querySelector('.details-info');
+            const existingHandle = detailsInfo.querySelector('.founder-handle-info');
+            if (existingHandle) existingHandle.remove();
+            
+            if (founder.handle || founder.company) {
+                const handleInfo = document.createElement('div');
+                handleInfo.className = 'founder-handle-info';
+                handleInfo.style.cssText = 'color: var(--cyan); font-size: 14px; margin-bottom: 10px;';
+                handleInfo.innerHTML = `
+                    ${founder.handle ? `<div>${founder.handle}</div>` : ''}
+                    ${founder.company ? `<div style="color: var(--yellow); font-size: 12px;">${founder.company}</div>` : ''}
+                `;
+                detailsInfo.appendChild(handleInfo);
+            }
             
             const achievementsList = document.getElementById('achievementsList');
             if (achievements.length > 0) {
@@ -920,7 +1194,6 @@
 
         // Toast notifications
         function showToast(message) {
-            // Simple toast implementation
             const toast = document.createElement('div');
             toast.style.cssText = `
                 position: fixed;
@@ -975,20 +1248,6 @@
             liminalBg.style.backgroundImage = `url('assets/backgrounds/${selectedBg}')`;
         }
 
-        // Make playpen itself a drop zone for free positioning
-        function setupPlaypenDrop() {
-            const playpen = document.getElementById('playpenContainer');
-            
-            // Allow drag over entire playpen
-            playpen.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-            });
-            
-            // Track mouse position during drag for smooth dropping
-            playpen.addEventListener('drop', handleDropToPlaypen);
-        }
-
         // Setup Firebase listeners
         function setupListeners() {
             database.ref('game/companies').on('value', (snapshot) => {
@@ -1020,7 +1279,9 @@
             renderZones();
             setupListeners();
             updateValuations();
-            setupPlaypenDrop();
+            
+            // Auto-sync to Firebase for moderator panel integration
+            autoSyncOnLoad();
         };
 
         // Handle resize

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WORKSUCKS.NET INTERNET OLYMPICS</title>
+    <title>F0UND3RZ G4M3 - INTERNET OLYMPICS</title>
     <style>
         /* CSS VARIABLES */
         :root {
@@ -14,6 +14,8 @@
             --dark-trans: rgba(20,20,40,0.5);
             --border-white: rgba(255,255,255,0.3);
             --blur: 5px;
+            --team1-color: #DC143C;
+            --team2-color: #00BFFF;
         }
 
         /* FONTS */
@@ -50,29 +52,35 @@
 
         /* HEADER */
         .header {
-            background: linear-gradient(180deg, rgba(138,43,226,0.9) 0%, rgba(75,0,130,0.9) 100%);
+            background: linear-gradient(90deg, 
+                rgba(138,43,226,0.6) 0%, 
+                rgba(0,191,255,0.6) 50%, 
+                rgba(138,43,226,0.6) 100%);
             backdrop-filter: blur(10px);
-            padding: 10px;
+            padding: 15px 10px;
             position: relative;
             overflow: hidden;
-            border-bottom: 3px solid #fff;
-            box-shadow: 0 5px 30px rgba(138,43,226,0.5);
+            border-bottom: 3px solid rgba(255,255,255,0.8);
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
         }
 
         .header::before {
             content: '';
             position: absolute;
             top: 0;
-            left: -100%;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: scan 3s linear infinite;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255,255,255,0.1) 50%, 
+                transparent 100%);
+            animation: shimmer-slow 8s ease-in-out infinite;
         }
 
-        @keyframes scan {
-            0% { left: -100%; }
-            100% { left: 100%; }
+        @keyframes shimmer-slow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .header h1 {
@@ -80,63 +88,233 @@
             font-weight: 900;
             text-align: center;
             color: #fff;
-            text-shadow: 0 0 20px rgba(255,255,255,0.5), 2px 2px 0 #000;
+            text-shadow: 
+                0 0 10px rgba(255,255,255,0.8),
+                2px 2px 0 rgba(0,0,0,0.5);
             letter-spacing: 2px;
             text-transform: uppercase;
+            position: relative;
+            z-index: 1;
+            margin: 0;
+        }
+
+        /* TURN INDICATOR */
+        .turn-indicator {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(90deg, 
+                rgba(0,0,0,0.8) 0%, 
+                rgba(138,43,226,0.3) 50%, 
+                rgba(0,0,0,0.8) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .turn-indicator::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: scan 3s linear infinite;
+        }
+
+        .turn-text {
+            font-size: 18px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            animation: pulse 2s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        .turn-text.team-1 {
+            color: var(--team1-color);
+            text-shadow: 0 0 20px var(--team1-color), 0 0 40px var(--team1-color);
+        }
+
+        .turn-text.team-2 {
+            color: var(--team2-color);
+            text-shadow: 0 0 20px var(--team2-color), 0 0 40px var(--team2-color);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
         }
 
         /* COMPANIES */
         .companies {
             display: flex;
-            gap: 20px;
-            padding: 8px;
-            margin-top: 8px;
+            gap: 30px;
+            padding: 20px;
+            margin-top: 15px;
             justify-content: center;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .company {
-            background: var(--dark-trans);
-            backdrop-filter: blur(var(--blur));
-            -webkit-backdrop-filter: blur(var(--blur));
-            border: 2px solid rgba(255,255,255,0.5);
-            padding: 8px 16px;
-            box-shadow: 0 0 15px rgba(255,255,255,0.2);
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 3px solid;
+            border-radius: 25px;
+            padding: 15px 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+            transform: rotate(-2deg);
+        }
+
+        .company::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 3s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .company.team-1 {
+            border-color: var(--team1-color);
+            background: linear-gradient(135deg, rgba(220,20,60,0.2) 0%, rgba(220,20,60,0.05) 100%);
+            transform: rotate(-3deg);
+        }
+
+        .company.team-2 {
+            border-color: var(--team2-color);
+            background: linear-gradient(135deg, rgba(0,191,255,0.2) 0%, rgba(0,191,255,0.05) 100%);
+            transform: rotate(3deg);
+        }
+
+        .company:hover {
+            transform: rotate(0deg) scale(1.05);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.4);
         }
 
         .company.active {
-            border-color: var(--yellow);
-            background: rgba(255,255,0,0.1);
-            box-shadow: 0 0 30px rgba(255,255,0,0.4);
+            animation: active-glow 2s ease-in-out infinite;
+            transform: rotate(0deg) scale(1.08);
+        }
+
+        @keyframes active-glow {
+            0%, 100% { 
+                box-shadow: 0 0 30px rgba(255,255,255,0.3), 0 15px 50px rgba(0,0,0,0.4);
+            }
+            50% { 
+                box-shadow: 0 0 50px rgba(255,255,255,0.5), 0 20px 60px rgba(0,0,0,0.5);
+            }
+        }
+
+        .company.active::after {
+            content: '⚡';
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            font-size: 30px;
+            animation: bounce-rotate 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce-rotate {
+            0%, 100% { transform: rotate(-15deg) scale(1); }
+            50% { transform: rotate(15deg) scale(1.2); }
+        }
+
+        /* Team Avatar */
+        .team-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid;
+            object-fit: cover;
+            box-shadow: 0 0 20px currentColor;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+
+        .company.team-1 .team-avatar {
+            border-color: var(--team1-color);
+            box-shadow: 0 0 20px var(--team1-color);
+        }
+
+        .company.team-2 .team-avatar {
+            border-color: var(--team2-color);
+            box-shadow: 0 0 20px var(--team2-color);
+        }
+
+        .company:hover .team-avatar {
+            transform: rotate(360deg) scale(1.1);
+        }
+
+        /* Company name visibility control */
+        .short-name {
+            display: none;
+        }
+
+        .full-name {
+            display: inline;
         }
 
         .company h2 {
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 900;
             margin: 0;
-            color: var(--cyan);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(0,255,255,0.5);
+            letter-spacing: 2px;
+            position: relative;
+            display: inline;
+            margin-right: 10px;
+        }
+
+        .company.team-1 h2 {
+            color: var(--team1-color);
+            text-shadow: 0 0 20px var(--team1-color), 0 0 40px var(--team1-color);
+        }
+
+        .company.team-2 h2 {
+            color: var(--team2-color);
+            text-shadow: 0 0 20px var(--team2-color), 0 0 40px var(--team2-color);
         }
 
         .valuation {
-            font-size: 20px;
+            font-size: 28px;
             color: var(--yellow);
-            text-shadow: 0 0 15px var(--yellow);
+            text-shadow: 0 0 20px var(--yellow), 0 0 40px var(--yellow);
             font-weight: 900;
             margin: 0;
+            letter-spacing: 1px;
+            display: inline;
+        }
+
+        .company-text {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         /* BOARD */
         .board-container {
             padding: 5px;
             position: relative;
-            min-height: calc(100vh - 150px);
+            min-height: calc(100vh - 200px);
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -191,13 +369,52 @@
             transition: all 0.3s ease;
             box-shadow: 0 0 10px rgba(255,255,255,0.1);
             cursor: pointer;
+            position: relative;
         }
 
-        .cell:hover {
+        .cell:hover:not(.completed):not(.unavailable) {
             background: rgba(255,255,255,0.2);
             border-color: var(--yellow);
             transform: scale(1.05);
             box-shadow: 0 0 30px rgba(255,255,0,0.4);
+        }
+
+        .cell.in-progress:hover {
+            transform: scale(1.05) !important;
+            box-shadow: 0 0 50px rgba(255,255,0,0.8) !important;
+            background: linear-gradient(45deg, 
+                rgba(255,255,0,0.2) 0%, 
+                rgba(255,255,0,0.3) 50%, 
+                rgba(255,255,0,0.2) 100%) !important;
+        }
+
+        /* UNAVAILABLE CELLS */
+        .cell.unavailable {
+            background: rgba(80,80,80,0.3);
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: rgba(100,100,100,0.5);
+        }
+
+        .cell.unavailable::before {
+            content: '✕';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #ff6666;
+            font-weight: bold;
+            z-index: 3;
+        }
+
+        .cell.unavailable .value {
+            color: rgba(100,100,100,0.6);
+            text-shadow: none;
+        }
+
+        .cell.unavailable .challenges {
+            opacity: 0.3;
         }
 
         .cell .value {
@@ -212,6 +429,8 @@
             display: flex;
             gap: 2px;
             margin-top: 2px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         .challenge-dot {
@@ -223,14 +442,20 @@
             box-shadow: 0 0 3px rgba(255,255,255,0.3);
         }
 
-        .challenge-dot.active {
-            background: var(--yellow);
-            border-color: var(--yellow);
-            box-shadow: 0 0 8px var(--yellow);
+        .challenge-dot.team-1 {
+            background: var(--team1-color);
+            border-color: var(--team1-color);
+            box-shadow: 0 0 8px var(--team1-color);
+        }
+
+        .challenge-dot.team-2 {
+            background: var(--team2-color);
+            border-color: var(--team2-color);
+            box-shadow: 0 0 8px var(--team2-color);
         }
 
         /* CELL STATES */
-        .cell.empty {
+        .cell.completed {
             background: rgba(50,50,50,0.2);
             opacity: 0.3;
             pointer-events: none;
@@ -238,28 +463,79 @@
             border-color: rgba(255,255,255,0.1);
         }
 
-        .cell.empty .value {
+        .cell.completed .value {
             color: rgba(255,255,255,0.3);
             text-shadow: none;
         }
 
-        .cell.pending {
-            animation: bounce 0.5s ease-in-out infinite;
-            background: rgba(255,255,0,0.2);
+        .cell.in-progress {
+            animation: active-pulse 1.5s ease-in-out infinite;
             border-color: var(--yellow);
             box-shadow: 0 0 30px rgba(255,255,0,0.5);
+            background: linear-gradient(45deg, 
+                rgba(255,255,0,0.1) 0%, 
+                rgba(255,255,0,0.2) 50%, 
+                rgba(255,255,0,0.1) 100%);
+            cursor: pointer !important;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        .cell.in-progress::before {
+            content: '⚡ ACTIVE ⚡';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: var(--yellow);
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--yellow);
+            animation: flash 1s ease-in-out infinite;
+            z-index: 10;
         }
 
-        .cell.selected {
-            background: rgba(255,255,255,0.05);
-            border-color: rgba(255,255,255,0.2);
-            transform: scale(0.95);
-            opacity: 0.6;
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes active-pulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 0 20px rgba(255,255,0,0.3);
+                border-width: 1px;
+            }
+            50% { 
+                transform: scale(1.02);
+                box-shadow: 0 0 40px rgba(255,255,0,0.6);
+                border-width: 2px;
+            }
+        }
+
+        /* Winner indicator on cells */
+        .cell .winner-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #fff;
+            z-index: 5;
+        }
+
+        .winner-badge.team-1 {
+            background: var(--team1-color);
+            box-shadow: 0 0 10px var(--team1-color);
+        }
+
+        .winner-badge.team-2 {
+            background: var(--team2-color);
+            box-shadow: 0 0 10px var(--team2-color);
         }
 
         /* MODAL */
@@ -304,6 +580,40 @@
             text-shadow: 2px 2px 0 #ff69b4;
         }
 
+        .challenge-progress {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 10px;
+        }
+
+        .team-progress {
+            text-align: center;
+            padding: 10px 20px;
+        }
+
+        .team-progress h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .team-progress.team-1 h4 {
+            color: var(--team1-color);
+        }
+
+        .team-progress.team-2 h4 {
+            color: var(--team2-color);
+        }
+
+        .progress-count {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
         .challenge-item {
             background: rgba(255,255,255,0.7);
             border: 2px solid #ff69b4;
@@ -311,16 +621,33 @@
             padding: 15px;
             margin-bottom: 15px;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .challenge-item:hover {
-            transform: translateX(10px);
-            box-shadow: -5px 5px 10px rgba(0,0,0,0.2);
-        }
-
-        .challenge-item.completed {
+        .challenge-item.claimed {
             opacity: 0.6;
             background: rgba(200,200,200,0.5);
+        }
+
+        .challenge-item.claimed::after {
+            content: '✓ CLAIMED';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            font-size: 40px;
+            font-weight: bold;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        .challenge-item.claimed.team-1::after {
+            color: var(--team1-color);
+        }
+
+        .challenge-item.claimed.team-2::after {
+            color: var(--team2-color);
         }
 
         .challenge-item h3 {
@@ -329,6 +656,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
         }
 
         .challenge-value {
@@ -340,6 +669,28 @@
         .challenge-description {
             color: #333;
             line-height: 1.6;
+            position: relative;
+            z-index: 2;
+        }
+
+        .claimed-by {
+            margin-top: 10px;
+            padding: 8px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .claimed-by.team-1 {
+            color: var(--team1-color);
+            background: rgba(220,20,60,0.1);
+        }
+
+        .claimed-by.team-2 {
+            color: var(--team2-color);
+            background: rgba(0,191,255,0.1);
         }
 
         .close-button {
@@ -385,32 +736,65 @@
             80%, 100% { content: '...'; }
         }
 
-        /* FLOATING ELEMENTS */
-        .butterfly {
-            position: fixed;
-            width: 30px;
-            height: 30px;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="70" font-size="70">🦋</text></svg>') no-repeat center;
-            background-size: contain;
-            pointer-events: none;
-            z-index: 5;
-            opacity: 0.7;
-            animation: fly 15s linear infinite;
-        }
+        /* MOBILE ADJUSTMENTS */
+        @media (max-width: 767px) {
+            .header h1 { 
+                font-size: 18px; 
+                letter-spacing: 1px;
+            }
+            
+            .turn-text { 
+                font-size: 14px; 
+            }
+            
+            .companies {
+                gap: 10px;
+                padding: 10px;
+            }
 
-        @keyframes fly {
-            0% { transform: translate(-100px, 100vh) rotate(0deg); }
-            25% { transform: translate(25vw, 75vh) rotate(90deg); }
-            50% { transform: translate(50vw, 25vh) rotate(180deg); }
-            75% { transform: translate(75vw, 50vh) rotate(270deg); }
-            100% { transform: translate(100vw, -100px) rotate(360deg); }
+            .company {
+                padding: 8px 12px;
+            }
+
+            .company h2 {
+                font-size: 10px;
+                letter-spacing: 0.5px;
+                margin-right: 8px;
+            }
+
+            /* Show short names on mobile */
+            .full-name {
+                display: none;
+            }
+
+            .short-name {
+                display: inline;
+            }
+
+            .team-avatar {
+                width: 30px;
+                height: 30px;
+                flex-shrink: 0;
+            }
+
+            .valuation {
+                font-size: 14px;
+                letter-spacing: 0;
+            }
+
+            .company-text {
+                gap: 5px;
+            }
         }
 
         /* TABLET AND DESKTOP */
         @media (min-width: 768px) {
-            .header h1 { font-size: 42px; }
-            .company h2 { font-size: 22px; }
-            .valuation { font-size: 42px; }
+            .header h1 { font-size: 36px; }
+            .company h2 { font-size: 16px; }
+            .company { padding: 20px 35px; }
+            .team-avatar { width: 60px; height: 60px; }
+            .valuation { font-size: 32px; }
+            .turn-text { font-size: 22px; }
             
             .board {
                 grid-template-columns: repeat(6, 1fr);
@@ -431,10 +815,6 @@
             
             .cell .value { font-size: 20px; }
             .challenge-dot { width: 8px; height: 8px; }
-            
-            /* Additional butterflies on larger screens */
-            .butterfly:nth-child(2) { animation-delay: 5s; }
-            .butterfly:nth-child(3) { animation-delay: 10s; }
         }
     </style>
 </head>
@@ -442,25 +822,37 @@
     <!-- BACKGROUND -->
     <div class="liminal-bg"></div>
 
-    <!-- BUTTERFLIES -->
-    <div class="butterfly"></div>
-    <div class="butterfly" style="animation-delay: 5s;"></div>
-    <div class="butterfly" style="animation-delay: 10s;"></div>
-
     <!-- HEADER -->
     <div class="header">
-        <h1>🌐 WORKSUCKS.NET INTERNET OLYMPICS 💿</h1>
+        <h1>WORKSUCKS.NET INTERNET OLYMPICS</h1>
+    </div>
+
+    <!-- TURN INDICATOR -->
+    <div class="turn-indicator">
+        <div class="turn-text" id="turnIndicator">Y2KET CORP.'S TURN TO CHOOSE</div>
     </div>
 
     <!-- COMPANY SCORES -->
     <div class="companies">
-        <div class="company" id="company1">
-            <h2>APPLE INC.</h2>
-            <div class="valuation" id="valuation1">$0</div>
+        <div class="company team-1" id="company1">
+            <img src="assets/founders/y2ket.png" alt="Y2Ket Corp" class="team-avatar">
+            <div class="company-text">
+                <h2>
+                    <span class="full-name">Y2KET CORP.</span>
+                    <span class="short-name">Y2KET</span>
+                </h2>
+                <div class="valuation" id="valuation1">$0</div>
+            </div>
         </div>
-        <div class="company" id="company2">
-            <h2>ORANGE INC.</h2>
-            <div class="valuation" id="valuation2">$0</div>
+        <div class="company team-2" id="company2">
+            <img src="assets/founders/series-a.png" alt="Series A" class="team-avatar">
+            <div class="company-text">
+                <h2>
+                    <span class="full-name">SERIES A(POCALYPSE)</span>
+                    <span class="short-name">SERIES A</span>
+                </h2>
+                <div class="valuation" id="valuation2">$0</div>
+            </div>
         </div>
     </div>
 
@@ -474,6 +866,17 @@
     <div class="modal" id="challengeModal">
         <div class="challenge-modal">
             <h2 id="challengeTitle">CHALLENGES</h2>
+            <div class="challenge-progress">
+                <div class="team-progress team-1">
+                    <h4>Y2KET CORP.</h4>
+                    <div class="progress-count" id="team1Progress">0</div>
+                </div>
+                <div style="font-size: 30px; color: #ff69b4;">VS</div>
+                <div class="team-progress team-2">
+                    <h4>SERIES A</h4>
+                    <div class="progress-count" id="team2Progress">0</div>
+                </div>
+            </div>
             <div class="challenge-list" id="challengeList"></div>
             <button class="close-button" onclick="closeChallengeModal()">CLOSE</button>
         </div>
@@ -496,7 +899,7 @@
             measurementId: "G-MPN2LP1Q6X"
         };
 
-        // Initialize Firebase with error handling
+        // Initialize Firebase
         let database;
         try {
             firebase.initializeApp(firebaseConfig);
@@ -505,39 +908,69 @@
             console.error("Firebase initialization error:", error);
         }
 
-        // Game configuration
-        const categories = ["meme-me-up", "doom-scroll", "web-1.0", "netbangers", "robot-time", "em0ti0nz"];
-        const values = [100, 200, 300, 400, 500];
+        // Game configuration - ALL VALUES SHOWN BUT ONLY $100 AVAILABLE
+        const categories = ["meme-me-up-scottie", "doom-scroll-nation", "web-1.0", "netbangerz", "paizley-and-robot", "em0ti0nz"];
+        const values = [100, 200, 300, 400, 500]; // All values shown
+        const availableValues = [100]; // Only $100 is clickable
 
         // Game state
         let gameState = {
             currentTeam: 1,
+            myTeam: null, // Will be set based on URL parameter or selection
             companies: {
-                1: { name: "Apple Inc.", valuation: 0 },
-                2: { name: "Orange Inc.", valuation: 0 }
+                1: { name: "Y2Ket Corp.", valuation: 0 },
+                2: { name: "Series A(pocalypse)", valuation: 0 }
             },
             board: {},
-            selectedCategory: null
+            selectedCategory: null,
+            currentChallenges: null,
+            activeCellKey: null,
+            pendingSelection: false
         };
 
-        // Create cell element
+        // Challenge database from Firebase - will load from moderator panel (5 challenges per $100 category)
+        let challengeDatabase = {
+            "meme-me-up-scottie": { 100: [] },
+            "doom-scroll-nation": { 100: [] },
+            "web-1.0": { 100: [] },
+            "netbangerz": { 100: [] },
+            "paizley-and-robot": { 100: [] },
+            "em0ti0nz": { 100: [] }
+        };
+
+        // Create cell element with dynamic challenge dots
         function createCell(cat, value) {
             const cell = document.createElement('div');
             cell.className = 'cell';
             cell.dataset.category = cat;
             cell.dataset.value = value;
-            cell.onclick = () => selectCategory(cat, value);
+            
+            // Only make $100 cells clickable
+            if (availableValues.includes(value)) {
+                cell.onclick = () => selectCategory(cat, value);
+            } else {
+                cell.classList.add('unavailable');
+            }
             
             const valueDiv = document.createElement('div');
             valueDiv.className = 'value';
-            valueDiv.textContent = `$${value}`;
+            valueDiv.textContent = `${value}`;
             
             const challengesDiv = document.createElement('div');
             challengesDiv.className = 'challenges';
             
-            for (let i = 0; i < 3; i++) {
+            // Get actual number of challenges from database, fallback to 5 for $100, 3 for others
+            let numChallenges;
+            if (value === 100) {
+                numChallenges = challengeDatabase[cat]?.[100]?.length || 5;
+            } else {
+                numChallenges = 3; // Default for unavailable higher values
+            }
+            
+            for (let i = 0; i < numChallenges; i++) {
                 const dot = document.createElement('div');
                 dot.className = 'challenge-dot';
+                dot.dataset.index = i;
                 challengesDiv.appendChild(dot);
             }
             
@@ -554,44 +987,41 @@
             
             if (isMobile) {
                 // Mobile: 3x2 layout
-                // First row of categories
                 categories.slice(0, 3).forEach(cat => {
                     const catDiv = document.createElement('div');
                     catDiv.className = 'category';
-                    catDiv.innerHTML = cat.replace(/-/g, ' ');
+                    catDiv.innerHTML = cat.replace(/-/g, ' ').toUpperCase();
                     board.appendChild(catDiv);
                 });
                 
-                // Values for first 3
                 values.forEach(value => {
                     categories.slice(0, 3).forEach(cat => {
                         board.appendChild(createCell(cat, value));
                     });
                 });
                 
-                // Second row of categories
                 categories.slice(3, 6).forEach(cat => {
                     const catDiv = document.createElement('div');
                     catDiv.className = 'category';
-                    catDiv.innerHTML = cat.replace(/-/g, ' ');
+                    catDiv.innerHTML = cat.replace(/-/g, ' ').toUpperCase();
                     board.appendChild(catDiv);
                 });
                 
-                // Values for second 3
                 values.forEach(value => {
                     categories.slice(3, 6).forEach(cat => {
                         board.appendChild(createCell(cat, value));
                     });
                 });
             } else {
-                // Desktop: 6 column layout
+                // Desktop: 6 column layout - ALL VALUES
                 categories.forEach(cat => {
                     const catDiv = document.createElement('div');
                     catDiv.className = 'category';
-                    catDiv.innerHTML = cat.replace(/-/g, ' ');
+                    catDiv.innerHTML = cat.replace(/-/g, ' ').toUpperCase();
                     board.appendChild(catDiv);
                 });
 
+                // Create all value rows
                 values.forEach(value => {
                     categories.forEach(cat => {
                         board.appendChild(createCell(cat, value));
@@ -607,29 +1037,53 @@
 
         // Select category
         function selectCategory(category, value) {
+            // Don't allow selection of unavailable values
+            if (!availableValues.includes(value)) {
+                return;
+            }
+            
             const cellKey = `${category}-${value}`;
             const cellState = gameState.board[cellKey];
             
+            // Don't allow selection if cell is completed
             if (cellState && cellState.completed) return;
 
-            const cell = document.querySelector(`[data-category="${category}"][data-value="${value}"]`);
-            cell.classList.add('pending');
+            // Check if this cell is in progress (active) - if so, show the challenges
+            if (cellState && cellState.inProgress && gameState.currentChallenges) {
+                // This is the active card - show its challenges
+                showChallenges(category, value, gameState.currentChallenges);
+                return;
+            }
 
+            // Check if there's another card in progress
+            if (gameState.currentChallenges && gameState.activeCellKey !== cellKey) {
+                alert("⏳ Wait your turn! Another challenge is currently active.");
+                return;
+            }
+
+            // Check if it's this team's turn
+            if (gameState.currentTeam !== gameState.myTeam) {
+                alert("⏳ It's not your team's turn!");
+                return;
+            }
+
+            // Send to Firebase for moderator approval
             if (database) {
                 database.ref(`game/pendingSelection`).set({
                     category,
-                    value,
+                    value: 100, // Always $100
                     team: gameState.currentTeam,
                     timestamp: Date.now()
                 });
+                
+                // Show waiting message
+                alert("📨 Selection sent to moderator for approval...");
             } else {
-                setTimeout(() => {
-                    showChallenges(category, value, [
-                        { description: `Challenge 1 for ${category} $${value}`, value: value },
-                        { description: `Challenge 2 for ${category} $${value}`, value: value },
-                        { description: `Challenge 3 for ${category} $${value}`, value: value }
-                    ]);
-                }, 500);
+                // For testing without Firebase
+                const challenges = challengeDatabase[category]?.[100] || [
+                    { description: `Sample challenge for ${category}`, value: 100 }
+                ];
+                showChallenges(category, 100, challenges);
             }
         }
 
@@ -637,30 +1091,70 @@
         function showChallenges(category, value, challenges) {
             const modal = document.getElementById('challengeModal');
             const title = document.getElementById('challengeTitle');
-            const list = document.getElementById('challengeList');
+            
+            // Store current challenges in state
+            gameState.currentChallenges = challenges.map(c => ({ 
+                ...c, 
+                completed: c.completed || false,
+                completedBy: c.completedBy || null, 
+                completedByTeam: c.completedByTeam || null 
+            }));
+            gameState.activeCellKey = `${category}-${value}`;
             
             title.textContent = `${category.replace(/-/g, ' ').toUpperCase()} - $${value}`;
             
-            list.innerHTML = challenges.map((challenge, index) => `
-                <div class="challenge-item ${challenge.completed ? 'completed' : ''}" id="challenge-${index}">
-                    <h3>
-                        <span>Challenge ${index + 1}</span>
-                        <span class="challenge-value">$${challenge.value || value}</span>
-                    </h3>
-                    <div class="challenge-description">${challenge.description}</div>
-                    ${challenge.completedBy ? `<div style="color: #999; margin-top: 10px;">✓ Completed by: ${challenge.completedBy}</div>` : ''}
-                </div>
-            `).join('');
+            // Update progress counts
+            updateChallengeProgress();
+            
+            // Render challenges
+            renderChallengeList();
             
             modal.style.display = 'block';
+        }
+
+        // Add new function to render challenge list
+        function renderChallengeList() {
+            const list = document.getElementById('challengeList');
+            if (!gameState.currentChallenges) return;
+            
+            list.innerHTML = gameState.currentChallenges.map((challenge, index) => {
+                const completedBy = challenge.completedBy;
+                const completedByTeam = challenge.completedByTeam;
+                const teamClass = completedByTeam ? `team-${completedByTeam}` : '';
+                
+                return `
+                    <div class="challenge-item ${completedBy ? 'claimed ' + teamClass : ''}" id="challenge-${index}">
+                        <h3>
+                            <span>Challenge ${index + 1}</span>
+                            <span class="challenge-value">${challenge.value}</span>
+                        </h3>
+                        <div class="challenge-description">${challenge.description}</div>
+                        ${completedBy ? `<div class="claimed-by ${teamClass}">✓ Completed by ${completedBy}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update challenge progress counters
+        function updateChallengeProgress() {
+            if (!gameState.currentChallenges) return;
+            
+            let team1Count = 0;
+            let team2Count = 0;
+            
+            gameState.currentChallenges.forEach(challenge => {
+                if (challenge.completedByTeam === 1) team1Count++;
+                else if (challenge.completedByTeam === 2) team2Count++;
+            });
+            
+            document.getElementById('team1Progress').textContent = team1Count;
+            document.getElementById('team2Progress').textContent = team2Count;
         }
 
         // Close challenge modal
         function closeChallengeModal() {
             document.getElementById('challengeModal').style.display = 'none';
-            document.querySelectorAll('.cell.pending').forEach(cell => {
-                cell.classList.remove('pending');
-            });
+            // Don't clear any state when closing modal - keep everything active
         }
 
         // Update displays
@@ -672,6 +1166,12 @@
                     el.classList.remove('active');
                 }
             });
+            
+            // Update turn indicator
+            const turnIndicator = document.getElementById('turnIndicator');
+            const teamName = gameState.currentTeam === 1 ? "Y2KET CORP." : "SERIES A(POCALYPSE)";
+            turnIndicator.textContent = `${teamName}'S TURN TO CHOOSE`;
+            turnIndicator.className = `turn-text team-${gameState.currentTeam}`;
         }
 
         function updateValuations() {
@@ -686,22 +1186,50 @@
                 const key = `${category}-${value}`;
                 const state = gameState.board[key];
 
-                cell.classList.remove('empty', 'pending', 'selected');
+                cell.classList.remove('completed', 'in-progress');
+                
+                // Remove any existing winner badge
+                const existingBadge = cell.querySelector('.winner-badge');
+                if (existingBadge) existingBadge.remove();
+                
+                // Reset all dots to default state
+                const dots = cell.querySelectorAll('.challenge-dot');
+                dots.forEach(dot => {
+                    dot.className = 'challenge-dot';
+                });
                 
                 if (state) {
-                    if (state.allCompleted) {
-                        cell.classList.add('empty');
+                    if (state.completed) {
+                        cell.classList.add('completed');
                         cell.querySelector('.value').textContent = '✓';
-                        cell.querySelector('.challenges').style.display = 'none';
-                    } else if (state.selected) {
-                        cell.classList.add('selected');
-                        const dots = cell.querySelectorAll('.challenge-dot');
-                        state.challenges?.forEach((challenge, idx) => {
-                            if (dots[idx]) {
-                                dots[idx].classList.toggle('completed', challenge.completed);
-                                dots[idx].classList.toggle('active', !challenge.completed);
-                            }
-                        });
+                        
+                        // Add winner badge
+                        if (state.winnerTeam) {
+                            const badge = document.createElement('div');
+                            badge.className = `winner-badge team-${state.winnerTeam}`;
+                            badge.textContent = state.winnerTeam === 1 ? 'Y' : 'A';
+                            cell.appendChild(badge);
+                        }
+                        
+                        // Update dots based on who completed each challenge
+                        if (state.challenges) {
+                            state.challenges.forEach((challenge, idx) => {
+                                if (dots[idx] && challenge.completedByTeam) {
+                                    dots[idx].className = `challenge-dot team-${challenge.completedByTeam}`;
+                                }
+                            });
+                        }
+                    } else if (state.inProgress) {
+                        cell.classList.add('in-progress');
+                        
+                        // Update dots for in-progress challenges
+                        if (state.challenges) {
+                            state.challenges.forEach((challenge, idx) => {
+                                if (dots[idx] && challenge.completedByTeam) {
+                                    dots[idx].className = `challenge-dot team-${challenge.completedByTeam}`;
+                                }
+                            });
+                        }
                     }
                 }
             });
@@ -711,6 +1239,17 @@
         function setupListeners() {
             if (!database) return;
 
+            // Load challenge database from Firebase
+            database.ref('game/challengeDatabase').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    challengeDatabase = data;
+                    // Reinitialize board to update dot counts
+                    initializeBoard();
+                }
+            });
+
+            // Company data
             database.ref('game/companies').on('value', (snapshot) => {
                 const companies = snapshot.val();
                 if (companies) {
@@ -719,24 +1258,68 @@
                 }
             });
 
+            // Current team
             database.ref('game/currentTeam').on('value', (snapshot) => {
                 gameState.currentTeam = snapshot.val() || 1;
                 updateCompanyDisplay();
             });
 
+            // Board state
             database.ref('game/board').on('value', (snapshot) => {
                 gameState.board = snapshot.val() || {};
                 updateBoard();
             });
 
+            // Pending selection listener
+            database.ref('game/pendingSelection').on('value', (snapshot) => {
+                const pending = snapshot.val();
+                if (pending) {
+                    gameState.pendingSelection = true;
+                    // You could add a visual indicator here
+                } else {
+                    gameState.pendingSelection = false;
+                }
+            });
+
+            // Active challenges (when moderator approves)
             database.ref('game/activeChallenges').on('value', (snapshot) => {
                 const active = snapshot.val();
                 if (active && active.challenges && active.challenges.length > 0) {
-                    setTimeout(() => {
-                        showChallenges(active.category, active.value, active.challenges || []);
-                    }, 100);
+                    // Use challenges from Firebase (which include completion status)
+                    const challenges = active.challenges;
+                    
+                    // Update local gameState with active challenges for real-time sync
+                    gameState.currentChallenges = challenges;
+                    gameState.activeCellKey = `${active.category}-${active.value}`;
+                    
+                    // Mark cell as in progress
+                    const cellKey = `${active.category}-${active.value}`;
+                    gameState.board[cellKey] = { inProgress: true, challenges: challenges };
+                    updateBoard();
+                    
+                    // Check if modal needs to be shown or updated
+                    const modalIsOpen = document.getElementById('challengeModal').style.display === 'block';
+                    
+                    if (modalIsOpen) {
+                        // Update the existing modal content
+                        updateChallengeProgress();
+                        renderChallengeList(); // Re-render the challenge list with updated data
+                    } else {
+                        // Show modal for the first time
+                        showChallenges(active.category, active.value, challenges);
+                    }
+                    
+                    // Clear any pending selection state
+                    gameState.pendingSelection = false;
                 } else {
-                    closeChallengeModal();
+                    // No active challenges - clear state
+                    gameState.currentChallenges = null;
+                    gameState.activeCellKey = null;
+                    
+                    // Close modal if it's open
+                    if (document.getElementById('challengeModal').style.display === 'block') {
+                        document.getElementById('challengeModal').style.display = 'none';
+                    }
                 }
             });
         }
@@ -778,26 +1361,74 @@
 
         // Initialize
         window.onload = () => {
-            initializeBoard();
-            setupListeners();
+            // Check URL parameter for team
+            const urlParams = new URLSearchParams(window.location.search);
+            const teamParam = urlParams.get('team');
+            
+            if (teamParam === '1' || teamParam === '2') {
+                gameState.myTeam = parseInt(teamParam);
+            } else {
+                // Ask which team they are
+                const team = prompt('Which team are you? Enter 1 for Y2KET CORP or 2 for SERIES A(POCALYPSE)');
+                if (team === '1' || team === '2') {
+                    gameState.myTeam = parseInt(team);
+                } else {
+                    gameState.myTeam = 1; // Default to team 1
+                    alert('Defaulting to Team 1: Y2KET CORP');
+                }
+            }
+            
+            setupListeners(); // Set up listeners first to load challenge database
+            setTimeout(() => {
+                initializeBoard(); // Initialize board after challenge database loads
+            }, 1000);
             updateCompanyDisplay();
             updateValuations();
             loadRandomBackground();
             
+            // Add sparkles
+            createSparkles();
+            
+            // Initialize Firebase data if needed
             if (database) {
                 database.ref('game').once('value', (snapshot) => {
                     if (!snapshot.exists()) {
                         database.ref('game').set({
                             currentTeam: 1,
                             companies: {
-                                1: { name: "Apple Inc.", valuation: 0 },
-                                2: { name: "Orange Inc.", valuation: 0 }
+                                1: { name: "Y2Ket Corp.", valuation: 0 },
+                                2: { name: "Series A(pocalypse)", valuation: 0 }
                             }
                         });
                     }
                 });
             }
         };
+
+        // Create sparkles and butterflies
+        function createSparkles() {
+            const sparkleCount = 20;
+            for (let i = 0; i < sparkleCount; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 3 + 's';
+                document.body.appendChild(sparkle);
+            }
+            
+            // Create floating butterflies
+            const butterflies = ['🦋', '🌸', '✨', '🍃'];
+            butterflies.forEach((emoji, index) => {
+                const butterfly = document.createElement('div');
+                butterfly.className = 'butterfly';
+                butterfly.textContent = emoji;
+                butterfly.style.top = (10 + index * 20) + '%';
+                butterfly.style.left = '-50px';
+                butterfly.style.animationDelay = (index * 5) + 's';
+                document.body.appendChild(butterfly);
+            });
+        }
 
         // Handle resize
         window.addEventListener('resize', () => {
