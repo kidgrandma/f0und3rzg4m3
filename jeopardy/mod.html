@@ -194,6 +194,13 @@
             line-height: 1.2;
         }
 
+        .founder-wealth {
+            font-size: 0.9em;
+            color: var(--yellow);
+            font-weight: bold;
+            margin-top: 3px;
+        }
+
         .current-card {
             background: rgba(255,255,0,0.1);
             border: 3px solid var(--yellow);
@@ -299,6 +306,23 @@
             gap: 10px;
             margin-top: 10px;
             align-items: center;
+        }
+
+        .undo-button {
+            background: var(--purple);
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.8em;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .undo-button:hover {
+            background: var(--pink);
+            transform: scale(1.05);
         }
 
         .pending-selection {
@@ -686,6 +710,7 @@
         let activeChallenges = null;
         let isConnected = false;
         let selectedFounder = null;
+        let founderWealth = {}; // Track individual founder wealth
 
         // Enhanced challenge database with actual challenges
         let challengeDatabase = {
@@ -823,21 +848,26 @@
                     { id: '40_craig_newmark', name: 'Craig Newmark', company: 'Craigslist', image: '40_craig_newmark.png', team: 1, handle: '@ladyhuss_' },
                     { id: '20_jack_dorsey', name: 'Jack Dorsey', company: 'Twitter', image: '20_jack_dorsey.png', team: 1, handle: '@jackhite' },
                     { id: '50_jessica_alba', name: 'Jessica Alba', company: 'The Honest Company', image: '50_jessica_alba.png', team: 1, handle: '@jasche__' },
-                    { id: '14_peter_thiel', name: 'Peter Thiel', company: 'PayPal', image: '14_peter_thiel.png', team: 1, handle: '@jesushands' },
+                    { id: '14_peter_thiel', name: 'Peter Thiel', company: 'Palantir', image: '14_peter_thiel.png', team: 1, handle: '@jesushands' },
                     { id: '17_sam_altman', name: 'Sam Altman', company: 'OpenAI', image: '17_sam_altman.png', team: 1, handle: '@michaelmelwani' },
                     { id: '11_google_founders', name: 'Larry Page & Sergey Brin', company: 'Google', image: '11_google_founders.png', team: 1, handle: '@mfgarret + @nataliesomekh_' },
                     { id: '15_jack_ma', name: 'Jack Ma', company: 'Alibaba', image: '15_jack_ma.png', team: 1, handle: '@manolowashere' },
                     { id: '08_elon_musk', name: 'Elon Musk', company: 'Tesla/SpaceX', image: '08_elon_musk.png', team: 1, handle: '@vishaal.arya' },
                     { id: '19_vitalik_buterin', name: 'Vitalik Buterin', company: 'Ethereum', image: '19_vitalik_buterin.png', team: 1, handle: '@saulisgood' },
-                    { id: '02_sheryl_sandberg', name: 'Sheryl Sandberg', company: 'Meta', image: '02_sheryl_sandberg.png', team: 1, handle: '@aiiisound' },
-                    { id: '04_brian_armstrong', name: 'Brian Armstrong', company: 'Coinbase', image: '04_brian_armstrong.png', team: 1, handle: '@jenergizer' },
-                    { id: '29_sean_parker', name: 'Sean Parker', company: 'Napster', image: '29_sean_parker.png', team: 1, handle: '@mansweater' }
+                    { id: '29_sean_parker', name: 'Sean Parker', company: 'Napster', image: '29_sean_parker.png', team: 1, handle: '@mansweater' },
+                    { id: '41_lucy_guo', name: 'Lucy Guo', company: 'Scale AI', image: '41_lucy_guo.png', team: 1, handle: '@literatrix' },
+                    { id: '06_brian_chesky', name: 'Brian Chesky', company: 'Airbnb', image: '06_brian_chesky.png', team: 1, handle: '@cyborgdrew' },
+                    { id: '52_palmer_luckey', name: 'Palmer Luckey', company: 'Oculus', image: '52_palmer_luckey.png', team: 1, handle: '@spine.remover' },
+                    { id: '38_juul', name: 'James Monsees & Adam Bowen', company: 'Juul', image: '38_juul.png', team: 1, handle: '@sam__stiles' },
+                    { id: '63_winklevoss', name: 'Winklevoss Twins', company: 'Gemini', image: '63_winklevoss.png', team: 1, handle: '@whoiskaybrown' },
+                    { id: '67_kim', name: 'Kim Dotcom', company: 'Mega', image: '67_kim.png', team: 1, handle: '@thecornii' }
                 ],
                 2: [
                     { id: '51_zhang_yiming', name: 'Zhang Yiming', company: 'ByteDance', image: '51_zhang_yiming.png', team: 2, handle: '@aiiisound' },
                     { id: '34_meg_whitman', name: 'Meg Whitman', company: 'eBay', image: '34_meg_whitman.png', team: 2, handle: '@bombchips' },
+                    { id: '04_brian_armstrong', name: 'Brian Armstrong', company: 'Coinbase', image: '04_brian_armstrong.png', team: 2, handle: '@jenergizer' },
                     { id: '48_sam_bankman_fried', name: 'Sam Bankman-Fried', company: 'FTX', image: '48_sam_bankman-fried.png', team: 2, handle: '@teamcoben' },
-                    { id: '49_reed_hastings', name: 'Reed Hastings', company: 'Netflix', image: '49_reed_hastings.png', team: 2, handle: '@stan_jericho' },
+                    { id: '49_reed_hastings', name: 'Reed Hastings', company: 'Netflix', image: '49_reed_hastings.png', team: 2, handle: '@stan_jericho', status: 'dead' },
                     { id: '24_larry_ellison', name: 'Larry Ellison', company: 'Oracle', image: '24_larry_ellison.png', team: 2, handle: '@littleurbanachiever' },
                     { id: '21_jimmy_wales', name: 'Jimmy Wales', company: 'Wikipedia', image: '21_jimmy_wales.png', team: 2, handle: '@danieldomange' },
                     { id: '46_dread_pirate', name: 'Ross Ulbricht', company: 'Silk Road', image: '46_dread_pirate.png', team: 2, handle: '@octavekitten' },
@@ -850,14 +880,22 @@
                     { id: '36_alexis_ohanian', name: 'Alexis Ohanian', company: 'Reddit', image: '36_alexis_ohanian.png', team: 2, handle: '@taytaystay' },
                     { id: '43_sophia_amoruso', name: 'Sophia Amoruso', company: 'Nasty Gal', image: '43_sophia_amoruso.png', team: 2, handle: '@special_agent_long' },
                     { id: '39_ariana_huffington', name: 'Ariana Huffington', company: 'Huffington Post', image: '39_ariana_huffington.png', team: 2, handle: '@jubileedj' },
-                    { id: '63_winklevoss', name: 'Winklevoss Twins', company: 'Gemini', image: '63_winklevoss.png', team: 2, handle: '@whoiskaybrown' }
+                    { id: '33_martin_shkreli', name: 'Martin Shkreli', company: 'Turing Pharmaceuticals', image: '33_martin_shkreli.png', team: 2, handle: '@l2ex', status: 'dead' }
                 ]
             };
             
             foundersDatabase = hardcodedFounders;
+            
+            // Initialize founder wealth
+            founderWealth = {};
+            Object.values(foundersDatabase).flat().forEach(founder => {
+                founderWealth[founder.id] = 0;
+            });
+            
             database.ref('game/founders').set(foundersDatabase);
+            database.ref('game/founderWealth').set(founderWealth);
             updateFounderDisplay();
-            log('Imported 34 founders from companies.html', 'success');
+            log('Imported founders from companies.html', 'success');
         }
 
         function updateFounderDisplay() {
@@ -874,11 +912,12 @@
             }
             
             return founders.map(founder => `
-                <div class="founder-item" onclick="selectFounder('${founder.id}')" data-founder="${founder.id}">
+                <div class="founder-item ${founder.status === 'dead' ? 'dead' : ''}" onclick="selectFounder('${founder.id}')" data-founder="${founder.id}">
                     <img src="assets/founders/${founder.image}" alt="${founder.name}" class="founder-avatar" 
                          onerror="this.src='assets/founders/default.png'">
                     <div class="founder-name">${founder.name}</div>
                     <div style="font-size: 0.7em; color: var(--cyan); margin-top: 2px;">${founder.handle || ''}</div>
+                    <div class="founder-wealth">$${(founderWealth[founder.id] || 0).toLocaleString()}</div>
                     <button onclick="moveFounderToOtherTeam('${founder.id}'); event.stopPropagation();" 
                             style="position: absolute; top: 2px; right: 2px; background: var(--purple); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 0.7em; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                         ↔
@@ -948,7 +987,10 @@
             };
             
             foundersDatabase[team].push(founder);
+            founderWealth[founder.id] = 0;
+            
             database.ref('game/founders').set(foundersDatabase);
+            database.ref('game/founderWealth').set(founderWealth);
             updateFounderDisplay();
             log(`Added ${name} to Team ${team}`, 'success');
         }
@@ -1041,8 +1083,12 @@
                 return;
             }
 
-            // Award points to the founder's team
+            // Award points to both company AND founder
             addValuation(founder.team, challenge.value);
+            
+            // Update founder's individual wealth
+            founderWealth[founder.id] = (founderWealth[founder.id] || 0) + challenge.value;
+            database.ref(`game/founderWealth/${founder.id}`).set(founderWealth[founder.id]);
             
             // Update the challenge
             const updatedChallenges = [...activeChallenges.challenges];
@@ -1050,7 +1096,8 @@
                 ...challenge,
                 completed: true,
                 completedBy: founder.name,
-                completedByTeam: founder.team
+                completedByTeam: founder.team,
+                completedByFounderId: founder.id
             };
             
             // Update Firebase
@@ -1063,6 +1110,47 @@
             document.querySelectorAll('.founder-item').forEach(item => {
                 item.classList.remove('active');
             });
+            
+            // Update display
+            updateFounderDisplay();
+        }
+
+        // NEW: Undo last challenge completion
+        function undoChallenge(index) {
+            if (!activeChallenges) return;
+            
+            const challenge = activeChallenges.challenges[index];
+            if (!challenge.completed) return;
+            
+            if (confirm(`Undo completion of this challenge by ${challenge.completedBy}?`)) {
+                // Subtract from company valuation
+                addValuation(challenge.completedByTeam, -challenge.value);
+                
+                // Subtract from founder wealth
+                if (challenge.completedByFounderId) {
+                    founderWealth[challenge.completedByFounderId] = Math.max(0, (founderWealth[challenge.completedByFounderId] || 0) - challenge.value);
+                    database.ref(`game/founderWealth/${challenge.completedByFounderId}`).set(founderWealth[challenge.completedByFounderId]);
+                }
+                
+                // Update the challenge
+                const updatedChallenges = [...activeChallenges.challenges];
+                updatedChallenges[index] = {
+                    description: challenge.description,
+                    value: challenge.value,
+                    completed: false,
+                    completedBy: null,
+                    completedByTeam: null,
+                    completedByFounderId: null
+                };
+                
+                // Update Firebase
+                database.ref('game/activeChallenges/challenges').set(updatedChallenges);
+                
+                log(`Undid challenge completion for ${challenge.completedBy}`, 'error');
+                
+                // Update display
+                updateFounderDisplay();
+            }
         }
 
         function updateChallengeProgress() {
@@ -1218,7 +1306,15 @@
                     1: { name: "Y2Ket Corp.", valuation: 0 },
                     2: { name: "Series A(pocalypse)", valuation: 0 }
                 });
-                log('Valuations reset', 'success');
+                
+                // Also reset founder wealth
+                Object.keys(founderWealth).forEach(founderId => {
+                    founderWealth[founderId] = 0;
+                });
+                database.ref('game/founderWealth').set(founderWealth);
+                
+                updateFounderDisplay();
+                log('Valuations and founder wealth reset', 'success');
             }
         }
 
@@ -1231,8 +1327,15 @@
                         2: { name: "Series A(pocalypse)", valuation: 0 }
                     },
                     challengeDatabase: challengeDatabase,
-                    board: {}
+                    board: {},
+                    founderWealth: {}
                 });
+                
+                // Reset local state
+                founderWealth = {};
+                foundersDatabase = { 1: [], 2: [] };
+                updateFounderDisplay();
+                
                 log('Game completely reset', 'success');
             }
         }
@@ -1266,6 +1369,15 @@
                 const data = snapshot.val();
                 if (data) {
                     foundersDatabase = data;
+                    updateFounderDisplay();
+                }
+            });
+
+            // Load founder wealth
+            database.ref('game/founderWealth').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    founderWealth = data;
                     updateFounderDisplay();
                 }
             });
@@ -1318,7 +1430,7 @@
                 }
             });
 
-            // Active challenges - FIXED
+            // Active challenges - FIXED with undo functionality
             database.ref('game/activeChallenges').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data && data.challenges && data.challenges.length > 0) {
@@ -1336,14 +1448,15 @@
                     challengeList.innerHTML = data.challenges.map((challenge, idx) => `
                         <div class="challenge-item ${challenge.completed ? 'completed' : ''}">
                             <div class="challenge-header">
-                                <div class="challenge-value">$${challenge.value}</div>
+                                <div class="challenge-value">${challenge.value}</div>
                                 <div class="challenge-status ${challenge.completed ? 'status-completed' : 'status-available'}">
                                     ${challenge.completed ? 'COMPLETED' : 'AVAILABLE'}
                                 </div>
                             </div>
                             <p style="margin-bottom: 10px;">${challenge.description}</p>
                             ${challenge.completed ? 
-                                `<p style="color: #00ff00; font-weight: bold;">✓ Completed by: ${challenge.completedBy} (Team ${challenge.completedByTeam})</p>` :
+                                `<p style="color: #00ff00; font-weight: bold;">✓ Completed by: ${challenge.completedBy} (Team ${challenge.completedByTeam})</p>
+                                <button onclick="undoChallenge(${idx})" class="undo-button">↺ Undo</button>` :
                                 `<div class="challenge-controls">
                                     <span style="color: var(--yellow);">Select founder above, then:</span>
                                     <button onclick="completeChallenge(${idx})" class="success">
@@ -1355,7 +1468,7 @@
                     `).join('');
                     
                     updateChallengeProgress();
-                    updateGameStatus(`Active: ${data.category} $${data.value}`);
+                    updateGameStatus(`Active: ${data.category} ${data.value}`);
                 } else {
                     activeChallenges = null;
                     const activeDiv = document.getElementById('activeCard');
@@ -1369,7 +1482,135 @@
                 }
             });
         }
+// Add this function to rebuild founder wealth from existing challenge data
+function rebuildFounderWealthFromHistory() {
+    console.log('🔧 Starting founder wealth rebuild...');
+    
+    // First, make sure we have founders loaded
+    if (!foundersDatabase[1].length && !foundersDatabase[2].length) {
+        alert('Please import founders first!');
+        return;
+    }
+    
+    // Create a name-to-ID mapping
+    const nameToId = {};
+    [...foundersDatabase[1], ...foundersDatabase[2]].forEach(founder => {
+        nameToId[founder.name] = founder.id;
+    });
+    
+    console.log('Name mapping:', nameToId);
+    
+    // Get all board data
+    database.ref('game/board').once('value', (snapshot) => {
+        const board = snapshot.val() || {};
+        const rebuiltWealth = {};
+        let totalFound = 0;
+        let unmatchedNames = [];
+        
+        // Go through each cell
+        Object.keys(board).forEach(cellKey => {
+            const cell = board[cellKey];
+            
+            if (cell.challenges && Array.isArray(cell.challenges)) {
+                cell.challenges.forEach((challenge, idx) => {
+                    if (challenge.completed && challenge.completedBy) {
+                        const founderId = nameToId[challenge.completedBy];
+                        
+                        if (founderId) {
+                            if (!rebuiltWealth[founderId]) {
+                                rebuiltWealth[founderId] = 0;
+                            }
+                            rebuiltWealth[founderId] += challenge.value;
+                            totalFound++;
+                            
+                            console.log(`✅ Matched: ${challenge.completedBy} = ${founderId}, +$${challenge.value}`);
+                            
+                            // Also update the challenge with the founder ID for future use
+                            database.ref(`game/board/${cellKey}/challenges/${idx}/completedByFounderId`).set(founderId);
+                        } else {
+                            console.log(`❌ Could not match: "${challenge.completedBy}"`);
+                            unmatchedNames.push(challenge.completedBy);
+                        }
+                    }
+                });
+            }
+        });
+        
+        console.log(`\n📊 REBUILD SUMMARY:`);
+        console.log(`Total challenges found: ${totalFound}`);
+        console.log(`Rebuilt wealth:`, rebuiltWealth);
+        
+        if (unmatchedNames.length > 0) {
+            console.log(`\n⚠️ Unmatched names:`, unmatchedNames);
+            alert(`Warning: Could not match ${unmatchedNames.length} founder names. Check console for details.`);
+        }
+        
+        // Calculate totals by team
+        let team1Total = 0;
+        let team2Total = 0;
+        
+        Object.keys(rebuiltWealth).forEach(founderId => {
+            const founder = [...foundersDatabase[1], ...foundersDatabase[2]].find(f => f.id === founderId);
+            if (founder) {
+                if (founder.team === 1) team1Total += rebuiltWealth[founderId];
+                else team2Total += rebuiltWealth[founderId];
+            }
+        });
+        
+        console.log(`Team 1 total: $${team1Total}`);
+        console.log(`Team 2 total: $${team2Total}`);
+        
+        if (confirm(`Found ${totalFound} completed challenges.\n\nTeam 1: $${team1Total}\nTeam 2: $${team2Total}\n\nSave this founder wealth data?`)) {
+            // Save to Firebase
+            database.ref('game/founderWealth').set(rebuiltWealth);
+            founderWealth = rebuiltWealth;
+            updateFounderDisplay();
+            log(`✅ Rebuilt wealth for ${Object.keys(rebuiltWealth).length} founders`, 'success');
+        }
+    });
+}
 
+// Also add this simpler function to just check current totals
+function auditCurrentScores() {
+    database.ref('game').once('value', (snapshot) => {
+        const data = snapshot.val();
+        
+        console.log('\n📊 CURRENT SCORE AUDIT:');
+        console.log('Company valuations:', data.companies);
+        
+        let calculatedTeam1 = 0;
+        let calculatedTeam2 = 0;
+        let detailsByTeam = { 1: [], 2: [] };
+        
+        if (data.board) {
+            Object.keys(data.board).forEach(cellKey => {
+                const cell = data.board[cellKey];
+                if (cell.challenges) {
+                    cell.challenges.forEach(challenge => {
+                        if (challenge.completed) {
+                            if (challenge.completedByTeam === 1) {
+                                calculatedTeam1 += challenge.value;
+                                detailsByTeam[1].push(`${challenge.completedBy}: $${challenge.value}`);
+                            } else if (challenge.completedByTeam === 2) {
+                                calculatedTeam2 += challenge.value;
+                                detailsByTeam[2].push(`${challenge.completedBy}: $${challenge.value}`);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        
+        console.log(`\nTeam 1 calculated total: $${calculatedTeam1}`);
+        console.log('Team 1 challenges:', detailsByTeam[1]);
+        console.log(`\nTeam 2 calculated total: $${calculatedTeam2}`);
+        console.log('Team 2 challenges:', detailsByTeam[2]);
+        
+        console.log('\n⚠️ DISCREPANCIES:');
+        console.log(`Team 1: Showing $${data.companies[1].valuation}, Should be $${calculatedTeam1}`);
+        console.log(`Team 2: Showing $${data.companies[2].valuation}, Should be $${calculatedTeam2}`);
+    });
+}
         // Initialize
         window.onload = () => {
             loadRandomBackground();
@@ -1384,7 +1625,8 @@
                             2: { name: "Series A(pocalypse)", valuation: 0 }
                         },
                         challengeDatabase: challengeDatabase,
-                        board: {}
+                        board: {},
+                        founderWealth: {}
                     });
                     log('Initialized new game', 'success');
                 }
