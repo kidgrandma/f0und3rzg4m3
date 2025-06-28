@@ -629,10 +629,19 @@
                 </div>
                 
                 <div id="challengeList"></div>
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,0,0.1); border: 2px solid var(--yellow); border-radius: 10px;">
+                    <button id="scoringModeBtn" onclick="toggleScoringMode()" class="secondary" style="width: 100%;">
+                        🏢 MODE: TEAM + PERSONAL
+                    </button>
+                    <div id="scoringModeIndicator" style="display: none; margin-top: 10px; color: var(--yellow); text-align: center; font-weight: bold;">
+                        ⚠️ PERSONAL MODE: Points go to founders only, NOT to teams!
+                    </div>
+                </div>
                 
+                <!-- Then your existing button group -->
                 <div class="button-group" style="margin-top: 20px;">
                     <button onclick="closeCurrentCard()" class="danger">🏁 Close Card</button>
-                    <button onclick="cancelCurrentRound()" class="danger">❌ Cancel Round</button>  <!-- ADD THIS -->
+                    <button onclick="cancelCurrentRound()" class="danger">❌ Cancel Round</button>
                     <button onclick="nextTeamTurn()" class="secondary">👥 Next Team's Turn</button>
                 </div>
             </div>
@@ -1069,91 +1078,107 @@
             log(`Rejected category selection`, 'error');
         }
 
-        // FIXED: Complete challenge function
         function completeChallenge(index) {
-            if (!activeChallenges || !selectedFounder) {
-                alert('Please select a founder first!');
-                return;
-            }
-            
-            const challenge = activeChallenges.challenges[index];
-            if (challenge.completed) return;
+    if (!activeChallenges || !selectedFounder) {
+        alert('Please select a founder first!');
+        return;
+    }
+    
+    const challenge = activeChallenges.challenges[index];
+    if (challenge.completed) return;
 
-            const founder = [...(foundersDatabase[1] || []), ...(foundersDatabase[2] || [])].find(f => f.id === selectedFounder);
-            if (!founder) {
-                alert('Selected founder not found!');
-                return;
-            }
+    const founder = [...(foundersDatabase[1] || []), ...(foundersDatabase[2] || [])].find(f => f.id === selectedFounder);
+    if (!founder) {
+        alert('Selected founder not found!');
+        return;
+    }
 
-            // Award points to both company AND founder
-            addValuation(founder.team, challenge.value);
-            
-            // Update founder's individual wealth
-            founderWealth[founder.id] = (founderWealth[founder.id] || 0) + challenge.value;
-            database.ref(`game/founderWealth/${founder.id}`).set(founderWealth[founder.id]);
-            
-            // Update the challenge
-            const updatedChallenges = [...activeChallenges.challenges];
-            updatedChallenges[index] = {
-                ...challenge,
-                completed: true,
-                completedBy: founder.name,
-                completedByTeam: founder.team,
-                completedByFounderId: founder.id
-            };
-            
-            // Update Firebase
-            database.ref('game/activeChallenges/challenges').set(updatedChallenges);
+    // Check scoring mode
+    if (personalScoringMode) {
+        // PERSONAL MODE: Only award to founder, NOT to company
+        log(`💰 PERSONAL MODE: ${founder.name} keeps all $${challenge.value} for themselves!`, 'error');
+    } else {
+        // NORMAL MODE: Award to company too
+        addValuation(founder.team, challenge.value);
+    }
+    
+    // Always update founder's individual wealth
+    founderWealth[founder.id] = (founderWealth[founder.id] || 0) + challenge.value;
+    database.ref(`game/founderWealth/${founder.id}`).set(founderWealth[founder.id]);
+    
+    // Update the challenge
+    const updatedChallenges = [...activeChallenges.challenges];
+    updatedChallenges[index] = {
+        ...challenge,
+        completed: true,
+        completedBy: founder.name,
+        completedByTeam: founder.team,
+        completedByFounderId: founder.id,
+        personalMode: personalScoringMode // Track if this was personal mode
+    };
+    
+    // Update Firebase
+    database.ref('game/activeChallenges/challenges').set(updatedChallenges);
 
-            log(`${founder.name} (Team ${founder.team}) completed challenge for +$${challenge.value}`, 'success');
-            
-            // Clear selection
-            selectedFounder = null;
-            document.querySelectorAll('.founder-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Update display
-            updateFounderDisplay();
-        }
+    if (personalScoringMode) {
+        log(`${founder.name} completed challenge for PERSONAL gain: +$${challenge.value} (Team gets $0)`, 'error');
+    } else {
+        log(`${founder.name} (Team ${founder.team}) completed challenge for +$${challenge.value}`, 'success');
+    }
+    
+    // Clear selection
+    selectedFounder = null;
+    document.querySelectorAll('.founder-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Update display
+    updateFounderDisplay();
+}
+
+
+
 
         // NEW: Undo last challenge completion
         function undoChallenge(index) {
-            if (!activeChallenges) return;
-            
-            const challenge = activeChallenges.challenges[index];
-            if (!challenge.completed) return;
-            
-            if (confirm(`Undo completion of this challenge by ${challenge.completedBy}?`)) {
-                // Subtract from company valuation
-                addValuation(challenge.completedByTeam, -challenge.value);
-                
-                // Subtract from founder wealth
-                if (challenge.completedByFounderId) {
-                    founderWealth[challenge.completedByFounderId] = Math.max(0, (founderWealth[challenge.completedByFounderId] || 0) - challenge.value);
-                    database.ref(`game/founderWealth/${challenge.completedByFounderId}`).set(founderWealth[challenge.completedByFounderId]);
-                }
-                
-                // Update the challenge
-                const updatedChallenges = [...activeChallenges.challenges];
-                updatedChallenges[index] = {
-                    description: challenge.description,
-                    value: challenge.value,
-                    completed: false,
-                    completedBy: null,
-                    completedByTeam: null,
-                    completedByFounderId: null
-                };
-                
-                // Update Firebase
-                database.ref('game/activeChallenges/challenges').set(updatedChallenges);
-                
-                log(`Undid challenge completion for ${challenge.completedBy}`, 'error');
-                
-                // Update display
-                updateFounderDisplay();
-            }
+    if (!activeChallenges) return;
+    
+    const challenge = activeChallenges.challenges[index];
+    if (!challenge.completed) return;
+    
+    if (confirm(`Undo completion of this challenge by ${challenge.completedBy}?`)) {
+        // Only subtract from company if it wasn't personal mode
+        if (!challenge.personalMode) {
+            addValuation(challenge.completedByTeam, -challenge.value);
         }
+        
+        // Always subtract from founder wealth
+        if (challenge.completedByFounderId) {
+            founderWealth[challenge.completedByFounderId] = Math.max(0, (founderWealth[challenge.completedByFounderId] || 0) - challenge.value);
+            database.ref(`game/founderWealth/${challenge.completedByFounderId}`).set(founderWealth[challenge.completedByFounderId]);
+        }
+        
+        // Update the challenge
+        const updatedChallenges = [...activeChallenges.challenges];
+        updatedChallenges[index] = {
+            description: challenge.description,
+            value: challenge.value,
+            completed: false,
+            completedBy: null,
+            completedByTeam: null,
+            completedByFounderId: null,
+            personalMode: false
+        };
+        
+        // Update Firebase
+        database.ref('game/activeChallenges/challenges').set(updatedChallenges);
+        
+        log(`Undid challenge completion for ${challenge.completedBy}${challenge.personalMode ? ' (was personal mode)' : ''}`, 'error');
+        
+        // Update display
+        updateFounderDisplay();
+    }
+}
 
         function updateChallengeProgress() {
             if (!activeChallenges) return;
@@ -1308,6 +1333,29 @@ function saveChallenges() {
             database.ref('game/paused').set(true);
             log('Game paused', 'error');
         }
+        let personalScoringMode = false;
+
+// Add this function to toggle scoring mode
+function toggleScoringMode() {
+    personalScoringMode = !personalScoringMode;
+    const button = document.getElementById('scoringModeBtn');
+    const indicator = document.getElementById('scoringModeIndicator');
+    
+    if (personalScoringMode) {
+        button.textContent = '💰 MODE: PERSONAL ONLY';
+        button.style.background = '#FFD700';
+        button.style.color = '#000';
+        indicator.textContent = '⚠️ PERSONAL MODE: Points go to founders only, NOT to teams!';
+        indicator.style.display = 'block';
+        log('Switched to PERSONAL scoring mode - founders keep money, teams get nothing!', 'error');
+    } else {
+        button.textContent = '🏢 MODE: TEAM + PERSONAL';
+        button.style.background = 'var(--cyan)';
+        button.style.color = '#000';
+        indicator.style.display = 'none';
+        log('Switched to NORMAL scoring mode - both teams and founders get points', 'success');
+    }
+}
         function openScoreEditor() {
     console.log('Opening score editor...');
     
@@ -1783,40 +1831,43 @@ function removeChallenge(cellKey, challengeIndex) {
 
             // Active challenges - FIXED with undo functionality
             database.ref('game/activeChallenges').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data && data.challenges && data.challenges.length > 0) {
-                    activeChallenges = data;
-                    const pendingDiv = document.getElementById('pendingSelection');
-                    const activeDiv = document.getElementById('activeCard');
-                    
-                    pendingDiv.style.display = 'none';
-                    activeDiv.style.display = 'block';
-                    
-                    document.getElementById('currentCardTitle').textContent = 
-                        `🎯 ${data.category.replace(/-/g, ' ').toUpperCase()} - $${data.value}`;
-                    
-                    const challengeList = document.getElementById('challengeList');
-                    challengeList.innerHTML = data.challenges.map((challenge, idx) => `
-                        <div class="challenge-item ${challenge.completed ? 'completed' : ''}">
-                            <div class="challenge-header">
-                                <div class="challenge-value">${challenge.value}</div>
-                                <div class="challenge-status ${challenge.completed ? 'status-completed' : 'status-available'}">
-                                    ${challenge.completed ? 'COMPLETED' : 'AVAILABLE'}
-                                </div>
-                            </div>
-                            <p style="margin-bottom: 10px;">${challenge.description}</p>
-                            ${challenge.completed ? 
-                                `<p style="color: #00ff00; font-weight: bold;">✓ Completed by: ${challenge.completedBy} (Team ${challenge.completedByTeam})</p>
-                                <button onclick="undoChallenge(${idx})" class="undo-button">↺ Undo</button>` :
-                                `<div class="challenge-controls">
-                                    <span style="color: var(--yellow);">Select founder above, then:</span>
-                                    <button onclick="completeChallenge(${idx})" class="success">
-                                        ✓ Mark Complete
-                                    </button>
-                                </div>`
-                            }
-                        </div>
-                    `).join('');
+    const data = snapshot.val();
+    if (data && data.challenges && data.challenges.length > 0) {
+        activeChallenges = data;
+        const pendingDiv = document.getElementById('pendingSelection');
+        const activeDiv = document.getElementById('activeCard');
+        
+        pendingDiv.style.display = 'none';
+        activeDiv.style.display = 'block';
+        
+        document.getElementById('currentCardTitle').textContent = 
+            `🎯 ${data.category.replace(/-/g, ' ').toUpperCase()} - $${data.value}`;
+        
+        const challengeList = document.getElementById('challengeList');
+        challengeList.innerHTML = data.challenges.map((challenge, idx) => `
+            <div class="challenge-item ${challenge.completed ? 'completed' : ''}">
+                <div class="challenge-header">
+                    <div class="challenge-value">$${challenge.value}</div>
+                    <div class="challenge-status ${challenge.completed ? 'status-completed' : 'status-available'}">
+                        ${challenge.completed ? 'COMPLETED' : 'AVAILABLE'}
+                    </div>
+                </div>
+                <p style="margin-bottom: 10px;">${challenge.description}</p>
+                ${challenge.completed ? 
+                    `<p style="color: #00ff00; font-weight: bold;">
+                        ✓ Completed by: ${challenge.completedBy} (Team ${challenge.completedByTeam})
+                        ${challenge.personalMode ? '<span style="color: var(--yellow);"> 💰 PERSONAL MODE</span>' : ''}
+                    </p>
+                    <button onclick="undoChallenge(${idx})" class="undo-button">↺ Undo</button>` :
+                    `<div class="challenge-controls">
+                        <span style="color: var(--yellow);">Select founder above, then:</span>
+                        <button onclick="completeChallenge(${idx})" class="success">
+                            ✓ Mark Complete
+                        </button>
+                    </div>`
+                }
+            </div>
+        `).join('');
                     
                     updateChallengeProgress();
                     updateGameStatus(`Active: ${data.category} ${data.value}`);
