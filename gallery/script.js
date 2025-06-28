@@ -160,6 +160,7 @@ const adoptedFounders = [
     '67_kim',
     '47_daniel_ek',
     '53_youtube',
+    '28_adam_neumann',
     '19_vitalik_buterin',
     '13_jensen_huang',
     '14_peter_thiel',

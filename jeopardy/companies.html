@@ -721,6 +721,7 @@
             { id: '29_sean_parker', name: 'Sean Parker', team: 1, wealth: 0, image: '29_sean_parker.png', handle: '@mansweater', company: 'Napster' },
             { id: '41_lucy_guo', name: 'Lucy Guo', team: 1, wealth: 0, image: '41_lucy_guo.png', handle: '@literatrix', company: 'Scale AI' },
             { id: '63_winklevoss', name: 'Winklevoss Twins', team: 1, wealth: 0, image: '63_winklevoss.png', handle: '@whoiskaybrown', company: 'Gemini' },
+            { id: '67_kim', name: 'Kim Dotcom', team: 1, wealth: 0, image: '67_kim.png', handle: '@thecornii', company: 'Mega' },
 
             // Series A(pocalypse) (Team 2)
             { id: '51_zhang_yiming', name: 'Zhang Yiming', team: 2, wealth: 0, image: '51_zhang_yiming.png', handle: '@aiiisound', company: 'ByteDance' },
@@ -1371,10 +1372,19 @@ Your Firebase database rules are blocking writes. To fix:
             database.ref('game/founderWealth').on('value', (snapshot) => {
                 const wealthData = snapshot.val() || {};
                 gameState.founders.forEach(founder => {
-                    if (wealthData[founder.id]) {
+                    if (wealthData[founder.id] !== undefined) {http://127.0.0.1:5501/jeopardy/assets/founders/24_larry_ellison.png
                         founder.wealth = wealthData[founder.id];
                     }
                 });
+                // Force re-render if a founder details popup is open
+                const detailsPopup = document.getElementById('founderDetails');
+                if (detailsPopup.classList.contains('active')) {
+                    const currentFounderName = document.getElementById('detailsName').textContent;
+                    const currentFounder = gameState.founders.find(f => f.name === currentFounderName);
+                    if (currentFounder) {
+                        document.getElementById('detailsWealth').textContent = `${(currentFounder.wealth || 0).toLocaleString()}`;
+                    }
+                }
             });
 
             database.ref('game/achievements').on('value', (snapshot) => {
