@@ -616,7 +616,6 @@
                     <p style="color: #666;">No category selected yet. Waiting for teams to choose...</p>
                 </div>
             </div>
-
             <div id="activeCard" style="display: none;">
                 <div class="current-card">
                     <h3 id="currentCardTitle">Current Card</h3>
@@ -633,10 +632,12 @@
                 
                 <div class="button-group" style="margin-top: 20px;">
                     <button onclick="closeCurrentCard()" class="danger">🏁 Close Card</button>
+                    <button onclick="cancelCurrentRound()" class="danger">❌ Cancel Round</button>  <!-- ADD THIS -->
                     <button onclick="nextTeamTurn()" class="secondary">👥 Next Team's Turn</button>
                 </div>
             </div>
-        </div>
+    </div>
+            
 
         <!-- ENHANCED CHALLENGE EDITOR -->
         <div class="panel">
@@ -1214,75 +1215,87 @@
 
         // Enhanced challenge editing functions
         function loadChallengesForEdit() {
-            const categorySelect = document.getElementById('editCategorySelect');
-            const editor = document.getElementById('challengeEditor');
-            const inputs = document.getElementById('challengeInputs');
-            
-            const category = categorySelect.value;
-            if (!category) {
-                editor.style.display = 'none';
-                return;
-            }
-            
-            editor.style.display = 'block';
-            
-            let html = `<h4 style="color: var(--cyan); margin-bottom: 20px;">${category.replace(/-/g, ' ').toUpperCase()} - Edit $100 Challenges</h4>`;
-            
-            // Only show $100 challenges
+    const categorySelect = document.getElementById('editCategorySelect');
+    const editor = document.getElementById('challengeEditor');
+    const inputs = document.getElementById('challengeInputs');
+    
+    const category = categorySelect.value;
+    if (!category) {
+        editor.style.display = 'none';
+        return;
+    }
+    
+    editor.style.display = 'block';
+    
+    let html = `<h4 style="color: var(--cyan); margin-bottom: 20px;">${category.replace(/-/g, ' ').toUpperCase()} - Edit Challenges</h4>`;
+    
+    const values = [100, 200]; // Add more values here as you unlock them
+    
+    values.forEach(value => {
+        html += `
+            <div class="value-editor-section" style="margin-bottom: 30px;">
+                <div class="value-editor-header" style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                    <h4 style="color: var(--yellow); font-size: 1.3em;">💰 $${value} Challenges</h4>
+                </div>
+                <div class="value-challenges show">
+        `;
+        
+        for (let i = 0; i < 5; i++) {
+            const challenge = challengeDatabase[category]?.[value]?.[i] || { description: '', value: value };
             html += `
-                <div class="value-editor-section">
-                    <div class="value-challenges show">
-            `;
-            
-            for (let i = 0; i < 5; i++) {
-                const challenge = challengeDatabase[category]?.[100]?.[i] || { description: '', value: 100 };
-                html += `
-                    <div class="challenge-input-group">
-                        <label class="challenge-input-label">Challenge ${i + 1}</label>
-                        <textarea 
-                            id="challenge_100_${i}" 
-                            placeholder="Enter challenge description..."
-                            style="width: 100%; min-height: 60px; resize: vertical;"
-                        >${challenge.description}</textarea>
-                    </div>
-                `;
-            }
-            
-            html += `
-                    </div>
+                <div class="challenge-input-group">
+                    <label class="challenge-input-label">Challenge ${i + 1}</label>
+                    <textarea 
+                        id="challenge_${value}_${i}" 
+                        placeholder="Enter challenge description for $${value}..."
+                        style="width: 100%; min-height: 60px; resize: vertical;"
+                    >${challenge.description}</textarea>
                 </div>
             `;
-            
-            inputs.innerHTML = html;
         }
-
-        function saveChallenges() {
-            const categorySelect = document.getElementById('editCategorySelect');
-            const category = categorySelect.value;
-            
-            if (!category) return;
-            
-            if (!challengeDatabase[category]) {
-                challengeDatabase[category] = {};
-            }
-            
-            // Save only $100 challenges
-            challengeDatabase[category][100] = [];
-            
-            for (let i = 0; i < 5; i++) {
-                const description = document.getElementById(`challenge_100_${i}`).value.trim();
+        
+        html += `
+                </div>
+            </div>
+        `;
+    });
+    
+    inputs.innerHTML = html;
+}
+function saveChallenges() {
+    const categorySelect = document.getElementById('editCategorySelect');
+    const category = categorySelect.value;
+    
+    if (!category) return;
+    
+    if (!challengeDatabase[category]) {
+        challengeDatabase[category] = {};
+    }
+    
+    // Save both $100 and $200 challenges
+    const values = [100, 200]; // Add more values here as you unlock them
+    
+    values.forEach(value => {
+        challengeDatabase[category][value] = [];
+        
+        for (let i = 0; i < 5; i++) {
+            const textarea = document.getElementById(`challenge_${value}_${i}`);
+            if (textarea) {
+                const description = textarea.value.trim();
                 if (description) {
-                    challengeDatabase[category][100].push({
+                    challengeDatabase[category][value].push({
                         description: description,
-                        value: 100
+                        value: value
                     });
                 }
             }
-            
-            // Save to Firebase
-            database.ref('game/challengeDatabase').set(challengeDatabase);
-            log(`Saved challenges for ${category}`, 'success');
         }
+    });
+    
+    // Save to Firebase
+    database.ref('game/challengeDatabase').set(challengeDatabase);
+    log(`Saved challenges for ${category}`, 'success');
+}
 
         // Game control functions
         function clearStaleData() {
@@ -1343,7 +1356,90 @@ function closeScoreEditor() {
         modal.remove();
     }
 }
+// Add this function to your mod.html script section:
 
+function cancelCurrentRound() {
+    if (!activeChallenges) {
+        alert('No active round to cancel!');
+        return;
+    }
+    
+    const category = activeChallenges.category;
+    const value = activeChallenges.value;
+    
+    if (confirm(`Cancel the current round?\n\n${category.replace(/-/g, ' ').toUpperCase()} - $${value}\n\nThis will NOT save any progress from this round.`)) {
+        
+        // Clear the active challenges
+        database.ref('game/activeChallenges').remove();
+        
+        // Remove the "in progress" status from the board cell
+        const cellKey = `${category}-${value}`;
+        const sanitizedKey = sanitizeFirebaseKey(cellKey);
+        
+        // Check if any challenges were completed in this round
+        let hadProgress = false;
+        if (activeChallenges.challenges) {
+            hadProgress = activeChallenges.challenges.some(c => c.completed);
+        }
+        
+        if (hadProgress) {
+            // If there was some progress, we need to reverse any points that were awarded
+            activeChallenges.challenges.forEach(challenge => {
+                if (challenge.completed && challenge.completedByFounderId) {
+                    // Subtract points from founder
+                    const currentWealth = founderWealth[challenge.completedByFounderId] || 0;
+                    founderWealth[challenge.completedByFounderId] = Math.max(0, currentWealth - challenge.value);
+                    database.ref(`game/founderWealth/${challenge.completedByFounderId}`).set(founderWealth[challenge.completedByFounderId]);
+                    
+                    // Subtract points from team
+                    const currentValuation = currentCompanies[challenge.completedByTeam].valuation || 0;
+                    currentCompanies[challenge.completedByTeam].valuation = Math.max(0, currentValuation - challenge.value);
+                    database.ref(`game/companies/${challenge.completedByTeam}/valuation`).set(currentCompanies[challenge.completedByTeam].valuation);
+                    
+                    log(`Reversed: -$${challenge.value} from ${challenge.completedBy}`, 'error');
+                }
+            });
+        }
+        
+        // Clear the board cell's in-progress status
+        database.ref(`game/board/${sanitizedKey}`).remove();
+        
+        // Clear local state
+        activeChallenges = null;
+        
+        // Update displays
+        updateFounderDisplay();
+        
+        log(`Cancelled round: ${category} $${value}`, 'error');
+        
+        // Hide the active card display
+        document.getElementById('activeCard').style.display = 'none';
+        document.getElementById('pendingSelection').style.display = 'block';
+    }
+}
+
+// Also add a "Reject & Clear" function for pending selections
+function rejectAndClearSelection() {
+    if (!pendingSelection) {
+        alert('No pending selection to clear!');
+        return;
+    }
+    
+    // Clear the pending selection
+    database.ref('game/pendingSelection').remove();
+    pendingSelection = null;
+    
+    log('Rejected and cleared pending selection', 'error');
+    
+    // Update display
+    const pendingDiv = document.getElementById('pendingSelection');
+    pendingDiv.innerHTML = `
+        <div class="current-card no-card">
+            <h3>⏳ Waiting for Team Selection</h3>
+            <p style="color: #666;">No category selected yet. Team ${currentTeam} should choose...</p>
+        </div>
+    `;
+}
 function loadCompletedChallenges() {
     database.ref('game/board').once('value', (snapshot) => {
         const board = snapshot.val() || {};
@@ -1666,9 +1762,10 @@ function removeChallenge(cellKey, challengeIndex) {
                                 ${pendingSelection.category.replace(/-/g, ' ').toUpperCase()} - $${pendingSelection.value}
                             </p>
                             <div class="button-group">
-                                <button onclick="approveSelection()" class="success">✓ Approve & Start Round</button>
-                                <button onclick="rejectSelection()" class="danger">✗ Reject</button>
-                            </div>
+    <button onclick="approveSelection()" class="success">✓ Approve & Start Round</button>
+    <button onclick="rejectSelection()" class="danger">✗ Reject</button>
+    <button onclick="rejectAndClearSelection()" class="danger">🗑️ Reject & Clear</button> 
+</div>
                         </div>
                     `;
                     activeDiv.style.display = 'none';
