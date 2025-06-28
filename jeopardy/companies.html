@@ -89,7 +89,88 @@
             50% { transform: rotate(2deg); }
         }
 
+        /* NAVIGATION BUTTONS */
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px;
+            flex-wrap: wrap;
+        }
 
+        .nav-button {
+            background: var(--glass);
+            backdrop-filter: blur(var(--blur));
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            transform: rotate(-2deg);
+        }
+
+        .nav-button:nth-child(1) {
+            border-color: var(--purple);
+            background: rgba(138,43,226,0.1);
+        }
+
+        .nav-button:nth-child(2) {
+            border-color: var(--cyan);
+            background: rgba(0,255,255,0.1);
+            transform: rotate(2deg);
+        }
+
+        .nav-button:hover {
+            transform: rotate(0deg) scale(1.1);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        }
+
+        .nav-button:nth-child(1):hover {
+            border-color: var(--yellow);
+            box-shadow: 0 0 30px rgba(255,255,0,0.3);
+        }
+
+        .nav-button:nth-child(2):hover {
+            border-color: var(--pink);
+            box-shadow: 0 0 30px rgba(255,105,180,0.3);
+        }
+
+        .nav-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .nav-button:nth-child(2) .nav-icon {
+            animation-delay: 1.5s;
+        }
+
+        .nav-text {
+            font-size: 20px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        .nav-button:nth-child(1) .nav-text {
+            color: var(--purple);
+            text-shadow: 0 0 15px var(--purple);
+        }
+
+        .nav-button:nth-child(2) .nav-text {
+            color: var(--cyan);
+            text-shadow: 0 0 15px var(--cyan);
+        }
 
         /* SCORE DISPLAY */
         .scores {
@@ -412,6 +493,25 @@
         @media (max-width: 768px) {
             .header h1 { font-size: 24px; }
             
+            .nav-buttons {
+                gap: 15px;
+                margin: 15px;
+            }
+            
+            .nav-button {
+                padding: 10px 15px;
+                gap: 10px;
+            }
+            
+            .nav-icon {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .nav-text {
+                font-size: 14px;
+            }
+            
             .game-area {
                 flex-direction: column;
             }
@@ -513,11 +613,21 @@
     <!-- BACKGROUND - Same as main game -->
     <div class="liminal-bg"></div>
 
-
-
     <!-- HEADER -->
     <div class="header">
         <h1>🧸 THE PLAYPEN 🧩</h1>
+    </div>
+
+    <!-- NAVIGATION BUTTONS -->
+    <div class="nav-buttons">
+        <a href="rules.html" class="nav-button">
+            <img src="assets/founders/rules.png" alt="Rules" class="nav-icon">
+            <span class="nav-text">RULES</span>
+        </a>
+        <a href="index.html" class="nav-button">
+            <img src="assets/founders/board.png" alt="Board" class="nav-icon">
+            <span class="nav-text">B0ARD</span>
+        </a>
     </div>
 
     <!-- COMPANY SCORES -->
@@ -1158,7 +1268,7 @@ Your Firebase database rules are blocking writes. To fix:
             document.getElementById('detailsImage').src = `assets/founders/${founder.image}`;
             document.getElementById('detailsImage').onerror = function() { this.src = 'assets/founders/default.png'; };
             document.getElementById('detailsName').textContent = founder.name;
-            document.getElementById('detailsWealth').textContent = `${(founder.wealth || 0).toLocaleString()}`;
+            document.getElementById('detailsWealth').textContent = `$${(founder.wealth || 0).toLocaleString()}`;
             
             // Add handle and company info
             const detailsInfo = document.querySelector('.details-info');
