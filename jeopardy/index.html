@@ -908,6 +908,16 @@
             console.error("Firebase initialization error:", error);
         }
 
+        // CRITICAL FIX: Add sanitizeFirebaseKey function to match moderator panel
+        function sanitizeFirebaseKey(key) {
+            return key.replace(/\./g, '_');
+        }
+
+        // CRITICAL FIX: Add unsanitizeFirebaseKey function to convert back
+        function unsanitizeFirebaseKey(key) {
+            return key.replace(/_/g, '.');
+        }
+
         // Game configuration - ALL VALUES SHOWN BUT ONLY $100 AVAILABLE
         const categories = ["meme-me-up-scottie", "doom-scroll-nation", "web-1.0", "netbangerz", "paizley-and-robot", "em0ti0nz"];
         const values = [100, 200, 300, 400, 500]; // All values shown
@@ -1032,6 +1042,9 @@
             setTimeout(() => {
                 document.getElementById('loading').style.display = 'none';
                 board.style.display = 'grid';
+                
+                // Update board state after creating elements
+                updateBoard();
             }, 1000);
         }
 
@@ -1043,10 +1056,19 @@
             }
             
             const cellKey = `${category}-${value}`;
-            const cellState = gameState.board[cellKey];
+            const sanitizedKey = sanitizeFirebaseKey(cellKey);
+            const cellState = gameState.board[sanitizedKey];
             
-            // Don't allow selection if cell is completed
-            if (cellState && cellState.completed) return;
+            // FIXED: Only block selection if truly completed (has winner or completed challenges)
+            if (cellState && cellState.completed) {
+                const hasWinner = cellState.winnerTeam;
+                const hasCompletedChallenges = cellState.challenges && cellState.challenges.some(c => c.completedByTeam);
+                
+                if (hasWinner || hasCompletedChallenges) {
+                    return; // Actually completed, don't allow selection
+                }
+                // If marked completed but no actual completion data, allow selection
+            }
 
             // Check if this cell is in progress (active) - if so, show the challenges
             if (cellState && cellState.inProgress && gameState.currentChallenges) {
@@ -1183,14 +1205,18 @@
             document.querySelectorAll('.cell').forEach(cell => {
                 const category = cell.dataset.category;
                 const value = cell.dataset.value;
-                const key = `${category}-${value}`;
-                const state = gameState.board[key];
+                const cellKey = `${category}-${value}`;
+                const sanitizedKey = sanitizeFirebaseKey(cellKey);
+                const state = gameState.board[sanitizedKey];
 
                 cell.classList.remove('completed', 'in-progress');
                 
                 // Remove any existing winner badge
                 const existingBadge = cell.querySelector('.winner-badge');
                 if (existingBadge) existingBadge.remove();
+                
+                // Reset value display
+                cell.querySelector('.value').textContent = value;
                 
                 // Reset all dots to default state
                 const dots = cell.querySelectorAll('.challenge-dot');
@@ -1199,11 +1225,16 @@
                 });
                 
                 if (state) {
-                    if (state.completed) {
+                    // FIXED: Only mark as completed if there's actually a winner OR meaningful challenge completions
+                    const hasWinner = state.winnerTeam;
+                    const hasCompletedChallenges = state.challenges && state.challenges.some(c => c.completedByTeam);
+                    const isActuallyCompleted = state.completed && (hasWinner || hasCompletedChallenges);
+                    
+                    if (isActuallyCompleted) {
                         cell.classList.add('completed');
                         cell.querySelector('.value').textContent = '✓';
                         
-                        // Add winner badge
+                        // Add winner badge only if there's a winner
                         if (state.winnerTeam) {
                             const badge = document.createElement('div');
                             badge.className = `winner-badge team-${state.winnerTeam}`;
@@ -1231,6 +1262,7 @@
                             });
                         }
                     }
+                    // FIXED: If state exists but doesn't meet completion criteria, treat as available
                 }
             });
         }
@@ -1245,7 +1277,10 @@
                 if (data) {
                     challengeDatabase = data;
                     // Reinitialize board to update dot counts
-                    initializeBoard();
+                    const board = document.getElementById('board');
+                    if (board.style.display !== 'none') {
+                        initializeBoard();
+                    }
                 }
             });
 
@@ -1264,9 +1299,12 @@
                 updateCompanyDisplay();
             });
 
-            // Board state
+            // FIXED: Board state listener - use sanitized keys
             database.ref('game/board').on('value', (snapshot) => {
-                gameState.board = snapshot.val() || {};
+                const boardData = snapshot.val() || {};
+                
+                // Keep sanitized keys in gameState.board to match Firebase structure
+                gameState.board = boardData;
                 updateBoard();
             });
 
@@ -1281,7 +1319,7 @@
                 }
             });
 
-            // Active challenges (when moderator approves)
+            // FIXED: Active challenges listener
             database.ref('game/activeChallenges').on('value', (snapshot) => {
                 const active = snapshot.val();
                 if (active && active.challenges && active.challenges.length > 0) {
@@ -1292,9 +1330,17 @@
                     gameState.currentChallenges = challenges;
                     gameState.activeCellKey = `${active.category}-${active.value}`;
                     
-                    // Mark cell as in progress
+                    // FIXED: Mark cell as in progress using sanitized key
                     const cellKey = `${active.category}-${active.value}`;
-                    gameState.board[cellKey] = { inProgress: true, challenges: challenges };
+                    const sanitizedKey = sanitizeFirebaseKey(cellKey);
+                    
+                    // Update the board state with sanitized key
+                    if (!gameState.board[sanitizedKey]) {
+                        gameState.board[sanitizedKey] = {};
+                    }
+                    gameState.board[sanitizedKey].inProgress = true;
+                    gameState.board[sanitizedKey].challenges = challenges;
+                    
                     updateBoard();
                     
                     // Check if modal needs to be shown or updated
@@ -1312,9 +1358,24 @@
                     // Clear any pending selection state
                     gameState.pendingSelection = false;
                 } else {
-                    // No active challenges - clear state
+                    // FIXED: No active challenges - clear inProgress state from all cells
                     gameState.currentChallenges = null;
                     gameState.activeCellKey = null;
+                    
+                    // Clear inProgress flag from all cells in local board state
+                    Object.keys(gameState.board).forEach(key => {
+                        if (gameState.board[key] && gameState.board[key].inProgress && !gameState.board[key].completed) {
+                            // Remove inProgress flag but keep other data
+                            delete gameState.board[key].inProgress;
+                            // If the cell has no other important data, clean it up
+                            if (!gameState.board[key].completed && !gameState.board[key].winnerTeam) {
+                                delete gameState.board[key];
+                            }
+                        }
+                    });
+                    
+                    // Update the board display
+                    updateBoard();
                     
                     // Close modal if it's open
                     if (document.getElementById('challengeModal').style.display === 'block') {
