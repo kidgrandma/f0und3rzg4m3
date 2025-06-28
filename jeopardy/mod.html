@@ -667,6 +667,7 @@
             <div class="quick-actions">
                 <button onclick="pauseGame()" class="secondary">⏸️ Pause Game</button>
                 <button onclick="resumeGame()" class="secondary">▶️ Resume Game</button>
+                <button onclick="openScoreEditor()" class="secondary">✏️ Edit Scores</button>
                 <button onclick="clearStaleData()" class="secondary">🧹 Clear Stale</button>
                 <button onclick="resetValuations()" class="danger">💰 Reset Scores</button>
                 <button onclick="resetAll()" class="danger">🔄 Reset Everything</button>
@@ -1294,6 +1295,259 @@
             database.ref('game/paused').set(true);
             log('Game paused', 'error');
         }
+        function openScoreEditor() {
+    console.log('Opening score editor...');
+    
+    // Create a modal for editing scores
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        z-index: 10000;
+        overflow-y: auto;
+        padding: 20px;
+    `;
+    
+    const container = document.createElement('div');
+    container.style.cssText = `
+        max-width: 900px;
+        margin: 0 auto;
+        background: #1a1a1a;
+        border-radius: 20px;
+        padding: 30px;
+        border: 3px solid var(--cyan);
+    `;
+    
+    container.innerHTML = `
+        <h2 style="color: var(--cyan); margin-bottom: 20px;">📝 SCORE EDITOR - Fix Incorrect Assignments</h2>
+        <p style="color: #999; margin-bottom: 20px;">Click on any completed challenge to reassign it to a different founder.</p>
+        <div id="scoreEditorContent">Loading challenges...</div>
+        <button onclick="closeScoreEditor()" style="margin-top: 20px; background: var(--pink); color: white;">Close Editor</button>
+    `;
+    
+    modal.appendChild(container);
+    document.body.appendChild(modal);
+    modal.id = 'scoreEditorModal';
+    
+    // Load all completed challenges
+    loadCompletedChallenges();
+}
+
+function closeScoreEditor() {
+    const modal = document.getElementById('scoreEditorModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function loadCompletedChallenges() {
+    database.ref('game/board').once('value', (snapshot) => {
+        const board = snapshot.val() || {};
+        const content = document.getElementById('scoreEditorContent');
+        let html = '';
+        
+        Object.keys(board).forEach(cellKey => {
+            const cell = board[cellKey];
+            if (cell.challenges && cell.completed) {
+                const categoryName = (cell.originalKey || cellKey).replace(/_/g, '.').split('-')[0].replace(/-/g, ' ').toUpperCase();
+                
+                html += `<div style="margin-bottom: 30px; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px;">`;
+                html += `<h3 style="color: var(--yellow); margin-bottom: 15px;">${categoryName} - $${cell.challenges[0]?.value || 100}</h3>`;
+                
+                cell.challenges.forEach((challenge, idx) => {
+                    if (challenge.completed) {
+                        const founder = [...(foundersDatabase[1] || []), ...(foundersDatabase[2] || [])].find(f => f.id === challenge.completedByFounderId);
+                        const teamColor = challenge.completedByTeam === 1 ? 'var(--team1-color)' : 'var(--team2-color)';
+                        
+                        html += `
+                            <div style="background: rgba(0,0,0,0.5); padding: 15px; margin-bottom: 10px; border-radius: 8px; border: 2px solid ${teamColor};">
+                                <div style="display: flex; justify-content: space-between; align-items: start;">
+                                    <div style="flex: 1;">
+                                        <p style="color: #ccc; margin-bottom: 8px;">${challenge.description}</p>
+                                        <p style="color: ${teamColor}; font-weight: bold;">
+                                            ✓ Completed by: ${challenge.completedBy} (Team ${challenge.completedByTeam})
+                                        </p>
+                                    </div>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <span style="color: var(--yellow); font-weight: bold; font-size: 1.2em;">$${challenge.value}</span>
+                                        <button onclick="reassignChallenge('${cellKey}', ${idx})" 
+                                                style="background: var(--purple); padding: 8px 15px; font-size: 0.9em;">
+                                            Reassign
+                                        </button>
+                                        <button onclick="removeChallenge('${cellKey}', ${idx})" 
+                                                style="background: #ff3333; padding: 8px 15px; font-size: 0.9em;">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                html += `</div>`;
+            }
+        });
+        
+        content.innerHTML = html || '<p style="color: #666;">No completed challenges found.</p>';
+    });
+}
+
+function reassignChallenge(cellKey, challengeIndex) {
+    // Get current challenge data
+    database.ref(`game/board/${cellKey}/challenges/${challengeIndex}`).once('value', (snapshot) => {
+        const challenge = snapshot.val();
+        if (!challenge || !challenge.completed) return;
+        
+        // Create founder selection modal
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #222;
+            border: 3px solid var(--cyan);
+            border-radius: 15px;
+            padding: 20px;
+            z-index: 10001;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        `;
+        
+        modal.innerHTML = `
+            <h3 style="color: var(--cyan); margin-bottom: 15px;">Select New Founder</h3>
+            <p style="color: #999; margin-bottom: 15px;">Currently assigned to: ${challenge.completedBy}</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4 style="color: var(--team1-color); margin-bottom: 10px;">Y2KET CORP.</h4>
+                    <div id="team1Select"></div>
+                </div>
+                <div>
+                    <h4 style="color: var(--team2-color); margin-bottom: 10px;">SERIES A(POCALYPSE)</h4>
+                    <div id="team2Select"></div>
+                </div>
+            </div>
+            <button onclick="this.parentElement.remove()" style="margin-top: 20px; background: #666;">Cancel</button>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Populate founder lists
+        [1, 2].forEach(team => {
+            const container = document.getElementById(`team${team}Select`);
+            const founders = foundersDatabase[team] || [];
+            
+            founders.forEach(founder => {
+                const founderDiv = document.createElement('div');
+                founderDiv.style.cssText = `
+                    padding: 10px;
+                    margin-bottom: 5px;
+                    background: rgba(255,255,255,0.1);
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                `;
+                
+                founderDiv.innerHTML = `
+                    <img src="assets/founders/${founder.image}" style="width: 30px; height: 30px; border-radius: 50%;">
+                    <span>${founder.name}</span>
+                `;
+                
+                founderDiv.onmouseover = () => founderDiv.style.background = 'rgba(255,255,255,0.2)';
+                founderDiv.onmouseout = () => founderDiv.style.background = 'rgba(255,255,255,0.1)';
+                
+                founderDiv.onclick = () => {
+                    if (confirm(`Reassign this $${challenge.value} challenge to ${founder.name}?`)) {
+                        executeReassignment(cellKey, challengeIndex, challenge, founder);
+                        modal.remove();
+                    }
+                };
+                
+                container.appendChild(founderDiv);
+            });
+        });
+    });
+}
+
+function executeReassignment(cellKey, challengeIndex, oldChallenge, newFounder) {
+    // Step 1: Remove points from old founder
+    if (oldChallenge.completedByFounderId) {
+        const oldFounderWealth = (founderWealth[oldChallenge.completedByFounderId] || 0) - oldChallenge.value;
+        founderWealth[oldChallenge.completedByFounderId] = Math.max(0, oldFounderWealth);
+        database.ref(`game/founderWealth/${oldChallenge.completedByFounderId}`).set(founderWealth[oldChallenge.completedByFounderId]);
+    }
+    
+    // Step 2: Remove points from old team
+    const oldTeamValuation = (currentCompanies[oldChallenge.completedByTeam].valuation || 0) - oldChallenge.value;
+    currentCompanies[oldChallenge.completedByTeam].valuation = Math.max(0, oldTeamValuation);
+    database.ref(`game/companies/${oldChallenge.completedByTeam}/valuation`).set(currentCompanies[oldChallenge.completedByTeam].valuation);
+    
+    // Step 3: Add points to new founder
+    founderWealth[newFounder.id] = (founderWealth[newFounder.id] || 0) + oldChallenge.value;
+    database.ref(`game/founderWealth/${newFounder.id}`).set(founderWealth[newFounder.id]);
+    
+    // Step 4: Add points to new team
+    currentCompanies[newFounder.team].valuation = (currentCompanies[newFounder.team].valuation || 0) + oldChallenge.value;
+    database.ref(`game/companies/${newFounder.team}/valuation`).set(currentCompanies[newFounder.team].valuation);
+    
+    // Step 5: Update the challenge record
+    const updatedChallenge = {
+        ...oldChallenge,
+        completedBy: newFounder.name,
+        completedByTeam: newFounder.team,
+        completedByFounderId: newFounder.id
+    };
+    
+    database.ref(`game/board/${cellKey}/challenges/${challengeIndex}`).set(updatedChallenge);
+    
+    log(`Reassigned challenge from ${oldChallenge.completedBy} to ${newFounder.name}`, 'success');
+    
+    // Refresh the editor
+    loadCompletedChallenges();
+    updateFounderDisplay();
+}
+
+function removeChallenge(cellKey, challengeIndex) {
+    database.ref(`game/board/${cellKey}/challenges/${challengeIndex}`).once('value', (snapshot) => {
+        const challenge = snapshot.val();
+        if (!challenge || !challenge.completed) return;
+        
+        if (confirm(`Remove this $${challenge.value} challenge from ${challenge.completedBy}? This will deduct points.`)) {
+            // Remove points from founder
+            if (challenge.completedByFounderId) {
+                founderWealth[challenge.completedByFounderId] = Math.max(0, (founderWealth[challenge.completedByFounderId] || 0) - challenge.value);
+                database.ref(`game/founderWealth/${challenge.completedByFounderId}`).set(founderWealth[challenge.completedByFounderId]);
+            }
+            
+            // Remove points from team
+            currentCompanies[challenge.completedByTeam].valuation = Math.max(0, (currentCompanies[challenge.completedByTeam].valuation || 0) - challenge.value);
+            database.ref(`game/companies/${challenge.completedByTeam}/valuation`).set(currentCompanies[challenge.completedByTeam].valuation);
+            
+            // Mark challenge as not completed
+            database.ref(`game/board/${cellKey}/challenges/${challengeIndex}`).update({
+                completed: false,
+                completedBy: null,
+                completedByTeam: null,
+                completedByFounderId: null
+            });
+            
+            log(`Removed challenge completion for ${challenge.completedBy}`, 'error');
+            
+            // Refresh
+            loadCompletedChallenges();
+            updateFounderDisplay();
+        }
+    });
+}
 
         function resumeGame() {
             database.ref('game/paused').set(false);

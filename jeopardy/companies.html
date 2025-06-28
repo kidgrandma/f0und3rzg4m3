@@ -466,23 +466,50 @@
             font-size: 24px;
             font-weight: bold;
         }
-
-        .achievements-list {
-            margin-top: 20px;
-        }
-
-        .achievements-list h4 {
-            color: var(--pink);
-            margin-bottom: 10px;
-        }
-
         .achievement-item {
-            background: rgba(138,43,226,0.2);
-            border-radius: 10px;
-            padding: 8px 12px;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
+    background: rgba(138,43,226,0.2);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid rgba(138,43,226,0.4);
+    transition: all 0.3s ease;
+}
+
+.achievement-item:hover {
+    background: rgba(138,43,226,0.3);
+    transform: translateX(5px);
+    border-color: var(--cyan);
+}
+
+.achievements-list {
+    margin-top: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.achievements-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.achievements-list::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+}
+
+.achievements-list::-webkit-scrollbar-thumb {
+    background: var(--purple);
+    border-radius: 3px;
+}
+
+.achievements-list h4 {
+    color: var(--pink);
+    margin-bottom: 15px;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
 
         .close-details {
             background: var(--pink);
@@ -769,7 +796,28 @@
             draggedElement: null,
             dragOffset: null
         };
+        
+        function closeDetails() {
+    const detailsPopup = document.getElementById('founderDetails');
+    if (detailsPopup) {
+        detailsPopup.classList.remove('active');
+    }
+}
 
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        closeDetails();
+    }
+});
+
+
+window.addEventListener('click', (event) => {
+    const founderDetails = document.getElementById('founderDetails');
+    if (event.target === founderDetails) {
+        closeDetails();
+    }
+});
         // Test Firebase connection and permissions
         function testFirebaseConnection() {
             console.log('Testing Firebase connection...');
@@ -1096,11 +1144,9 @@ Your Firebase database rules are blocking writes. To fix:
             cards.forEach(card => {
                 card.removeEventListener('dragstart', handleDragStart);
                 card.removeEventListener('dragend', handleDragEnd);
-                card.removeEventListener('click', handleFounderClick);
                 
                 card.addEventListener('dragstart', handleDragStart);
                 card.addEventListener('dragend', handleDragEnd);
-                card.addEventListener('click', handleFounderClick);
                 
                 card.setAttribute('draggable', 'true');
             });
@@ -1277,45 +1323,172 @@ Your Firebase database rules are blocking writes. To fix:
 
         // Show founder details
         function showFounderDetails(founder) {
-            const details = document.getElementById('founderDetails');
-            const achievements = gameState.achievements[founder.id] || [];
+    const details = document.getElementById('founderDetails');
+    
+    document.getElementById('detailsImage').src = `assets/founders/${founder.image}`;
+    document.getElementById('detailsImage').onerror = function() { this.src = 'assets/founders/default.png'; };
+    document.getElementById('detailsName').textContent = founder.name;
+    document.getElementById('detailsWealth').textContent = `$${(founder.wealth || 0).toLocaleString()}`;
+    
+    // Add handle and company info
+    const detailsInfo = document.querySelector('.details-info');
+    const existingHandle = detailsInfo.querySelector('.founder-handle-info');
+    if (existingHandle) existingHandle.remove();
+    
+    if (founder.handle || founder.company) {
+        const handleInfo = document.createElement('div');
+        handleInfo.className = 'founder-handle-info';
+        handleInfo.style.cssText = 'color: var(--cyan); font-size: 14px; margin-bottom: 10px;';
+        handleInfo.innerHTML = `
+            ${founder.handle ? `<div>${founder.handle}</div>` : ''}
+            ${founder.company ? `<div style="color: var(--yellow); font-size: 12px;">${founder.company}</div>` : ''}
+        `;
+        detailsInfo.appendChild(handleInfo);
+    }
+    
+    // Get real achievements from Firebase board data
+    const achievementsList = document.getElementById('achievementsList');
+    achievementsList.innerHTML = '<div class="achievement-item">Loading achievements...</div>';
+    
+    // Fetch completed challenges for this founder
+    database.ref('game/board').once('value', (snapshot) => {
+        const board = snapshot.val() || {};
+        const achievements = [];
+        
+        // Go through all board cells
+        Object.keys(board).forEach(cellKey => {
+            const cell = board[cellKey];
             
-            document.getElementById('detailsImage').src = `assets/founders/${founder.image}`;
-            document.getElementById('detailsImage').onerror = function() { this.src = 'assets/founders/default.png'; };
-            document.getElementById('detailsName').textContent = founder.name;
-            document.getElementById('detailsWealth').textContent = `$${(founder.wealth || 0).toLocaleString()}`;
-            
-            // Add handle and company info
-            const detailsInfo = document.querySelector('.details-info');
-            const existingHandle = detailsInfo.querySelector('.founder-handle-info');
-            if (existingHandle) existingHandle.remove();
-            
-            if (founder.handle || founder.company) {
-                const handleInfo = document.createElement('div');
-                handleInfo.className = 'founder-handle-info';
-                handleInfo.style.cssText = 'color: var(--cyan); font-size: 14px; margin-bottom: 10px;';
-                handleInfo.innerHTML = `
-                    ${founder.handle ? `<div>${founder.handle}</div>` : ''}
-                    ${founder.company ? `<div style="color: var(--yellow); font-size: 12px;">${founder.company}</div>` : ''}
-                `;
-                detailsInfo.appendChild(handleInfo);
+            if (cell.challenges && Array.isArray(cell.challenges)) {
+                cell.challenges.forEach(challenge => {
+                    // Check if this founder completed this challenge
+                    if (challenge.completed && 
+                        (challenge.completedByFounderId === founder.id || 
+                         challenge.completedBy === founder.name)) {
+                        
+                        // Parse the category from the cell key
+                        const category = cell.originalKey ? 
+                            cell.originalKey.split('-')[0] : 
+                            cellKey.replace(/_/g, '.').split('-')[0];
+                        
+                        achievements.push({
+                            category: category.replace(/-/g, ' ').toUpperCase(),
+                            description: challenge.description,
+                            value: challenge.value
+                        });
+                    }
+                });
             }
-            
-            const achievementsList = document.getElementById('achievementsList');
-            if (achievements.length > 0) {
-                achievementsList.innerHTML = achievements.map(a => 
-                    `<div class="achievement-item">${a}</div>`
-                ).join('');
-            } else {
-                achievementsList.innerHTML = '<div class="achievement-item">No achievements yet!</div>';
-            }
-            
-            details.classList.add('active');
+        });
+        
+        // Display achievements
+        if (achievements.length > 0) {
+            achievementsList.innerHTML = achievements.map(achievement => `
+                <div class="achievement-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <span style="color: var(--cyan); font-size: 11px; text-transform: uppercase;">
+                            ${achievement.category}
+                        </span>
+                        <span style="color: var(--yellow); font-weight: bold;">
+                            +$${achievement.value}
+                        </span>
+                    </div>
+                    <div style="font-size: 13px; line-height: 1.3;">
+                        ${achievement.description}
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            achievementsList.innerHTML = '<div class="achievement-item">No achievements yet!</div>';
         }
+    });
+    
+    details.classList.add('active');
+}
 
-        function closeDetails() {
-            document.getElementById('founderDetails').classList.remove('active');
+        function showFounderDetails(founder) {
+    const details = document.getElementById('founderDetails');
+    
+    document.getElementById('detailsImage').src = `assets/founders/${founder.image}`;
+    document.getElementById('detailsImage').onerror = function() { this.src = 'assets/founders/default.png'; };
+    document.getElementById('detailsName').textContent = founder.name;
+    document.getElementById('detailsWealth').textContent = `$${(founder.wealth || 0).toLocaleString()}`;
+    
+    // Add handle and company info
+    const detailsInfo = document.querySelector('.details-info');
+    const existingHandle = detailsInfo.querySelector('.founder-handle-info');
+    if (existingHandle) existingHandle.remove();
+    
+    if (founder.handle || founder.company) {
+        const handleInfo = document.createElement('div');
+        handleInfo.className = 'founder-handle-info';
+        handleInfo.style.cssText = 'color: var(--cyan); font-size: 14px; margin-bottom: 10px;';
+        handleInfo.innerHTML = `
+            ${founder.handle ? `<div>${founder.handle}</div>` : ''}
+            ${founder.company ? `<div style="color: var(--yellow); font-size: 12px;">${founder.company}</div>` : ''}
+        `;
+        detailsInfo.appendChild(handleInfo);
+    }
+    
+    // Get real achievements from Firebase board data
+    const achievementsList = document.getElementById('achievementsList');
+    achievementsList.innerHTML = '<div class="achievement-item">Loading achievements...</div>';
+    
+    // Fetch completed challenges for this founder
+    database.ref('game/board').once('value', (snapshot) => {
+        const board = snapshot.val() || {};
+        const achievements = [];
+        
+        // Go through all board cells
+        Object.keys(board).forEach(cellKey => {
+            const cell = board[cellKey];
+            
+            if (cell.challenges && Array.isArray(cell.challenges)) {
+                cell.challenges.forEach(challenge => {
+                    // Check if this founder completed this challenge
+                    if (challenge.completed && 
+                        (challenge.completedByFounderId === founder.id || 
+                         challenge.completedBy === founder.name)) {
+                        
+                        // Parse the category from the cell key
+                        const category = cell.originalKey ? 
+                            cell.originalKey.split('-')[0] : 
+                            cellKey.replace(/_/g, '.').split('-')[0];
+                        
+                        achievements.push({
+                            category: category.replace(/-/g, ' ').toUpperCase(),
+                            description: challenge.description,
+                            value: challenge.value
+                        });
+                    }
+                });
+            }
+        });
+        
+        // Display achievements
+        if (achievements.length > 0) {
+            achievementsList.innerHTML = achievements.map(achievement => `
+                <div class="achievement-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <span style="color: var(--cyan); font-size: 11px; text-transform: uppercase;">
+                            ${achievement.category}
+                        </span>
+                        <span style="color: var(--yellow); font-weight: bold;">
+                            +$${achievement.value}
+                        </span>
+                    </div>
+                    <div style="font-size: 13px; line-height: 1.3;">
+                        ${achievement.description}
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            achievementsList.innerHTML = '<div class="achievement-item">No achievements yet!</div>';
         }
+    });
+    
+    details.classList.add('active');
+}
 
         // Toast notifications
         function showToast(message) {
