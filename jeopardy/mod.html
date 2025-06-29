@@ -1042,10 +1042,10 @@
         }
 
         // FIXED: Challenge and card management
-        function approveSelection() {
-            if (!pendingSelection) return;
-            
-            const { category, team } = pendingSelection;
+       function approveSelection() {
+                   if (!pendingSelection) return;
+                   
+                   const { category, team, value } = pendingSelection;
    
             
             // Get challenges from database or use defaults
