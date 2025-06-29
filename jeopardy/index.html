@@ -1093,7 +1093,7 @@
             if (database) {
                 database.ref(`game/pendingSelection`).set({
                     category,
-                    value: 100, // Always $100
+                    value: value,
                     team: gameState.currentTeam,
                     timestamp: Date.now()
                 });
