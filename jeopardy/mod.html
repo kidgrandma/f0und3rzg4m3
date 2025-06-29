@@ -681,6 +681,8 @@
                 <button onclick="clearStaleData()" class="secondary">🧹 Clear Stale</button>
                 <button onclick="resetValuations()" class="danger">💰 Reset Scores</button>
                 <button onclick="resetAll()" class="danger">🔄 Reset Everything</button>
+                <button onclick="distributeTeamWealthToFounders()" class="secondary">💰 Rebuild Founder Wealth</button>
+                <button onclick="equallyDistributeTeamWealth()" class="secondary">⚖️ Equal Distribution</button>
             </div>
         </div>
 
@@ -847,68 +849,83 @@
             liminalBg.style.backgroundImage = `url('assets/backgrounds/${selectedBg}')`;
         }
 
-        // Founder management
         function loadFoundersFromCompaniesPage() {
-            const hardcodedFounders = {
-                1: [
-                    { id: '30_john_mckafee', name: 'John McAfee', company: 'McAfee', image: '30_john_mckafee.png', team: 1, handle: '@hauntyourownhouse' },
-                    { id: '13_jensen_huang', name: 'Jensen Huang', company: 'NVIDIA', image: '13_jensen_huang.png', team: 1, handle: '@caleb' },
-                    { id: '22_pavel_durov', name: 'Pavel Durov', company: 'Telegram', image: '22_pavel_durov.png', team: 1, handle: '@discoesq' },
-                    { id: '32_kevin_systrom', name: 'Kevin Systrom', company: 'Instagram', image: '32_kevin_systrom.png', team: 1, handle: '@dougdalton' },
-                    { id: '35_tom_anderson', name: 'Tom Anderson', company: 'MySpace', image: '35_tom_anderson.png', team: 1, handle: '@betwixt.frankie' },
-                    { id: '40_craig_newmark', name: 'Craig Newmark', company: 'Craigslist', image: '40_craig_newmark.png', team: 1, handle: '@ladyhuss_' },
-                    { id: '20_jack_dorsey', name: 'Jack Dorsey', company: 'Twitter', image: '20_jack_dorsey.png', team: 1, handle: '@jackhite' },
-                    { id: '50_jessica_alba', name: 'Jessica Alba', company: 'The Honest Company', image: '50_jessica_alba.png', team: 1, handle: '@jasche__' },
-                    { id: '14_peter_thiel', name: 'Peter Thiel', company: 'Palantir', image: '14_peter_thiel.png', team: 1, handle: '@jesushands' },
-                    { id: '17_sam_altman', name: 'Sam Altman', company: 'OpenAI', image: '17_sam_altman.png', team: 1, handle: '@michaelmelwani' },
-                    { id: '11_google_founders', name: 'Larry Page & Sergey Brin', company: 'Google', image: '11_google_founders.png', team: 1, handle: '@mfgarret + @nataliesomekh_' },
-                    { id: '15_jack_ma', name: 'Jack Ma', company: 'Alibaba', image: '15_jack_ma.png', team: 1, handle: '@manolowashere' },
-                    { id: '08_elon_musk', name: 'Elon Musk', company: 'Tesla/SpaceX', image: '08_elon_musk.png', team: 1, handle: '@vishaal.arya' },
-                    { id: '19_vitalik_buterin', name: 'Vitalik Buterin', company: 'Ethereum', image: '19_vitalik_buterin.png', team: 1, handle: '@saulisgood' },
-                    { id: '29_sean_parker', name: 'Sean Parker', company: 'Napster', image: '29_sean_parker.png', team: 1, handle: '@mansweater' },
-                    { id: '41_lucy_guo', name: 'Lucy Guo', company: 'Scale AI', image: '41_lucy_guo.png', team: 1, handle: '@literatrix' },
-                    { id: '06_brian_chesky', name: 'Brian Chesky', company: 'Airbnb', image: '06_brian_chesky.png', team: 1, handle: '@cyborgdrew' },
-                    { id: '52_palmer_luckey', name: 'Palmer Luckey', company: 'Oculus', image: '52_palmer_luckey.png', team: 1, handle: '@spine.remover' },
-                    { id: '38_juul', name: 'James Monsees & Adam Bowen', company: 'Juul', image: '38_juul.png', team: 1, handle: '@sam__stiles' },
-                    { id: '63_winklevoss', name: 'Winklevoss Twins', company: 'Gemini', image: '63_winklevoss.png', team: 1, handle: '@whoiskaybrown' },
-                    { id: '67_kim', name: 'Kim Dotcom', company: 'Mega', image: '67_kim.png', team: 1, handle: '@thecornii' }
-                ],
-                2: [
-                    { id: '51_zhang_yiming', name: 'Zhang Yiming', company: 'ByteDance', image: '51_zhang_yiming.png', team: 2, handle: '@aiiisound' },
-                    { id: '34_meg_whitman', name: 'Meg Whitman', company: 'eBay', image: '34_meg_whitman.png', team: 2, handle: '@bombchips' },
-                    { id: '04_brian_armstrong', name: 'Brian Armstrong', company: 'Coinbase', image: '04_brian_armstrong.png', team: 2, handle: '@jenergizer' },
-                    { id: '48_sam_bankman_fried', name: 'Sam Bankman-Fried', company: 'FTX', image: '48_sam_bankman-fried.png', team: 2, handle: '@teamcoben' },
-                    { id: '49_reed_hastings', name: 'Reed Hastings', company: 'Netflix', image: '49_reed_hastings.png', team: 2, handle: '@stan_jericho', status: 'dead' },
-                    { id: '24_larry_ellison', name: 'Larry Ellison', company: 'Oracle', image: '24_larry_ellison.png', team: 2, handle: '@littleurbanachiever' },
-                    { id: '21_jimmy_wales', name: 'Jimmy Wales', company: 'Wikipedia', image: '21_jimmy_wales.png', team: 2, handle: '@danieldomange' },
-                    { id: '46_dread_pirate', name: 'Ross Ulbricht', company: 'Silk Road', image: '46_dread_pirate.png', team: 2, handle: '@octavekitten' },
-                    { id: '25_elizabeth_holmes', name: 'Elizabeth Holmes', company: 'Theranos', image: '25_elizabeth_holmes.png', team: 2, handle: '@seanpaulsartre_' },
-                    { id: '47_daniel_ek', name: 'Daniel Ek', company: 'Spotify', image: '47_daniel_ek.png', team: 2, handle: '@jacquesgreene' },
-                    { id: '27_travis_kalanick', name: 'Travis Kalanick', company: 'Uber', image: '27_travis_kalanick.png', team: 2, handle: '@kunaalarya' },
-                    { id: '37_steve_wozniak', name: 'Steve Wozniak', company: 'Apple', image: '37_steve_wozniak.png', team: 2, handle: '@minibearbeats' },
-                    { id: '53_youtube', name: 'YouTube Founders', company: 'YouTube', image: '53_youtube.png', team: 2, handle: '@plascu' },
-                    { id: '31_whitney_wolfe_herd', name: 'Whitney Wolfe Herd', company: 'Bumble', image: '31_whitney_wolfe_herd.png', team: 2, handle: '@steak.night' },
-                    { id: '36_alexis_ohanian', name: 'Alexis Ohanian', company: 'Reddit', image: '36_alexis_ohanian.png', team: 2, handle: '@taytaystay' },
-                    { id: '43_sophia_amoruso', name: 'Sophia Amoruso', company: 'Nasty Gal', image: '43_sophia_amoruso.png', team: 2, handle: '@special_agent_long' },
-                    { id: '39_ariana_huffington', name: 'Ariana Huffington', company: 'Huffington Post', image: '39_ariana_huffington.png', team: 2, handle: '@jubileedj' },
-                    { id: '33_martin_shkreli', name: 'Martin Shkreli', company: 'Turing Pharmaceuticals', image: '33_martin_shkreli.png', team: 2, handle: '@l2ex', status: 'dead' }
-                ]
-            };
-            
-            foundersDatabase = hardcodedFounders;
-            
-            // Initialize founder wealth
-            founderWealth = {};
-            Object.values(foundersDatabase).flat().forEach(founder => {
+    // First, get the current wealth data from Firebase before we do anything
+    database.ref('game/founderWealth').once('value', (snapshot) => {
+        const existingWealth = snapshot.val() || {};
+        
+        const hardcodedFounders = {
+            1: [
+                { id: '30_john_mckafee', name: 'John McAfee', company: 'McAfee', image: '30_john_mckafee.png', team: 1, handle: '@hauntyourownhouse' },
+                { id: '13_jensen_huang', name: 'Jensen Huang', company: 'NVIDIA', image: '13_jensen_huang.png', team: 1, handle: '@caleb' },
+                { id: '22_pavel_durov', name: 'Pavel Durov', company: 'Telegram', image: '22_pavel_durov.png', team: 1, handle: '@discoesq' },
+                { id: '32_kevin_systrom', name: 'Kevin Systrom', company: 'Instagram', image: '32_kevin_systrom.png', team: 1, handle: '@dougdalton' },
+                { id: '35_tom_anderson', name: 'Tom Anderson', company: 'MySpace', image: '35_tom_anderson.png', team: 1, handle: '@betwixt.frankie' },
+                { id: '40_craig_newmark', name: 'Craig Newmark', company: 'Craigslist', image: '40_craig_newmark.png', team: 1, handle: '@ladyhuss_' },
+                { id: '20_jack_dorsey', name: 'Jack Dorsey', company: 'Twitter', image: '20_jack_dorsey.png', team: 1, handle: '@jackhite' },
+                { id: '50_jessica_alba', name: 'Jessica Alba', company: 'The Honest Company', image: '50_jessica_alba.png', team: 1, handle: '@jasche__' },
+                { id: '14_peter_thiel', name: 'Peter Thiel', company: 'Palantir', image: '14_peter_thiel.png', team: 1, handle: '@jesushands' },
+                { id: '17_sam_altman', name: 'Sam Altman', company: 'OpenAI', image: '17_sam_altman.png', team: 1, handle: '@michaelmelwani' },
+                { id: '11_google_founders', name: 'Larry Page & Sergey Brin', company: 'Google', image: '11_google_founders.png', team: 1, handle: '@mfgarret + @nataliesomekh_' },
+                { id: '15_jack_ma', name: 'Jack Ma', company: 'Alibaba', image: '15_jack_ma.png', team: 1, handle: '@manolowashere' },
+                { id: '08_elon_musk', name: 'Elon Musk', company: 'Tesla/SpaceX', image: '08_elon_musk.png', team: 1, handle: '@vishaal.arya' },
+                { id: '19_vitalik_buterin', name: 'Vitalik Buterin', company: 'Ethereum', image: '19_vitalik_buterin.png', team: 1, handle: '@saulisgood' },
+                { id: '29_sean_parker', name: 'Sean Parker', company: 'Napster', image: '29_sean_parker.png', team: 1, handle: '@mansweater' },
+                { id: '41_lucy_guo', name: 'Lucy Guo', company: 'Scale AI', image: '41_lucy_guo.png', team: 1, handle: '@literatrix' },
+                { id: '06_brian_chesky', name: 'Brian Chesky', company: 'Airbnb', image: '06_brian_chesky.png', team: 1, handle: '@cyborgdrew' },
+                { id: '52_palmer_luckey', name: 'Palmer Luckey', company: 'Oculus', image: '52_palmer_luckey.png', team: 1, handle: '@spine.remover' },
+                { id: '38_juul', name: 'James Monsees & Adam Bowen', company: 'Juul', image: '38_juul.png', team: 1, handle: '@sam__stiles' },
+                { id: '63_winklevoss', name: 'Winklevoss Twins', company: 'Gemini', image: '63_winklevoss.png', team: 1, handle: '@whoiskaybrown' },
+                { id: '67_kim', name: 'Kim Dotcom', company: 'Mega', image: '67_kim.png', team: 1, handle: '@thecornii' }
+            ],
+            2: [
+                { id: '51_zhang_yiming', name: 'Zhang Yiming', company: 'ByteDance', image: '51_zhang_yiming.png', team: 2, handle: '@aiiisound' },
+                { id: '34_meg_whitman', name: 'Meg Whitman', company: 'eBay', image: '34_meg_whitman.png', team: 2, handle: '@bombchips' },
+                { id: '04_brian_armstrong', name: 'Brian Armstrong', company: 'Coinbase', image: '04_brian_armstrong.png', team: 2, handle: '@jenergizer' },
+                { id: '48_sam_bankman_fried', name: 'Sam Bankman-Fried', company: 'FTX', image: '48_sam_bankman-fried.png', team: 2, handle: '@teamcoben' },
+                { id: '49_reed_hastings', name: 'Reed Hastings', company: 'Netflix', image: '49_reed_hastings.png', team: 2, handle: '@stan_jericho', status: 'dead' },
+                { id: '24_larry_ellison', name: 'Larry Ellison', company: 'Oracle', image: '24_larry_ellison.png', team: 2, handle: '@littleurbanachiever' },
+                { id: '21_jimmy_wales', name: 'Jimmy Wales', company: 'Wikipedia', image: '21_jimmy_wales.png', team: 2, handle: '@danieldomange' },
+                { id: '46_dread_pirate', name: 'Ross Ulbricht', company: 'Silk Road', image: '46_dread_pirate.png', team: 2, handle: '@octavekitten' },
+                { id: '25_elizabeth_holmes', name: 'Elizabeth Holmes', company: 'Theranos', image: '25_elizabeth_holmes.png', team: 2, handle: '@seanpaulsartre_' },
+                { id: '47_daniel_ek', name: 'Daniel Ek', company: 'Spotify', image: '47_daniel_ek.png', team: 2, handle: '@jacquesgreene' },
+                { id: '27_travis_kalanick', name: 'Travis Kalanick', company: 'Uber', image: '27_travis_kalanick.png', team: 2, handle: '@kunaalarya' },
+                { id: '37_steve_wozniak', name: 'Steve Wozniak', company: 'Apple', image: '37_steve_wozniak.png', team: 2, handle: '@minibearbeats' },
+                { id: '53_youtube', name: 'YouTube Founders', company: 'YouTube', image: '53_youtube.png', team: 2, handle: '@plascu' },
+                { id: '31_whitney_wolfe_herd', name: 'Whitney Wolfe Herd', company: 'Bumble', image: '31_whitney_wolfe_herd.png', team: 2, handle: '@steak.night' },
+                { id: '36_alexis_ohanian', name: 'Alexis Ohanian', company: 'Reddit', image: '36_alexis_ohanian.png', team: 2, handle: '@taytaystay' },
+                { id: '43_sophia_amoruso', name: 'Sophia Amoruso', company: 'Nasty Gal', image: '43_sophia_amoruso.png', team: 2, handle: '@special_agent_long' },
+                { id: '39_ariana_huffington', name: 'Ariana Huffington', company: 'Huffington Post', image: '39_ariana_huffington.png', team: 2, handle: '@jubileedj' },
+                { id: '33_martin_shkreli', name: 'Martin Shkreli', company: 'Turing Pharmaceuticals', image: '33_martin_shkreli.png', team: 2, handle: '@l2ex', status: 'dead' }
+            ]
+        };
+        
+        foundersDatabase = hardcodedFounders;
+        
+        // Initialize founder wealth, preserving existing values
+        founderWealth = {};
+        let preservedCount = 0;
+        let newCount = 0;
+        
+        Object.values(foundersDatabase).flat().forEach(founder => {
+            if (existingWealth[founder.id] !== undefined && existingWealth[founder.id] > 0) {
+                // Preserve existing wealth
+                founderWealth[founder.id] = existingWealth[founder.id];
+                preservedCount++;
+            } else {
+                // New founder or no wealth
                 founderWealth[founder.id] = 0;
-            });
-            
-            database.ref('game/founders').set(foundersDatabase);
-            database.ref('game/founderWealth').set(founderWealth);
-            updateFounderDisplay();
-            log('Imported founders from companies.html', 'success');
+                newCount++;
+            }
+        });
+        
+        database.ref('game/founders').set(foundersDatabase);
+        database.ref('game/founderWealth').set(founderWealth);
+        updateFounderDisplay();
+        
+        log(`Imported founders: ${preservedCount} kept their wealth, ${newCount} started at $0`, 'success');
+    });
         }
-
         function updateFounderDisplay() {
             const team1Div = document.getElementById('team1Founders');
             const team2Div = document.getElementById('team2Founders');
@@ -1136,7 +1153,91 @@
     updateFounderDisplay();
 }
 
+function distributeTeamWealthToFounders() {
+    console.log('🔄 Redistributing team wealth to individual founders...');
+    
+    // Get all current data
+    database.ref('game').once('value', (snapshot) => {
+        const data = snapshot.val();
+        if (!data) {
+            alert('No game data found!');
+            return;
+        }
 
+        const board = data.board || {};
+        const founders = data.founders || { 1: [], 2: [] };
+        const companies = data.companies || {};
+        
+        // Create founder lookup
+        const allFounders = [...(founders[1] || []), ...(founders[2] || [])];
+        console.log('All founders:', allFounders);
+        
+        // Count challenges completed by each founder
+        const founderChallengeCount = {};
+        const teamChallengeCount = { 1: 0, 2: 0 };
+        
+        // First pass: count all completed challenges per team and founder
+        Object.keys(board).forEach(cellKey => {
+            const cell = board[cellKey];
+            if (cell.challenges && Array.isArray(cell.challenges)) {
+                cell.challenges.forEach(challenge => {
+                    if (challenge.completed && challenge.completedByTeam) {
+                        teamChallengeCount[challenge.completedByTeam]++;
+                        
+                        // Try to find founder by name
+                        const founder = allFounders.find(f => f.name === challenge.completedBy);
+                        if (founder) {
+                            if (!founderChallengeCount[founder.id]) {
+                                founderChallengeCount[founder.id] = 0;
+                            }
+                            founderChallengeCount[founder.id] += challenge.value;
+                            console.log(`✅ ${founder.name} gets $${challenge.value}`);
+                        } else {
+                            console.log(`❌ Could not find founder: "${challenge.completedBy}"`);
+                        }
+                    }
+                });
+            }
+        });
+        
+        console.log('Founder challenge totals:', founderChallengeCount);
+        console.log('Team challenge counts:', teamChallengeCount);
+        
+        // Verify the totals match
+        let calculatedTeam1 = 0;
+        let calculatedTeam2 = 0;
+        
+        Object.keys(founderChallengeCount).forEach(founderId => {
+            const founder = allFounders.find(f => f.id === founderId);
+            if (founder) {
+                if (founder.team === 1) {
+                    calculatedTeam1 += founderChallengeCount[founderId];
+                } else if (founder.team === 2) {
+                    calculatedTeam2 += founderChallengeCount[founderId];
+                }
+            }
+        });
+        
+        console.log(`\nVerification:`);
+        console.log(`Team 1: Company shows $${companies[1]?.valuation || 0}, Calculated $${calculatedTeam1}`);
+        console.log(`Team 2: Company shows $${companies[2]?.valuation || 0}, Calculated $${calculatedTeam2}`);
+        
+        // Show summary before applying
+        const summary = Object.keys(founderChallengeCount).map(founderId => {
+            const founder = allFounders.find(f => f.id === founderId);
+            return `${founder?.name || founderId}: $${founderChallengeCount[founderId]}`;
+        }).join('\n');
+        
+        if (confirm(`Found wealth distribution:\n\n${summary}\n\nApply this to founder accounts?`)) {
+            // Apply the founder wealth
+            database.ref('game/founderWealth').set(founderChallengeCount).then(() => {
+                founderWealth = founderChallengeCount; // Update local state
+                updateFounderDisplay();
+                log(`✅ Distributed wealth to ${Object.keys(founderChallengeCount).length} founders`, 'success');
+            });
+        }
+    });
+}
 
 
         // NEW: Undo last challenge completion
