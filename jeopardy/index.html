@@ -921,7 +921,7 @@
         // Game configuration - ALL VALUES SHOWN BUT ONLY $100 AVAILABLE
         const categories = ["meme-me-up-scottie", "doom-scroll-nation", "web-1.0", "netbangerz", "paizley-and-robot", "em0ti0nz"];
         const values = [100, 200, 300, 400, 500]; // All values shown
-        const availableValues = [100, 200]; // Only $100 is clickable
+        const availableValues = [100, 200,300 ];
 
         // Game state
         let gameState = {
@@ -964,7 +964,7 @@
             
             const valueDiv = document.createElement('div');
             valueDiv.className = 'value';
-            valueDiv.textContent = `${value}`;
+            valueDiv.textContent = `$${value}`;
             
             const challengesDiv = document.createElement('div');
             challengesDiv.className = 'challenges';
@@ -1201,73 +1201,182 @@ if (value === 100 || value === 200) {
             document.getElementById('valuation1').textContent = `$${gameState.companies[1].valuation.toLocaleString()}`;
             document.getElementById('valuation2').textContent = `$${gameState.companies[2].valuation.toLocaleString()}`;
         }
-
         function updateBoard() {
-            document.querySelectorAll('.cell').forEach(cell => {
-                const category = cell.dataset.category;
-                const value = cell.dataset.value;
-                const cellKey = `${category}-${value}`;
-                const sanitizedKey = sanitizeFirebaseKey(cellKey);
-                const state = gameState.board[sanitizedKey];
+    document.querySelectorAll('.cell').forEach(cell => {
+        const category = cell.dataset.category;
+        const value = parseInt(cell.dataset.value);
+        const cellKey = `${category}-${value}`;
+        const sanitizedKey = sanitizeFirebaseKey(cellKey);
+        const state = gameState.board[sanitizedKey];
 
-                cell.classList.remove('completed', 'in-progress');
+        // Reset cell states
+        cell.classList.remove('completed', 'in-progress');
+        
+        // Remove any existing winner badge
+        const existingBadge = cell.querySelector('.winner-badge');
+        if (existingBadge) existingBadge.remove();
+        
+        // Get value element
+        const valueElement = cell.querySelector('.value');
+        if (valueElement) {
+            valueElement.textContent = `$${value}`;
+        }
+        
+        // Reset all dots to default state
+        const dots = cell.querySelectorAll('.challenge-dot');
+        dots.forEach(dot => {
+            dot.className = 'challenge-dot';
+        });
+        
+        if (state) {
+            // Special handling for Doom Scroll Nation
+            if (category === 'doom-scroll-nation' && value === 100) {
+                // Force check if it has completed challenges
+                const hasCompletedChallenges = state.challenges && 
+                    Array.isArray(state.challenges) && 
+                    state.challenges.some(c => c.completed === true);
                 
-                // Remove any existing winner badge
-                const existingBadge = cell.querySelector('.winner-badge');
-                if (existingBadge) existingBadge.remove();
-                
-                // Reset value display
-                cell.querySelector('.value').textContent = value;
-                
-                // Reset all dots to default state
-                const dots = cell.querySelectorAll('.challenge-dot');
-                dots.forEach(dot => {
-                    dot.className = 'challenge-dot';
-                });
-                
-                if (state) {
-                    // FIXED: Only mark as completed if there's actually a winner OR meaningful challenge completions
-                    const hasWinner = state.winnerTeam;
-                    const hasCompletedChallenges = state.challenges && state.challenges.some(c => c.completedByTeam);
-                    const isActuallyCompleted = state.completed && (hasWinner || hasCompletedChallenges);
+                if (hasCompletedChallenges) {
+                    // It's actually completed - force the completed state
+                    cell.classList.add('completed');
                     
-                    if (isActuallyCompleted) {
-                        cell.classList.add('completed');
-                        cell.querySelector('.value').textContent = '✓';
-                        
-                        // Add winner badge only if there's a winner
-                        if (state.winnerTeam) {
-                            const badge = document.createElement('div');
-                            badge.className = `winner-badge team-${state.winnerTeam}`;
-                            badge.textContent = state.winnerTeam === 1 ? 'Y' : 'A';
-                            cell.appendChild(badge);
+                    if (valueElement) {
+                        valueElement.textContent = '✓';
+                    }
+                    
+                    // Count wins per team
+                    let team1Wins = 0;
+                    let team2Wins = 0;
+                    
+                    state.challenges.forEach((challenge, idx) => {
+                        if (challenge.completed && challenge.completedByTeam) {
+                            if (challenge.completedByTeam === 1) team1Wins++;
+                            else if (challenge.completedByTeam === 2) team2Wins++;
+                            
+                            // Update dot color
+                            if (dots[idx]) {
+                                dots[idx].className = `challenge-dot team-${challenge.completedByTeam}`;
+                            }
                         }
+                    });
+                    
+                    // Add winner badge
+                    if (team1Wins > team2Wins) {
+                        const badge = document.createElement('div');
+                        badge.className = 'winner-badge team-1';
+                        badge.textContent = 'Y';
+                        cell.appendChild(badge);
+                    } else if (team2Wins > team1Wins) {
+                        const badge = document.createElement('div');
+                        badge.className = 'winner-badge team-2';
+                        badge.textContent = 'A';
+                        cell.appendChild(badge);
+                    }
+                    
+                    // Log for debugging
+                    console.log(`Doom Scroll Nation: Team 1 won ${team1Wins}, Team 2 won ${team2Wins}`);
+                }
+            }
+            
+            // Normal processing for other cells
+            const hasCompletedChallenges = state.challenges && 
+                Array.isArray(state.challenges) && 
+                state.challenges.some(c => c.completed === true && c.completedByTeam);
+            
+            const isActuallyCompleted = state.completed === true && hasCompletedChallenges;
+            
+            if (isActuallyCompleted) {
+                cell.classList.add('completed');
+                
+                if (valueElement) {
+                    valueElement.textContent = '✓';
+                }
+                
+                // Count wins per team
+                let team1Wins = 0;
+                let team2Wins = 0;
+                
+                state.challenges.forEach((challenge, idx) => {
+                    if (challenge.completed && challenge.completedByTeam) {
+                        if (challenge.completedByTeam === 1) team1Wins++;
+                        else if (challenge.completedByTeam === 2) team2Wins++;
                         
-                        // Update dots based on who completed each challenge
-                        if (state.challenges) {
-                            state.challenges.forEach((challenge, idx) => {
-                                if (dots[idx] && challenge.completedByTeam) {
-                                    dots[idx].className = `challenge-dot team-${challenge.completedByTeam}`;
-                                }
-                            });
-                        }
-                    } else if (state.inProgress) {
-                        cell.classList.add('in-progress');
-                        
-                        // Update dots for in-progress challenges
-                        if (state.challenges) {
-                            state.challenges.forEach((challenge, idx) => {
-                                if (dots[idx] && challenge.completedByTeam) {
-                                    dots[idx].className = `challenge-dot team-${challenge.completedByTeam}`;
-                                }
-                            });
+                        // Update dot color
+                        if (dots[idx]) {
+                            dots[idx].className = `challenge-dot team-${challenge.completedByTeam}`;
                         }
                     }
-                    // FIXED: If state exists but doesn't meet completion criteria, treat as available
+                });
+                
+                // Add winner badge if there's a clear winner
+                if (team1Wins > team2Wins || team2Wins > team1Wins) {
+                    const winnerTeam = team1Wins > team2Wins ? 1 : 2;
+                    const badge = document.createElement('div');
+                    badge.className = `winner-badge team-${winnerTeam}`;
+                    badge.textContent = winnerTeam === 1 ? 'Y' : 'A';
+                    cell.appendChild(badge);
                 }
-            });
+            } else if (state.inProgress === true) {
+                // Only show as in-progress if it's actually active
+                cell.classList.add('in-progress');
+                
+                // Update dots for in-progress challenges
+                if (state.challenges) {
+                    state.challenges.forEach((challenge, idx) => {
+                        if (dots[idx] && challenge.completed && challenge.completedByTeam) {
+                            dots[idx].className = `challenge-dot team-${challenge.completedByTeam}`;
+                        }
+                    });
+                }
+            }
         }
+    });
+}
+function fixDoomScrollNation() {
+    console.log('Checking Doom Scroll Nation status...');
+    
+    const doomScrollKey = sanitizeFirebaseKey('doom-scroll-nation-100');
+    
+    database.ref(`game/board/${doomScrollKey}`).once('value', (snapshot) => {
+        const data = snapshot.val();
+        
+        if (data && data.challenges) {
+            console.log('Doom Scroll Nation data:', data);
+            
+            // Count completed challenges
+            const completedChallenges = data.challenges.filter(c => c.completed);
+            console.log(`Found ${completedChallenges.length} completed challenges`);
+            
+            if (completedChallenges.length > 0 && !data.completed) {
+                // It has completed challenges but isn't marked as completed
+                console.log('Fixing Doom Scroll Nation - marking as completed');
+                
+                // Count wins
+                let team1Wins = 0;
+                let team2Wins = 0;
+                
+                data.challenges.forEach(challenge => {
+                    if (challenge.completed && challenge.completedByTeam === 1) team1Wins++;
+                    else if (challenge.completed && challenge.completedByTeam === 2) team2Wins++;
+                });
+                
+                const winnerTeam = team1Wins > team2Wins ? 1 : (team2Wins > team1Wins ? 2 : null);
+                
+                // Update Firebase
+                database.ref(`game/board/${doomScrollKey}`).update({
+                    completed: true,
+                    inProgress: false,
+                    winnerTeam: winnerTeam
+                });
+                
+                console.log(`Fixed! Winner: Team ${winnerTeam || 'Tie'}`);
+            }
+        }
+    });
+}
 
+// Call this function after the page loads to fix any stuck states
+setTimeout(fixDoomScrollNation, 2000);
         // Setup Firebase listeners
         function setupListeners() {
             if (!database) return;
