@@ -675,9 +675,12 @@
             <div class="quick-actions">
                 <button onclick="pauseGame()" class="secondary">⏸️ Pause Game</button>
                 <button onclick="resumeGame()" class="secondary">▶️ Resume Game</button>
+                <button onclick="openFirebaseDiagnostic()" class="secondary">🔍 Firebase Diagnostic</button>
                 <button onclick="openScoreEditor()" class="secondary">✏️ Edit Scores</button>
+                <button onclick="openChallengeWinnerEditor()" class="secondary">🏆 Edit Challenge Winners</button>
                 <button onclick="clearStaleData()" class="secondary">🧹 Clear Stale</button>
                 <button onclick="resetValuations()" class="danger">💰 Reset Scores</button>
+                <button onclick="openWalletRecovery()" class="secondary">💸 Wallet Recovery Tool</button>
                 <button onclick="openIndividualWallet()" class="secondary">💳 Individual Wallets</button>
                 <button onclick="ensureAllFoundersInFirebase()" class="secondary">🔄 Sync All Founders</button>
                 <button onclick="verifyFounderWealth()" class="secondary">🔍 Verify Wallets</button>
@@ -1765,8 +1768,8 @@
             if (!category) return;
             
             // Count how many challenges we're saving
-            let challengeCount = 0;
-            const values = [300]; // Focus on $300
+            let challengeCount = 0
+            const values = [400]; 
             
             values.forEach(value => {
                 for (let i = 0; i < 5; i++) {
@@ -2180,6 +2183,858 @@
         window.executeReassignment = executeReassignment;
         window.removeChallenge = removeChallenge;
         window.closeScoreEditor = closeScoreEditor;
+        function openFirebaseDiagnostic() {
+    document.getElementById('firebaseDiagnosticModal').style.display = 'block';
+}
+
+function closeFirebaseDiagnostic() {
+    document.getElementById('firebaseDiagnosticModal').style.display = 'none';
+}
+
+function viewDoomScrollData() {
+    const doomScrollKey = 'doom-scroll-nation-100'.replace(/\./g, '_');
+    
+    database.ref(`game/board/${doomScrollKey}`).once('value', (snapshot) => {
+        const data = snapshot.val();
+        const viewer = document.getElementById('rawDataViewer');
+        
+        if (data) {
+            viewer.textContent = JSON.stringify(data, null, 2);
+            
+            // Also show a summary
+            let summary = `\nSUMMARY:\n`;
+            summary += `- In Progress: ${data.inProgress || false}\n`;
+            summary += `- Completed: ${data.completed || false}\n`;
+            summary += `- Winner Team: ${data.winnerTeam || 'None'}\n`;
+            
+            if (data.challenges) {
+                const completedCount = data.challenges.filter(c => c.completed).length;
+                summary += `- Challenges: ${completedCount}/${data.challenges.length} completed\n`;
+                
+                // Count by team
+                let team1 = 0, team2 = 0;
+                data.challenges.forEach(c => {
+                    if (c.completed) {
+                        if (c.completedByTeam === 1) team1++;
+                        else if (c.completedByTeam === 2) team2++;
+                    }
+                });
+                summary += `- Team 1 wins: ${team1}\n`;
+                summary += `- Team 2 wins: ${team2}\n`;
+            }
+            
+            viewer.textContent = summary + '\n-------------------\n' + viewer.textContent;
+        } else {
+            viewer.textContent = 'No data found for doom-scroll-nation-100';
+        }
+    });
+}
+
+function forceClearDoomScroll() {
+    if (confirm('This will completely clear all data for Doom Scroll Nation $100. Are you sure?')) {
+        const doomScrollKey = 'doom-scroll-nation-100'.replace(/\./g, '_');
+        
+        database.ref(`game/board/${doomScrollKey}`).remove()
+            .then(() => {
+                log('Cleared Doom Scroll Nation $100 data', 'success');
+                alert('Cleared! The cell should now appear as available.');
+                viewDoomScrollData(); // Refresh the view
+            })
+            .catch(error => {
+                log('Failed to clear: ' + error.message, 'error');
+            });
+    }
+}
+
+function forceCompleteDoomScroll() {
+    const doomScrollKey = 'doom-scroll-nation-100'.replace(/\./g, '_');
+    
+    // First, get the current data
+    database.ref(`game/board/${doomScrollKey}`).once('value', (snapshot) => {
+        const currentData = snapshot.val() || {};
+        
+        // If there are challenges, count wins
+        let winnerTeam = null;
+        if (currentData.challenges) {
+            let team1Wins = 0, team2Wins = 0;
+            currentData.challenges.forEach(c => {
+                if (c.completed && c.completedByTeam === 1) team1Wins++;
+                else if (c.completed && c.completedByTeam === 2) team2Wins++;
+            });
+            
+            if (team1Wins > team2Wins) winnerTeam = 1;
+            else if (team2Wins > team1Wins) winnerTeam = 2;
+        }
+        
+        // Force update to completed state
+        database.ref(`game/board/${doomScrollKey}`).update({
+            completed: true,
+            inProgress: false,
+            winnerTeam: winnerTeam,
+            originalKey: 'doom-scroll-nation-100'
+        }).then(() => {
+            log('Forced Doom Scroll Nation $100 to completed state', 'success');
+            alert('Marked as completed! The cell should now show as finished.');
+            viewDoomScrollData(); // Refresh the view
+        });
+    });
+}
+
+function loadBoardDiagnostic() {
+    database.ref('game/board').once('value', (snapshot) => {
+        const boardData = snapshot.val() || {};
+        const content = document.getElementById('boardDiagnosticContent');
+        
+        let html = '<table style="width: 100%; color: #fff; font-size: 12px;">';
+        html += '<tr style="border-bottom: 1px solid #444;"><th>Cell</th><th>Status</th><th>Winner</th><th>Challenges</th><th>Actions</th></tr>';
+        
+        Object.keys(boardData).forEach(cellKey => {
+            const cell = boardData[cellKey];
+            const originalKey = cell.originalKey || cellKey.replace(/_/g, '.');
+            
+            let status = 'Unknown';
+            if (cell.completed) status = '✓ Completed';
+            else if (cell.inProgress) status = '⚡ In Progress';
+            else status = '⭕ Available';
+            
+            let challengeInfo = 'No challenges';
+            if (cell.challenges) {
+                const completed = cell.challenges.filter(c => c.completed).length;
+                challengeInfo = `${completed}/${cell.challenges.length}`;
+            }
+            
+            html += `<tr style="border-bottom: 1px solid #222;">`;
+            html += `<td style="padding: 8px;">${originalKey}</td>`;
+            html += `<td style="color: ${cell.completed ? '#0f0' : (cell.inProgress ? '#ff0' : '#666')}">${status}</td>`;
+            html += `<td>Team ${cell.winnerTeam || '-'}</td>`;
+            html += `<td>${challengeInfo}</td>`;
+            html += `<td>`;
+            html += `<button onclick="viewCellData('${cellKey}')" style="font-size: 10px; padding: 2px 8px; margin-right: 5px;">View</button>`;
+            html += `<button onclick="clearCell('${cellKey}')" style="font-size: 10px; padding: 2px 8px; background: #f33;">Clear</button>`;
+            html += `</td>`;
+            html += `</tr>`;
+        });
+        
+        html += '</table>';
+        content.innerHTML = html;
+    });
+}
+
+function viewCellData(cellKey) {
+    database.ref(`game/board/${cellKey}`).once('value', (snapshot) => {
+        const data = snapshot.val();
+        const viewer = document.getElementById('rawDataViewer');
+        viewer.textContent = `Data for ${cellKey}:\n\n${JSON.stringify(data, null, 2)}`;
+    });
+}
+
+function clearCell(cellKey) {
+    const originalKey = cellKey.replace(/_/g, '.');
+    if (confirm(`Clear all data for ${originalKey}?`)) {
+        database.ref(`game/board/${cellKey}`).remove()
+            .then(() => {
+                log(`Cleared ${originalKey}`, 'success');
+                loadBoardDiagnostic(); // Refresh the list
+            });
+    }
+}
+
+// Also check for any active challenges that might be stuck
+function checkActiveChallenge() {
+    database.ref('game/activeChallenges').once('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.category === 'doom-scroll-nation' && data.value === 100) {
+            console.log('Found active Doom Scroll Nation challenge:', data);
+            if (confirm('Doom Scroll Nation $100 is marked as active. Clear this active state?')) {
+                database.ref('game/activeChallenges').remove();
+            }
+        }
+    });
+}
+function openChallengeWinnerEditor() {
+    document.getElementById('challengeWinnerModal').style.display = 'block';
+    populateCompletedCells();
+}
+
+function closeChallengeWinnerEditor() {
+    document.getElementById('challengeWinnerModal').style.display = 'none';
+}
+
+function populateCompletedCells() {
+    database.ref('game/board').once('value', (snapshot) => {
+        const board = snapshot.val() || {};
+        const select = document.getElementById('winnerEditorSelect');
+        
+        let options = '<option value="">Choose a completed cell...</option>';
+        
+        // Create sorted array of cells
+        const cells = [];
+        Object.keys(board).forEach(cellKey => {
+            const cell = board[cellKey];
+            if (cell.completed || cell.inProgress) {
+                // Convert the key back to readable format
+                const originalKey = cell.originalKey || cellKey.replace(/_/g, '.').replace(/_/g, '-');
+                
+                // Parse the category and value
+                let category, value;
+                const parts = originalKey.split('-');
+                if (parts.length > 2) {
+                    // Handle multi-word categories like doom-scroll-nation
+                    value = parts[parts.length - 1];
+                    category = parts.slice(0, -1).join('-');
+                } else {
+                    [category, value] = parts;
+                }
+                
+                cells.push({
+                    cellKey: cellKey,
+                    category: category,
+                    value: parseInt(value) || 0,
+                    displayName: `${category.replace(/-/g, ' ').toUpperCase()} - ${value}`
+                });
+            }
+        });
+        
+        // Sort by category then by value
+        cells.sort((a, b) => {
+            if (a.category !== b.category) {
+                return a.category.localeCompare(b.category);
+            }
+            return a.value - b.value;
+        });
+        
+        // Build options
+        cells.forEach(cell => {
+            options += `<option value="${cell.cellKey}">${cell.displayName}</option>`;
+        });
+        
+        select.innerHTML = options;
+    });
+}
+
+let currentEditingCell = null;
+let currentChallenges = [];
+
+function loadChallengeWinners() {
+    const cellKey = document.getElementById('winnerEditorSelect').value;
+    if (!cellKey) {
+        document.getElementById('challengeWinnerContent').style.display = 'none';
+        return;
+    }
+    
+    currentEditingCell = cellKey;
+    document.getElementById('challengeWinnerContent').style.display = 'block';
+    
+    database.ref(`game/board/${cellKey}`).once('value', (snapshot) => {
+        const cellData = snapshot.val();
+        const originalKey = cellData.originalKey || cellKey.replace(/_/g, '-');
+        
+        // Parse the category and value properly
+        let category, value;
+        const parts = originalKey.split('-');
+        if (parts.length > 2) {
+            // Handle multi-word categories
+            value = parts[parts.length - 1];
+            category = parts.slice(0, -1).join('-');
+        } else {
+            [category, value] = parts;
+        }
+        
+        document.getElementById('selectedCellTitle').textContent = 
+            `${category.replace(/-/g, ' ').toUpperCase()} - ${value}`;
+        
+        // Load challenges from the challenge database or use existing ones
+        if (cellData.challenges && cellData.challenges.length > 0) {
+            currentChallenges = cellData.challenges;
+        } else {
+            // Load from challenge database
+            database.ref(`game/challengeDatabase/${category}/${value}`).once('value', (snapshot) => {
+                const challenges = snapshot.val() || [];
+                currentChallenges = challenges.map(c => ({
+                    ...c,
+                    completed: false,
+                    completedBy: null,
+                    completedByTeam: null
+                }));
+                renderChallengesList();
+            });
+            return;
+        }
+        
+        renderChallengesList();
+    });
+}
+
+function renderChallengesList() {
+    const container = document.getElementById('challengesList');
+    
+    let html = '<div style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 10px;">';
+    
+    currentChallenges.forEach((challenge, idx) => {
+        const isCompleted = challenge.completed || challenge.completedBy;
+        const bgColor = isCompleted ? 'rgba(0,255,0,0.1)' : 'rgba(255,255,255,0.05)';
+        const borderColor = challenge.completedByTeam === 1 ? 'var(--team1-color)' : 
+                          challenge.completedByTeam === 2 ? 'var(--team2-color)' : '#666';
+        
+        html += `
+            <div style="background: ${bgColor}; border: 2px solid ${borderColor}; 
+                        border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="flex: 1;">
+                        <h4 style="color: var(--cyan); margin-bottom: 8px;">Challenge ${idx + 1} - $${challenge.value || 100}</h4>
+                        <p style="color: #ccc; margin-bottom: 10px;">${challenge.description || 'No description'}</p>
+                        ${isCompleted ? 
+                            `<p style="color: #0f0;">✓ Won by: ${challenge.completedBy || 'Unknown'} (Team ${challenge.completedByTeam || '?'})</p>` :
+                            `<p style="color: #999;">Not completed</p>`
+                        }
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <select id="winner_select_${idx}" style="width: 200px;">
+                            <option value="">Select winner...</option>
+                            <optgroup label="Team 1 - Y2KET">
+                                ${renderFounderOptions(1, challenge.completedBy)}
+                            </optgroup>
+                            <optgroup label="Team 2 - Series A">
+                                ${renderFounderOptions(2, challenge.completedBy)}
+                            </optgroup>
+                        </select>
+                        <button onclick="clearChallengeWinner(${idx})" style="background: #ff3333; font-size: 12px;">
+                            Clear Winner
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function renderFounderOptions(team, selectedFounder) {
+    const founders = foundersDatabase[team] || [];
+    return founders.map(founder => 
+        `<option value="${founder.id}" ${founder.name === selectedFounder ? 'selected' : ''}>
+            ${founder.name}
+        </option>`
+    ).join('');
+}
+
+function clearChallengeWinner(idx) {
+    currentChallenges[idx].completed = false;
+    currentChallenges[idx].completedBy = null;
+    currentChallenges[idx].completedByTeam = null;
+    currentChallenges[idx].completedByFounderId = null;
+    renderChallengesList();
+}
+
+function saveChallengeWinners() {
+    // Update challenges based on selections
+    currentChallenges.forEach((challenge, idx) => {
+        const select = document.getElementById(`winner_select_${idx}`);
+        const founderId = select.value;
+        
+        if (founderId) {
+            const founder = [...(foundersDatabase[1] || []), ...(foundersDatabase[2] || [])]
+                .find(f => f.id === founderId);
+            
+            if (founder) {
+                challenge.completed = true;
+                challenge.completedBy = founder.name;
+                challenge.completedByTeam = founder.team;
+                challenge.completedByFounderId = founder.id;
+            }
+        }
+    });
+    
+    // Count wins per team
+    let team1Wins = 0;
+    let team2Wins = 0;
+    currentChallenges.forEach(c => {
+        if (c.completed) {
+            if (c.completedByTeam === 1) team1Wins++;
+            else if (c.completedByTeam === 2) team2Wins++;
+        }
+    });
+    
+    const winnerTeam = team1Wins > team2Wins ? 1 : (team2Wins > team1Wins ? 2 : null);
+    
+    // Update Firebase
+    database.ref(`game/board/${currentEditingCell}`).update({
+        challenges: currentChallenges,
+        completed: true,
+        inProgress: false,
+        winnerTeam: winnerTeam
+    }).then(() => {
+        log(`Updated winners for ${currentEditingCell}`, 'success');
+        alert(`Saved! Team 1: ${team1Wins} wins, Team 2: ${team2Wins} wins`);
+        
+        // Update founder wealth if needed
+        updateFounderWealthFromChallenges();
+    });
+}
+
+function updateFounderWealthFromChallenges() {
+    // This recalculates founder wealth based on all completed challenges
+    database.ref('game/board').once('value', (snapshot) => {
+        const board = snapshot.val() || {};
+        const newWealth = {};
+        
+        // Initialize all founders to 0
+        [...(foundersDatabase[1] || []), ...(foundersDatabase[2] || [])]
+            .forEach(founder => {
+                newWealth[founder.id] = 0;
+            });
+        
+        // Add up all completed challenges
+        Object.values(board).forEach(cell => {
+            if (cell.challenges) {
+                cell.challenges.forEach(challenge => {
+                    if (challenge.completed && challenge.completedByFounderId) {
+                        newWealth[challenge.completedByFounderId] = 
+                            (newWealth[challenge.completedByFounderId] || 0) + (challenge.value || 100);
+                    }
+                });
+            }
+        });
+        
+        // Update Firebase
+        database.ref('game/founderWealth').set(newWealth)
+            .then(() => {
+                founderWealth = newWealth;
+                updateFounderDisplay();
+                log('Recalculated all founder wealth', 'success');
+            });
+    });
+}
+
+function autoDistributeWins() {
+    if (!confirm('This will randomly distribute wins between the teams. Continue?')) return;
+    
+    // Get all founders
+    const team1Founders = foundersDatabase[1] || [];
+    const team2Founders = foundersDatabase[2] || [];
+    
+    currentChallenges.forEach((challenge, idx) => {
+        // Randomly pick a team (slightly favor the losing team)
+        const team = Math.random() < 0.5 ? 1 : 2;
+        const founders = team === 1 ? team1Founders : team2Founders;
+        
+        if (founders.length > 0) {
+            const randomFounder = founders[Math.floor(Math.random() * founders.length)];
+            challenge.completed = true;
+            challenge.completedBy = randomFounder.name;
+            challenge.completedByTeam = team;
+            challenge.completedByFounderId = randomFounder.id;
+        }
+    });
+    
+    renderChallengesList();
+    alert('Randomly distributed wins! Review and click Save to confirm.');
+}
+
+// Quick function to recalculate all wealth
+function recalculateAllWealth() {
+    if (confirm('This will recalculate all founder wealth based on completed challenges. Continue?')) {
+        updateFounderWealthFromChallenges();
+    }
+}
+// Run this check when opening diagnostic
+setTimeout(checkActiveChallenge, 500);
+let walletRecoveryLog = [];
+
+function openWalletRecovery() {
+    document.getElementById('walletRecoveryModal').style.display = 'block';
+    loadCurrentWalletStatus();
+    populateRecoveryFounderSelect();
+    addRecoveryLog('Wallet recovery tool opened');
+}
+
+function closeWalletRecovery() {
+    document.getElementById('walletRecoveryModal').style.display = 'none';
+}
+
+function loadCurrentWalletStatus() {
+    database.ref('game/founderWealth').once('value', (snapshot) => {
+        const wealth = snapshot.val() || {};
+        const statusDiv = document.getElementById('currentWalletStatus');
+        
+        const allFounders = [...(foundersDatabase[1] || []), ...(foundersDatabase[2] || [])];
+        
+        // Group by team and sort by wealth
+        const team1 = allFounders.filter(f => f.team === 1).map(f => ({
+            ...f,
+            wealth: wealth[f.id] || 0
+        })).sort((a, b) => b.wealth - a.wealth);
+        
+        const team2 = allFounders.filter(f => f.team === 2).map(f => ({
+            ...f,
+            wealth: wealth[f.id] || 0
+        })).sort((a, b) => b.wealth - a.wealth);
+        
+        let html = '';
+        
+        // Team 1
+        html += '<div style="margin-bottom: 20px;">';
+        html += '<h4 style="color: var(--team1-color);">Team 1 - Y2KET CORP.</h4>';
+        const team1Total = team1.reduce((sum, f) => sum + f.wealth, 0);
+        html += `<p style="color: var(--yellow); margin-bottom: 10px;">Total: $${team1Total.toLocaleString()}</p>`;
+        team1.forEach(founder => {
+            const color = founder.wealth > 0 ? '#0f0' : '#999';
+            html += `<div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #333;">
+                <span>${founder.name}</span>
+                <span style="color: ${color};">$${founder.wealth.toLocaleString()}</span>
+            </div>`;
+        });
+        html += '</div>';
+        
+        // Team 2
+        html += '<div>';
+        html += '<h4 style="color: var(--team2-color);">Team 2 - SERIES A(POCALYPSE)</h4>';
+        const team2Total = team2.reduce((sum, f) => sum + f.wealth, 0);
+        html += `<p style="color: var(--yellow); margin-bottom: 10px;">Total: $${team2Total.toLocaleString()}</p>`;
+        team2.forEach(founder => {
+            const color = founder.wealth > 0 ? '#0f0' : '#999';
+            html += `<div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #333;">
+                <span>${founder.name}</span>
+                <span style="color: ${color};">$${founder.wealth.toLocaleString()}</span>
+            </div>`;
+        });
+        html += '</div>';
+        
+        statusDiv.innerHTML = html;
+        
+        addRecoveryLog(`Loaded current status - Team 1: $${team1Total}, Team 2: $${team2Total}`);
+    });
+}
+
+function populateRecoveryFounderSelect() {
+    const select = document.getElementById('recoveryFounderSelect');
+    const allFounders = [...(foundersDatabase[1] || []), ...(foundersDatabase[2] || [])];
+    
+    let options = '<option value="">Select founder...</option>';
+    options += '<optgroup label="Team 1 - Y2KET">';
+    allFounders.filter(f => f.team === 1).forEach(founder => {
+        options += `<option value="${founder.id}">${founder.name}</option>`;
+    });
+    options += '</optgroup>';
+    
+    options += '<optgroup label="Team 2 - Series A">';
+    allFounders.filter(f => f.team === 2).forEach(founder => {
+        options += `<option value="${founder.id}">${founder.name}</option>`;
+    });
+    options += '</optgroup>';
+    
+    select.innerHTML = options;
+}
+
+function addRecoveryLog(message) {
+    const time = new Date().toLocaleTimeString();
+    walletRecoveryLog.push(`[${time}] ${message}`);
+    
+    const logDiv = document.getElementById('walletAuditLog');
+    logDiv.innerHTML = walletRecoveryLog.join('<br>');
+    logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+function exportWalletData() {
+    database.ref('game/founderWealth').once('value', (snapshot) => {
+        const wealth = snapshot.val() || {};
+        const allFounders = [...(foundersDatabase[1] || []), ...(foundersDatabase[2] || [])];
+        
+        let exportText = 'WALLET DATA EXPORT - ' + new Date().toLocaleString() + '\n\n';
+        exportText += 'Format: founderId:amount\n\n';
+        
+        allFounders.forEach(founder => {
+            const amount = wealth[founder.id] || 0;
+            exportText += `${founder.id}:${amount} # ${founder.name}\n`;
+        });
+        
+        // Create a download
+        const blob = new Blob([exportText], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'wallet_backup_' + Date.now() + '.txt';
+        a.click();
+        
+        addRecoveryLog('Exported wallet data');
+    });
+}
+
+function bulkUpdateWallets() {
+    const bulkData = document.getElementById('bulkWalletData').value.trim();
+    if (!bulkData) {
+        alert('Please paste wallet data in the format: founderId:amount');
+        return;
+    }
+    
+    const updates = {};
+    const lines = bulkData.split('\n');
+    let updateCount = 0;
+    
+    lines.forEach(line => {
+        const cleanLine = line.split('#')[0].trim(); // Remove comments
+        if (cleanLine) {
+            const [founderId, amount] = cleanLine.split(':');
+            if (founderId && amount) {
+                updates[founderId.trim()] = parseInt(amount) || 0;
+                updateCount++;
+            }
+        }
+    });
+    
+    if (updateCount === 0) {
+        alert('No valid wallet data found');
+        return;
+    }
+    
+    if (confirm(`Update ${updateCount} wallets?`)) {
+        database.ref('game/founderWealth').update(updates)
+            .then(() => {
+                founderWealth = { ...founderWealth, ...updates };
+                updateFounderDisplay();
+                loadCurrentWalletStatus();
+                addRecoveryLog(`Bulk updated ${updateCount} wallets`);
+                document.getElementById('bulkWalletData').value = '';
+                alert(`Successfully updated ${updateCount} wallets!`);
+            });
+    }
+}
+
+function applyManualAdjustment(multiplier) {
+    const founderId = document.getElementById('recoveryFounderSelect').value;
+    const amount = parseInt(document.getElementById('recoveryAmount').value);
+    const reason = document.getElementById('recoveryReason').value || 'Manual adjustment';
+    
+    if (!founderId || !amount) {
+        alert('Please select a founder and enter an amount');
+        return;
+    }
+    
+    const founder = [...(foundersDatabase[1] || []), ...(foundersDatabase[2] || [])].find(f => f.id === founderId);
+    if (!founder) return;
+    
+    const currentWealth = founderWealth[founderId] || 0;
+    const adjustment = amount * multiplier;
+    const newWealth = Math.max(0, currentWealth + adjustment);
+    
+    database.ref(`game/founderWealth/${founderId}`).set(newWealth)
+        .then(() => {
+            founderWealth[founderId] = newWealth;
+            updateFounderDisplay();
+            loadCurrentWalletStatus();
+            
+            const action = multiplier > 0 ? 'Added' : 'Subtracted';
+            addRecoveryLog(`${action} $${Math.abs(adjustment)} ${multiplier > 0 ? 'to' : 'from'} ${founder.name}: ${reason}`);
+            
+            // Clear form
+            document.getElementById('recoveryAmount').value = '';
+            document.getElementById('recoveryReason').value = '';
+        });
+}
+
+function setExactAmount() {
+    const founderId = document.getElementById('recoveryFounderSelect').value;
+    const amount = parseInt(document.getElementById('recoveryAmount').value);
+    const reason = document.getElementById('recoveryReason').value || 'Set exact amount';
+    
+    if (!founderId || amount === undefined) {
+        alert('Please select a founder and enter an amount');
+        return;
+    }
+    
+    const founder = [...(foundersDatabase[1] || []), ...(foundersDatabase[2] || [])].find(f => f.id === founderId);
+    if (!founder) return;
+    
+    database.ref(`game/founderWealth/${founderId}`).set(amount)
+        .then(() => {
+            founderWealth[founderId] = amount;
+            updateFounderDisplay();
+            loadCurrentWalletStatus();
+            
+            addRecoveryLog(`Set ${founder.name} to exactly $${amount}: ${reason}`);
+            
+            // Clear form
+            document.getElementById('recoveryAmount').value = '';
+            document.getElementById('recoveryReason').value = '';
+        });
+}
+
+function calculateFromChallenges() {
+    if (!confirm('This will recalculate ALL wallets based on completed challenges. Current wallet values will be REPLACED. Continue?')) {
+        return;
+    }
+    
+    addRecoveryLog('Starting recalculation from challenges...');
+    
+    database.ref('game/board').once('value', (snapshot) => {
+        const board = snapshot.val() || {};
+        const newWealth = {};
+        
+        // Initialize all founders to 0
+        [...(foundersDatabase[1] || []), ...(foundersDatabase[2] || [])].forEach(founder => {
+            newWealth[founder.id] = 0;
+        });
+        
+        let totalChallenges = 0;
+        let totalValue = 0;
+        
+        // Add up all completed challenges
+        Object.values(board).forEach(cell => {
+            if (cell.challenges && Array.isArray(cell.challenges)) {
+                cell.challenges.forEach(challenge => {
+                    if (challenge.completed && challenge.completedByFounderId) {
+                        const value = challenge.value || 100;
+                        newWealth[challenge.completedByFounderId] = 
+                            (newWealth[challenge.completedByFounderId] || 0) + value;
+                        totalChallenges++;
+                        totalValue += value;
+                    }
+                });
+            }
+        });
+        
+        addRecoveryLog(`Found ${totalChallenges} completed challenges worth $${totalValue}`);
+        
+        // Show preview
+        let preview = 'PREVIEW OF CHANGES:\n\n';
+        Object.keys(newWealth).forEach(founderId => {
+            const oldWealth = founderWealth[founderId] || 0;
+            const newAmount = newWealth[founderId];
+            if (oldWealth !== newAmount) {
+                const founder = [...(foundersDatabase[1] || []), ...(foundersDatabase[2] || [])].find(f => f.id === founderId);
+                const diff = newAmount - oldWealth;
+                preview += `${founder?.name || founderId}: $${oldWealth} → $${newAmount} (${diff > 0 ? '+' : ''}${diff})\n`;
+            }
+        });
+        
+        if (confirm(preview + '\nApply these changes?')) {
+            database.ref('game/founderWealth').set(newWealth)
+                .then(() => {
+                    founderWealth = newWealth;
+                    updateFounderDisplay();
+                    loadCurrentWalletStatus();
+                    addRecoveryLog(`Recalculation complete - ${totalChallenges} challenges processed`);
+                    alert('Wallet recalculation complete!');
+                });
+        }
+    });
+}
+
     </script>
+    <div id="firebaseDiagnosticModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; overflow-y: auto; padding: 20px;">
+        <div style="max-width: 1200px; margin: 0 auto; background: #1a1a1a; border-radius: 20px; padding: 30px; border: 3px solid var(--cyan);">
+            <h2 style="color: var(--cyan); margin-bottom: 20px;">🔍 FIREBASE DIAGNOSTIC TOOL</h2>
+            
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: var(--yellow);">Quick Fix: Doom Scroll Nation $100</h3>
+                <button onclick="forceClearDoomScroll()" class="danger" style="margin-right: 10px;">🗑️ Clear Cell Data</button>
+                <button onclick="forceCompleteDoomScroll()" class="success" style="margin-right: 10px;">✓ Mark as Completed</button>
+                <button onclick="viewDoomScrollData()" class="secondary">👁️ View Current Data</button>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <h3 style="color: var(--yellow);">All Board Cells Status</h3>
+                <div id="boardDiagnosticContent" style="max-height: 400px; overflow-y: auto; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 10px;">
+                    <p style="color: #666;">Click "Load Board Data" to see all cells...</p>
+                </div>
+                <button onclick="loadBoardDiagnostic()" class="secondary" style="margin-top: 10px;">📋 Load Board Data</button>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h3 style="color: var(--yellow);">Raw Data Viewer</h3>
+                <pre id="rawDataViewer" style="background: #000; color: #0f0; padding: 15px; border-radius: 8px; overflow-x: auto; max-height: 300px; font-family: monospace; font-size: 12px;">
+                    Click a button above to view data...
+                </pre>
+            </div>
+            
+            <button onclick="closeFirebaseDiagnostic()" style="margin-top: 20px; background: var(--pink); color: white;">Close Diagnostic</button>
+        </div>
+    </div>
+    <div id="challengeWinnerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; overflow-y: auto; padding: 20px;">
+        <div style="max-width: 1000px; margin: 0 auto; background: #1a1a1a; border-radius: 20px; padding: 30px; border: 3px solid var(--cyan);">
+            <h2 style="color: var(--cyan); margin-bottom: 20px;">🏆 CHALLENGE WINNER EDITOR</h2>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="color: var(--yellow);">Select Category & Value:</label>
+                <select id="winnerEditorSelect" onchange="loadChallengeWinners()" style="width: 100%; margin-top: 10px;">
+                    <option value="">Choose a completed cell...</option>
+                </select>
+            </div>
+            
+            <div id="challengeWinnerContent" style="display: none;">
+                <h3 id="selectedCellTitle" style="color: var(--yellow); margin-bottom: 20px;"></h3>
+                
+                <div id="challengesList"></div>
+                
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button onclick="saveChallengeWinners()" class="success">💾 Save Winners</button>
+                    <button onclick="autoDistributeWins()" class="secondary">🎲 Auto-Distribute Wins</button>
+                </div>
+            </div>
+            
+            <button onclick="closeChallengeWinnerEditor()" style="margin-top: 20px; background: var(--pink); color: white;">Close Editor</button>
+        </div>
+    </div>
+    <div id="walletRecoveryModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; overflow-y: auto; padding: 20px;">
+        <div style="max-width: 1400px; margin: 0 auto; background: #1a1a1a; border-radius: 20px; padding: 30px; border: 3px solid var(--cyan);">
+            <h2 style="color: var(--cyan); margin-bottom: 20px;">💸 WALLET RECOVERY TOOL</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <!-- Left Panel - Current State -->
+                <div>
+                    <h3 style="color: var(--yellow); margin-bottom: 15px;">Current Wallet Status</h3>
+                    <div style="background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.3); border-radius: 10px; padding: 20px; max-height: 500px; overflow-y: auto;">
+                        <div id="currentWalletStatus"></div>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: var(--pink);">Quick Actions</h4>
+                        <button onclick="exportWalletData()" class="secondary" style="margin-right: 10px;">📥 Export Current Data</button>
+                        <button onclick="calculateFromChallenges()" class="secondary">🔄 Recalculate from Challenges</button>
+                    </div>
+                </div>
+                
+                <!-- Right Panel - Recovery Options -->
+                <div>
+                    <h3 style="color: var(--yellow); margin-bottom: 15px;">Recovery Options</h3>
+                    
+                    <!-- Bulk Update Section -->
+                    <div style="background: rgba(138,43,226,0.2); border: 2px solid var(--purple); border-radius: 10px; padding: 20px; margin-bottom: 20px;">
+                        <h4 style="color: var(--purple); margin-bottom: 15px;">Bulk Wallet Update</h4>
+                        <textarea id="bulkWalletData" placeholder="Paste wallet data here (format: founderId:amount per line)" 
+                                 style="width: 100%; height: 150px; margin-bottom: 10px;"></textarea>
+                        <button onclick="bulkUpdateWallets()" class="success">💾 Apply Bulk Update</button>
+                    </div>
+                    
+                    <!-- Manual Adjustments -->
+                    <div style="background: rgba(255,255,0,0.1); border: 2px solid var(--yellow); border-radius: 10px; padding: 20px;">
+                        <h4 style="color: var(--yellow); margin-bottom: 15px;">Manual Adjustment</h4>
+                        <select id="recoveryFounderSelect" style="width: 100%; margin-bottom: 10px;">
+                            <option value="">Select founder...</option>
+                        </select>
+                        <input type="number" id="recoveryAmount" placeholder="Amount to add/subtract" style="width: 100%; margin-bottom: 10px;">
+                        <input type="text" id="recoveryReason" placeholder="Reason for adjustment" style="width: 100%; margin-bottom: 10px;">
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="applyManualAdjustment(1)" class="success">➕ Add</button>
+                            <button onclick="applyManualAdjustment(-1)" class="danger">➖ Subtract</button>
+                            <button onclick="setExactAmount()" class="secondary">📍 Set Exact</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Audit Log -->
+            <div style="margin-top: 30px;">
+                <h3 style="color: var(--yellow);">Audit Log</h3>
+                <div id="walletAuditLog" style="background: rgba(0,0,0,0.8); border: 2px solid rgba(255,255,255,0.3); border-radius: 10px; padding: 15px; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px;">
+                    Wallet recovery tool initialized...
+                </div>
+            </div>
+            
+            <button onclick="closeWalletRecovery()" style="margin-top: 20px; background: var(--pink); color: white;">Close Recovery Tool</button>
+        </div>
+    </div>
 </body>
 </html>

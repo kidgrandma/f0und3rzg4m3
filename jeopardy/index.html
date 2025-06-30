@@ -938,61 +938,60 @@
             pendingSelection: false
         }
         let challengeDatabase = {
-    "meme-me-up-scottie": { 100: [], 200: [], 300: [] },
-    "doom-scroll-nation": { 100: [], 200: [], 300: [] },
-    "web-1.0": { 100: [], 200: [], 300: [] },
-    "netbangerz": { 100: [], 200: [], 300: [] },
-    "paizley-and-robot": { 100: [], 200: [], 300: [] },
-    "em0ti0nz": { 100: [], 200: [], 300: [] }
+    "meme-me-up-scottie": { 100: [], 200: [], 300: [], 400: [] },
+    "doom-scroll-nation": { 100: [], 200: [], 300: [], 400: [] },
+    "web-1.0": { 100: [], 200: [], 300: [], 400: [] },
+    "netbangerz": { 100: [], 200: [], 300: [], 400: [] },
+    "paizley-and-robot": { 100: [], 200: [], 300: [], 400: [] },
+    "em0ti0nz": { 100: [], 200: [], 300: [], 400: [] }
 };
-
-        // Create cell element with dynamic challenge dots
-        function createCell(cat, value) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            cell.dataset.category = cat;
-            cell.dataset.value = value;
-            
-            // Only make $100 cells clickable
-            if (availableValues.includes(value)) {
-                cell.onclick = () => selectCategory(cat, value);
-            } else {
-                cell.classList.add('unavailable');
-            }
-            
-            const valueDiv = document.createElement('div');
-            valueDiv.className = 'value';
-            valueDiv.textContent = `$${value}`;
-            
-            const challengesDiv = document.createElement('div');
-            challengesDiv.className = 'challenges';
-           
-           
-            let numChallenges;
-if (availableValues.includes(value)) {
-    // For available values ($100, $200, $300), show 5 challenges
-    const challengesArray = challengeDatabase[cat]?.[value];
-    if (challengesArray && challengesArray.length > 0) {
-        numChallenges = challengesArray.length;
+function createCell(cat, value) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.dataset.category = cat;
+    cell.dataset.value = value;
+    
+    // Only make available values clickable
+    if (availableValues.includes(value)) {
+        cell.onclick = () => selectCategory(cat, value);
     } else {
-        // Default to 5 if no challenges loaded yet
-        numChallenges = 5;
+        cell.classList.add('unavailable');
     }
-} else {
-    // For unavailable higher values ($400, $500), show 3 dots
-    numChallenges = 3;
-}
-            for (let i = 0; i < numChallenges; i++) {
-                const dot = document.createElement('div');
-                dot.className = 'challenge-dot';
-                dot.dataset.index = i;
-                challengesDiv.appendChild(dot);
-            }
-            
-            cell.appendChild(valueDiv);
-            cell.appendChild(challengesDiv);
-            return cell;
+    
+    const valueDiv = document.createElement('div');
+    valueDiv.className = 'value';
+    valueDiv.textContent = `$${value}`;
+    
+    const challengesDiv = document.createElement('div');
+    challengesDiv.className = 'challenges';
+    
+    // Determine number of challenges to show
+    let numChallenges;
+    if (availableValues.includes(value)) {
+        // For available values ($100, $200, $300), show 5 challenges
+        const challengesArray = challengeDatabase[cat]?.[value];
+        if (challengesArray && challengesArray.length > 0) {
+            numChallenges = challengesArray.length;
+        } else {
+            // Default to 5 if no challenges loaded yet
+            numChallenges = 5;
         }
+    } else {
+        // For unavailable higher values ($400, $500), show 3 dots
+        numChallenges = 3;
+    }
+    
+    for (let i = 0; i < numChallenges; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'challenge-dot';
+        dot.dataset.index = i;
+        challengesDiv.appendChild(dot);
+    }
+    
+    cell.appendChild(valueDiv);
+    cell.appendChild(challengesDiv);
+    return cell;
+}
 
         // Initialize board
         function initializeBoard() {
@@ -1336,7 +1335,7 @@ if (availableValues.includes(value)) {
         }
     });
 }
-function fixDoomScrollNation() {
+        function fixDoomScrollNation() {
     console.log('Checking Doom Scroll Nation status...');
     
     const doomScrollKey = sanitizeFirebaseKey('doom-scroll-nation-100');
@@ -1385,18 +1384,34 @@ setTimeout(fixDoomScrollNation, 2000);
         function setupListeners() {
             if (!database) return;
 
-            // Load challenge database from Firebase
             database.ref('game/challengeDatabase').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
+              const data = snapshot.val();
+               if (data) {
                     challengeDatabase = data;
-                    // Reinitialize board to update dot counts
-                    const board = document.getElementById('board');
-                    if (board.style.display !== 'none') {
-                        initializeBoard();
-                    }
+        
+        // Ensure each available value has 5 challenges
+        Object.keys(challengeDatabase).forEach(category => {
+            availableValues.forEach(value => {
+                if (!challengeDatabase[category][value]) {
+                    challengeDatabase[category][value] = [];
+                }
+                // Pad with empty challenges if less than 5
+                while (challengeDatabase[category][value].length < 5) {
+                    challengeDatabase[category][value].push({
+                        description: `Challenge ${challengeDatabase[category][value].length + 1}`,
+                        value: value
+                    });
                 }
             });
+        });
+        
+        // Reinitialize board to update dot counts
+        const board = document.getElementById('board');
+        if (board.style.display !== 'none') {
+            initializeBoard();
+        }
+    }
+});
 
             // Company data
             database.ref('game/companies').on('value', (snapshot) => {
