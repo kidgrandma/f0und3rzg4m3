@@ -936,17 +936,15 @@
             currentChallenges: null,
             activeCellKey: null,
             pendingSelection: false
-        };
-
-        // Challenge database from Firebase - will load from moderator panel (5 challenges per $100 category)
+        }
         let challengeDatabase = {
-            "meme-me-up-scottie": { 100: [] },
-            "doom-scroll-nation": { 100: [] },
-            "web-1.0": { 100: [] },
-            "netbangerz": { 100: [] },
-            "paizley-and-robot": { 100: [] },
-            "em0ti0nz": { 100: [] }
-        };
+    "meme-me-up-scottie": { 100: [], 200: [], 300: [] },
+    "doom-scroll-nation": { 100: [], 200: [], 300: [] },
+    "web-1.0": { 100: [], 200: [], 300: [] },
+    "netbangerz": { 100: [], 200: [], 300: [] },
+    "paizley-and-robot": { 100: [], 200: [], 300: [] },
+    "em0ti0nz": { 100: [], 200: [], 300: [] }
+};
 
         // Create cell element with dynamic challenge dots
         function createCell(cat, value) {
@@ -968,14 +966,20 @@
             
             const challengesDiv = document.createElement('div');
             challengesDiv.className = 'challenges';
-            
-            // Get actual number of challenges from database, fallback to 5 for $100, 3 for others
+           
+           
             let numChallenges;
-if (value === 100 || value === 200) {
-    // For available values ($100 and $200), show 5 challenges
-    numChallenges = challengeDatabase[cat]?.[value]?.length || 5;
+if (availableValues.includes(value)) {
+    // For available values ($100, $200, $300), show 5 challenges
+    const challengesArray = challengeDatabase[cat]?.[value];
+    if (challengesArray && challengesArray.length > 0) {
+        numChallenges = challengesArray.length;
+    } else {
+        // Default to 5 if no challenges loaded yet
+        numChallenges = 5;
+    }
 } else {
-    // For unavailable higher values ($300, $400, $500), show 3 dots
+    // For unavailable higher values ($400, $500), show 3 dots
     numChallenges = 3;
 }
             for (let i = 0; i < numChallenges; i++) {
