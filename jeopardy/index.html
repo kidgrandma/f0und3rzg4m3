@@ -953,9 +953,16 @@ function createCell(cat, value) {
     
     // Only make available values clickable
     if (availableValues.includes(value)) {
-        cell.onclick = () => selectCategory(cat, value);
+        // Use an arrow function to ensure correct scope
+        cell.onclick = function() {
+            selectCategory(cat, value);
+        };
+        
+        // Add hover cursor
+        cell.style.cursor = 'pointer';
     } else {
         cell.classList.add('unavailable');
+        cell.style.cursor = 'not-allowed';
     }
     
     const valueDiv = document.createElement('div');
@@ -968,7 +975,7 @@ function createCell(cat, value) {
     // Determine number of challenges to show
     let numChallenges;
     if (availableValues.includes(value)) {
-        // For available values ($100, $200, $300), show 5 challenges
+        // For available values, show 5 challenges
         const challengesArray = challengeDatabase[cat]?.[value];
         if (challengesArray && challengesArray.length > 0) {
             numChallenges = challengesArray.length;
@@ -977,7 +984,7 @@ function createCell(cat, value) {
             numChallenges = 5;
         }
     } else {
-        // For unavailable higher values ($400, $500), show 3 dots
+        // For unavailable higher values ($500), show 3 dots
         numChallenges = 3;
     }
     
@@ -992,6 +999,80 @@ function createCell(cat, value) {
     cell.appendChild(challengesDiv);
     return cell;
 }
+
+// Also add this diagnostic function to check what's happening
+function checkCellClickability() {
+    console.log('\n🔍 Checking cell clickability...\n');
+    
+    let clickableCount = 0;
+    let unclickableCount = 0;
+    
+    document.querySelectorAll('.cell').forEach(cell => {
+        const category = cell.dataset.category;
+        const value = cell.dataset.value;
+        const hasOnclick = cell.onclick !== null;
+        const isUnavailable = cell.classList.contains('unavailable');
+        const isCompleted = cell.classList.contains('completed');
+        
+        if (hasOnclick && !isUnavailable && !isCompleted) {
+            clickableCount++;
+        } else {
+            unclickableCount++;
+            if (category === 'netbangerz') {
+                console.log(`Netbangerz $${value}: onclick=${hasOnclick}, unavailable=${isUnavailable}, completed=${isCompleted}`);
+            }
+        }
+    });
+    
+    console.log(`Total cells: ${clickableCount + unclickableCount}`);
+    console.log(`Clickable: ${clickableCount}`);
+    console.log(`Unclickable: ${unclickableCount}`);
+}
+
+// Add this to manually fix any broken cells
+function fixBrokenCells() {
+    console.log('Fixing broken cells...');
+    
+    let fixedCount = 0;
+    
+    document.querySelectorAll('.cell').forEach(cell => {
+        const category = cell.dataset.category;
+        const value = parseInt(cell.dataset.value);
+        
+        // If this should be clickable but isn't
+        if (availableValues.includes(value) && !cell.classList.contains('completed')) {
+            if (!cell.onclick || cell.onclick.toString().includes('mod.html')) {
+                // Fix the onclick
+                cell.onclick = function() {
+                    selectCategory(category, value);
+                };
+                cell.style.cursor = 'pointer';
+                cell.classList.remove('unavailable');
+                fixedCount++;
+                console.log(`Fixed: ${category} $${value}`);
+            }
+        }
+    });
+    
+    console.log(`Fixed ${fixedCount} cells`);
+    updateBoard(); // Refresh the board display
+}
+
+// Run this after the board loads to ensure everything is set up correctly
+setTimeout(() => {
+    checkCellClickability();
+    
+    // Auto-fix if we detect issues
+    const brokenCells = document.querySelectorAll('.cell').length > 0 && 
+                       Array.from(document.querySelectorAll('.cell')).some(cell => 
+                           cell.onclick && cell.onclick.toString().includes('mod.html')
+                       );
+    
+    if (brokenCells) {
+        console.log('⚠️ Detected cells with wrong onclick handlers, fixing...');
+        fixBrokenCells();
+    }
+}, 3000);
 
         // Initialize board
         function initializeBoard() {
