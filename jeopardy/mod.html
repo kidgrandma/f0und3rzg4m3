@@ -1760,64 +1760,70 @@
             
             inputs.innerHTML = html;
         }
-
         function saveChallenges() {
-            const categorySelect = document.getElementById('editCategorySelect');
-            const category = categorySelect.value;
-            
-            if (!category) return;
-            
-            // Count how many challenges we're saving
-            let challengeCount = 0
-            const values = [500]; 
-            
-            values.forEach(value => {
-                for (let i = 0; i < 5; i++) {
-                    const textarea = document.getElementById(`challenge_${value}_${i}`);
-                    if (textarea && textarea.value.trim()) {
-                        challengeCount++;
-                    }
-                }
-            });
-            
-            if (challengeCount === 0) {
-                alert('No challenges to save! Please add at least one challenge.');
-                return;
+    const categorySelect = document.getElementById('editCategorySelect');
+    const category = categorySelect.value;
+    
+    if (!category) return;
+    
+    // Count how many challenges we're saving
+    let challengeCount = 0;
+    const values = [500]; 
+    
+    values.forEach(value => {
+        for (let i = 0; i < 5; i++) {
+            const textarea = document.getElementById(`challenge_${value}_${i}`);
+            if (textarea && textarea.value.trim()) {
+                challengeCount++;
             }
-            
-            if (!challengeDatabase[category]) {
-                challengeDatabase[category] = {};
-            }
-            
-            // Save challenges
-            values.forEach(value => {
-                challengeDatabase[category][value] = [];
-                
-                for (let i = 0; i < 5; i++) {
-                    const textarea = document.getElementById(`challenge_${value}_${i}`);
-                    if (textarea) {
-                        const description = textarea.value.trim();
-                        if (description) {
-                            challengeDatabase[category][value].push({
-                                description: description,
-                                value: value
-                            });
-                        }
-                    }
-                }
-            });
-            
-            // Save to Firebase with confirmation
-            database.ref('game/challengeDatabase').set(challengeDatabase)
-                .then(() => {
-                    log(`✅ Saved ${challengeCount} challenges for ${category}`, 'success');
-                    alert(`Successfully saved ${challengeCount} challenges!`);
-                })
-                .catch((error) => {
-                    log(`❌ Failed to save challenges: ${error.message}`, 'error');
-                    alert('Failed to save challenges. Please try again.');
-                });
         }
+    });
+    
+    if (challengeCount === 0) {
+        alert('No challenges to save! Please add at least one challenge.');
+        return;
+    }
+    
+    if (!challengeDatabase[category]) {
+        challengeDatabase[category] = {};
+    }
+    
+    // Save challenges
+    values.forEach(value => {
+        challengeDatabase[category][value] = [];
+        
+        for (let i = 0; i < 5; i++) {
+            const textarea = document.getElementById(`challenge_${value}_${i}`);
+            if (textarea) {
+                const description = textarea.value.trim();
+                if (description) {
+                    challengeDatabase[category][value].push({
+                        description: description,
+                        value: value
+                    });
+                }
+            }
+        }
+    });
+    
+    // Create a sanitized version for Firebase
+    const sanitizedDatabase = {};
+    Object.keys(challengeDatabase).forEach(cat => {
+        const sanitizedKey = cat.replace(/\./g, '_'); // Replace periods with underscores
+        sanitizedDatabase[sanitizedKey] = challengeDatabase[cat];
+    });
+    
+    // Save to Firebase with sanitized keys
+    database.ref('game/challengeDatabase').set(sanitizedDatabase)
+        .then(() => {
+            log(`✅ Saved ${challengeCount} challenges for ${category}`, 'success');
+            alert(`Successfully saved ${challengeCount} challenges!`);
+        })
+        .catch((error) => {
+            log(`❌ Failed to save challenges: ${error.message}`, 'error');
+            alert('Failed to save challenges. Please try again.');
+        });
+}
 
         // Game control functions
         function clearStaleData() {
@@ -2008,25 +2014,32 @@
                 }
             });
 
-            // Load challenges from Firebase
+            // Load challenges from Firebas
             database.ref('game/challengeDatabase').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    // Only update if we're not currently editing
-                    const editCategory = document.getElementById('editCategorySelect').value;
-                    if (!editCategory) {
-                        challengeDatabase = data;
-                        log('Challenge database loaded', 'success');
-                    } else {
-                        // Merge without overwriting current edits
-                        Object.keys(data).forEach(category => {
-                            if (category !== editCategory) {
-                                challengeDatabase[category] = data[category];
-                            }
-                        });
-                    }
+    const data = snapshot.val();
+    if (data) {
+        // Convert sanitized keys back to original format
+        const unsanitizedData = {};
+        Object.keys(data).forEach(key => {
+            const originalKey = key.replace(/_/g, '.'); // Convert back from underscore to period
+            unsanitizedData[originalKey] = data[key];
+        });
+        
+        // Only update if we're not currently editing
+        const editCategory = document.getElementById('editCategorySelect').value;
+        if (!editCategory) {
+            challengeDatabase = unsanitizedData;
+            log('Challenge database loaded', 'success');
+        } else {
+            // Merge without overwriting current edits
+            Object.keys(unsanitizedData).forEach(category => {
+                if (category !== editCategory) {
+                    challengeDatabase[category] = unsanitizedData[category];
                 }
             });
+        }
+    }
+});
 
             // Load founders from Firebase
             database.ref('game/founders').on('value', (snapshot) => {
