@@ -524,7 +524,7 @@
                 <button onclick="recalculateWealth()" class="success">Recalculate Wealth</button>
                 <button onclick="viewFirebaseData()" class="secondary">View Raw Data</button>
                 <button onclick="updateCompanyValuation(1, 5000)">+ $5,000 Team 1</button>
-<button onclick="updateCompanyValuation(2, -5000)">- $5,000 Team 2</button>
+            <button onclick="updateCompanyValuation(2, -5000)">- $5,000 Team 2</button>
                 <button onclick="emergencyReset()" class="danger">EMERGENCY RESET</button>
             </div>
         </div>
@@ -738,6 +738,20 @@
     } else {
         alert('Invalid number.');
     }
+}
+function updateCompanyValuation(teamNumber, delta) {
+    const companyRef = database.ref(`game/companies/${teamNumber}/valuation`);
+    companyRef.transaction(currentVal => {
+        return (currentVal || 0) + delta;
+    }).then(result => {
+        if (result.committed) {
+            log(`Updated Team ${teamNumber} valuation by $${delta}`, 'success');
+        } else {
+            log(`Transaction for Team ${teamNumber} was not committed`, 'error');
+        }
+    }).catch(error => {
+        log(`Error updating valuation: ${error}`, 'error');
+    });
 }
         function renderSelections(team) {
             const selections = gameState.playerSelections[team] || [];
