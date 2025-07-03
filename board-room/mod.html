@@ -523,6 +523,8 @@
                 <button onclick="resetPlayerSelections()" class="secondary">Reset Selections</button>
                 <button onclick="recalculateWealth()" class="success">Recalculate Wealth</button>
                 <button onclick="viewFirebaseData()" class="secondary">View Raw Data</button>
+                <button onclick="updateCompanyValuation(1, 5000)">+ $5,000 Team 1</button>
+<button onclick="updateCompanyValuation(2, -5000)">- $5,000 Team 2</button>
                 <button onclick="emergencyReset()" class="danger">EMERGENCY RESET</button>
             </div>
         </div>
@@ -728,7 +730,15 @@
                 </div>
             `;
         }
-
+        function promptValuationChange(team) {
+    const input = prompt(`Enter amount to change Team ${team}'s valuation (positive or negative):`);
+    const delta = parseInt(input);
+    if (!isNaN(delta)) {
+        updateCompanyValuation(team, delta);
+    } else {
+        alert('Invalid number.');
+    }
+}
         function renderSelections(team) {
             const selections = gameState.playerSelections[team] || [];
             
