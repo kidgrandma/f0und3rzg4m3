@@ -849,6 +849,13 @@ body {
             // Update image to open state when clicked
             const img = this.querySelector('img');
             img.src = 'assets/entrance/ps1-open.png';
+            
+            // Add error handling to check if image loads
+            img.onerror = function() {
+                console.error('Failed to load ps1-open.png');
+                // Fallback to original image if open image doesn't exist
+                this.src = 'assets/entrance/ps1.png';
+            };
         });
 
         // Dragging functionality
