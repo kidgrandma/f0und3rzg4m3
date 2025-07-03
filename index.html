@@ -128,6 +128,27 @@
             animation: none;
         }
 
+        /* Special styling for PS1 */
+        #ps1-case {
+            width: 140px;
+            height: 140px;
+        }
+
+        #ps1-case::after {
+            content: 'BOARD ROOM';
+            color: #00ffff;
+            font-weight: bold;
+            font-size: 11px;
+            text-shadow: 0 0 5px #00ffff;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        #ps1-case.opened::after {
+            content: 'DROP IN VORTEX';
+            color: #ff00ff;
+            animation: none;
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
             50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
@@ -170,7 +191,14 @@
             left: 50%;
             transform: translateX(-50%) rotate(-5deg) rotateX(15deg);
         }
-
+        
+        /* PS1 positioning */
+        #ps1-case {
+            top: 50%;
+            left: 60%;
+            transform: translateX(-50%) rotate(-5deg) rotateX(15deg);
+        }
+        
         /* CD Discs */
         .cd-disc {
             position: absolute;
@@ -477,6 +505,16 @@
                 font-size: 7px;
             }
             
+            /* PS1 mobile sizing */
+            #ps1-case {
+                width: 70px;
+                height: 70px;
+            }
+            
+            #ps1-case::after {
+                font-size: 7px;
+            }
+            
             /* Distribute cases around the screen more evenly */
             #confused-case {
                 top: 20%;
@@ -511,6 +549,13 @@
                 transform: translateX(-50%) rotate(-3deg) rotateX(15deg);
             }
             
+            /* PS1 mobile positioning */
+            #ps1-case {
+                top: 35%;
+                left: 50%;
+                transform: translateX(-50%) rotate(12deg);
+            }
+            
             /* Smaller discs */
             .cd-disc {
                 width: 70px;
@@ -537,6 +582,11 @@
             #psp-case {
                 width: 100px;
                 height: 60px;
+            }
+            
+            #ps1-case {
+                width: 90px;
+                height: 90px;
             }
             
             .cd-disc {
@@ -590,11 +640,15 @@ body {
     <div class="cd-case" id="ps2-case" data-disc="startgame">
         <img src="assets/entrance/start-game.png" alt="Start Game">
     </div>
-    <!-- NEW PSP CASE -->
+    <!-- PSP CASE -->
     <div class="cd-case" id="psp-case" data-disc="psp">
         <img src="assets/entrance/psp.png" alt="PSP Jeopardy">
     </div>
-
+    <!-- NEW PS1 CASE -->
+    <div class="cd-case" id="ps1-case" data-disc="ps1">
+        <img src="assets/entrance/ps1.png" alt="PS1 Board">
+    </div>
+    
     <!-- CD Discs (hidden until case clicked) -->
     <div class="cd-disc" id="confused-disc" data-portal="confused">
         <img src="assets/entrance/confused-disk.png" alt="Confused Disc">
@@ -608,11 +662,15 @@ body {
     <div class="cd-disc" id="startgame-disc" data-portal="gallery">
         <img src="assets/entrance/start-game-disc.png" alt="Start Game Disc">
     </div>
-    <!-- NEW PSP DISC -->
+    <!-- PSP DISC -->
     <div class="cd-disc" id="psp-disc" data-portal="jeopardy">
         <img src="assets/entrance/psp-disc.png" alt="PSP Disc">
     </div>
-
+    <!-- NEW PS1 DISC -->
+    <div class="cd-disc" id="ps1-disc" data-portal="boardroom">
+        <img src="assets/entrance/ps1-pocket.png" alt="PS1 Disc">
+    </div>
+    
     <!-- Portal Vortex -->
     <div class="portal-container">
         <div class="portal-vortex" id="portal"></div>
@@ -723,7 +781,8 @@ body {
             curious: './curious/',
             resident: './resident/',
             gallery: './gallery/',
-            jeopardy: './jeopardy/companies.html'  // NEW: PSP leads to jeopardy companies page
+            jeopardy: './jeopardy/companies.html',
+            boardroom: './board-room/index.html',
         };
 
         // CD case click handler
@@ -778,11 +837,18 @@ body {
             img.src = 'assets/entrance/start-game-open.png';
         });
 
-        // NEW: Update PSP case to show open state
+        // Update PSP case to show open state
         document.getElementById('psp-case').addEventListener('click', function() {
             // Update image to open state when clicked
             const img = this.querySelector('img');
             img.src = 'assets/entrance/psp-open.png';
+        });
+
+        // NEW: Update PS1 case to show open state
+        document.getElementById('ps1-case').addEventListener('click', function() {
+            // Update image to open state when clicked
+            const img = this.querySelector('img');
+            img.src = 'assets/entrance/ps1-open.png';
         });
 
         // Dragging functionality

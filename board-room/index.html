@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B04RD R00M - F0UND3RZ G4M3</title>
+    <style>
+        :root {
+            --purple: #8A2BE2;
+            --cyan: #00FFFF;
+            --yellow: #FFFF00;
+            --pink: #FF69B4;
+            --team1-color: #DC143C;
+            --team2-color: #00BFFF;
+            --glass: rgba(0,0,0,0.7);
+            --glass-light: rgba(255,255,255,0.1);
+            --blur: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Board Room Background */
+        .board-room-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background-image: url('assets/board-room.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(0.4);
+        }
+
+        /* Background Music */
+        #bgMusic {
+            display: none;
+        }
+
+        /* Header */
+        .header {
+            background: var(--glass);
+            backdrop-filter: blur(var(--blur));
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid rgba(255,255,255,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 
+                0 0 20px rgba(255,255,255,0.5),
+                3px 3px 0 #000;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(255,255,255,0.5), 3px 3px 0 #000; }
+            to { text-shadow: 0 0 30px rgba(255,255,255,0.8), 3px 3px 0 #000, 0 0 50px var(--cyan); }
+        }
+
+        /* Company Scores */
+        .companies {
+            display: flex;
+            gap: 30px;
+            padding: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .company {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 3px solid;
+            border-radius: 20px;
+            padding: 20px 40px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .company.team-1 {
+            border-color: var(--team1-color);
+            background: rgba(220,20,60,0.1);
+        }
+
+        .company.team-2 {
+            border-color: var(--team2-color);
+            background: rgba(0,191,255,0.1);
+        }
+
+        .company:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .team-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid;
+            object-fit: cover;
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .company.team-1 .team-avatar {
+            border-color: var(--team1-color);
+        }
+
+        .company.team-2 .team-avatar {
+            border-color: var(--team2-color);
+        }
+
+        .company h2 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .company.team-1 h2 {
+            color: var(--team1-color);
+            text-shadow: 0 0 20px var(--team1-color);
+        }
+
+        .company.team-2 h2 {
+            color: var(--team2-color);
+            text-shadow: 0 0 20px var(--team2-color);
+        }
+
+        .valuation {
+            font-size: 2em;
+            color: var(--yellow);
+            text-shadow: 0 0 20px var(--yellow);
+            font-weight: 900;
+        }
+
+        /* Founder Wealth Display */
+        .wealth-ticker {
+            background: var(--glass);
+            backdrop-filter: blur(var(--blur));
+            padding: 15px;
+            margin: 20px;
+            border-radius: 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+            overflow: hidden;
+        }
+
+        .wealth-ticker h3 {
+            color: var(--cyan);
+            margin-bottom: 10px;
+            text-align: center;
+            text-shadow: 0 0 10px var(--cyan);
+        }
+
+        .wealth-list {
+            display: flex;
+            gap: 20px;
+            padding: 10px;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--cyan) transparent;
+        }
+
+        .wealth-list::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .wealth-list::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+
+        .wealth-list::-webkit-scrollbar-thumb {
+            background: var(--cyan);
+            border-radius: 3px;
+        }
+
+        .founder-wealth-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 10px 15px;
+            min-width: 180px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .founder-wealth-item.team-1 {
+            border-color: var(--team1-color);
+        }
+
+        .founder-wealth-item.team-2 {
+            border-color: var(--team2-color);
+        }
+
+        .founder-wealth-item:hover {
+            transform: scale(1.05);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .founder-wealth-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid currentColor;
+        }
+
+        .founder-wealth-info {
+            text-align: left;
+        }
+
+        .founder-wealth-name {
+            font-size: 0.9em;
+            margin-bottom: 3px;
+        }
+
+        .founder-wealth-amount {
+            font-size: 1.1em;
+            color: var(--yellow);
+            font-weight: bold;
+        }
+
+        /* Board Container */
+        .board-container {
+            padding: 30px;
+            min-height: 500px;
+        }
+
+        .boards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Board Cards */
+        .board-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .board-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--cyan);
+            box-shadow: 0 20px 40px rgba(0,255,255,0.3);
+        }
+
+        .board-card.active {
+            border-color: var(--yellow);
+            background: rgba(255,255,0,0.1);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .board-card.completed {
+            opacity: 0.6;
+            border-color: #00ff00;
+            background: rgba(0,255,0,0.05);
+            pointer-events: none;
+        }
+
+        .board-card.completed::after {
+            content: '✓ COMPLETED';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            font-size: 2em;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 20px #00ff00;
+            opacity: 0.5;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,255,0,0.5); }
+            50% { box-shadow: 0 0 40px rgba(255,255,0,0.8); }
+        }
+
+        .board-image {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .board-card:hover .board-image {
+            transform: rotate(5deg) scale(1.1);
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.6));
+        }
+
+        .board-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: var(--cyan);
+            text-shadow: 0 0 10px var(--cyan);
+            margin-bottom: 10px;
+        }
+
+        .board-status {
+            font-size: 0.9em;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .board-progress {
+            margin-top: 10px;
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyan), var(--yellow));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Challenge Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
+        }
+
+        .challenge-modal {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 3px solid var(--cyan);
+            border-radius: 30px;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 40px;
+            animation: modalSlide 0.5s ease-out;
+            position: relative;
+        }
+
+        @keyframes modalSlide {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .challenge-modal h2 {
+            color: var(--cyan);
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px var(--cyan);
+        }
+
+        .challenge-progress {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+        }
+
+        .team-progress {
+            text-align: center;
+            padding: 10px 30px;
+        }
+
+        .team-progress h4 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .team-progress.team-1 h4 {
+            color: var(--team1-color);
+            text-shadow: 0 0 10px var(--team1-color);
+        }
+
+        .team-progress.team-2 h4 {
+            color: var(--team2-color);
+            text-shadow: 0 0 10px var(--team2-color);
+        }
+
+        .progress-count {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--yellow);
+        }
+
+        .challenges-list {
+            margin-bottom: 30px;
+        }
+
+        .challenge-item {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .challenge-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--yellow);
+        }
+
+        .challenge-item.completed {
+            opacity: 0.7;
+            border-color: #00ff00;
+            background: rgba(0,255,0,0.1);
+        }
+
+        .challenge-item.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+            color: #00ff00;
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .challenge-number {
+            color: var(--purple);
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .challenge-value {
+            color: var(--yellow);
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .challenge-description {
+            color: #ddd;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .challenge-winner {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .challenge-winner.team-1 {
+            color: var(--team1-color);
+            border: 1px solid var(--team1-color);
+        }
+
+        .challenge-winner.team-2 {
+            color: var(--team2-color);
+            border: 1px solid var(--team2-color);
+        }
+
+        .close-button {
+            background: var(--pink);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover {
+            background: var(--purple);
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(138,43,226,0.5);
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            font-size: 2em;
+            color: var(--pink);
+            margin: 100px 0;
+            text-transform: uppercase;
+            animation: loadingPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loadingPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Player Selection Styles */
+        .selection-type {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .selection-type h3 {
+            color: var(--yellow);
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            text-shadow: 0 0 10px var(--yellow);
+        }
+
+        .stakes-display {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stake-item {
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stake-label {
+            color: #999;
+            margin-right: 10px;
+        }
+
+        .stake-value {
+            color: var(--pink);
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .team-selection-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .team-selection {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid;
+        }
+
+        .team-1-selection {
+            border-color: var(--team1-color);
+        }
+
+        .team-2-selection {
+            border-color: var(--team2-color);
+        }
+
+        .team-selection h4 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .team-1-selection h4 {
+            color: var(--team1-color);
+            text-shadow: 0 0 10px var(--team1-color);
+        }
+
+        .team-2-selection h4 {
+            color: var(--team2-color);
+            text-shadow: 0 0 10px var(--team2-color);
+        }
+
+        .player-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .player-item {
+            background: rgba(0,0,0,0.3);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .player-item:hover:not(.eliminated) {
+            transform: scale(1.05);
+            border-color: var(--cyan);
+        }
+
+        .player-item.selected {
+            border-color: var(--yellow);
+            background: rgba(255,255,0,0.2);
+        }
+
+        .player-item.eliminated {
+            opacity: 0.3;
+            cursor: not-allowed;
+            position: relative;
+        }
+
+        .player-item.eliminated::after {
+            content: '❌';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2em;
+        }
+
+        .player-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 5px;
+        }
+
+        .player-name {
+            font-size: 0.8em;
+            margin-bottom: 3px;
+        }
+
+        .player-wealth {
+            font-size: 0.9em;
+            color: var(--yellow);
+            font-weight: bold;
+        }
+
+        .selected-players {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 80px;
+        }
+
+        .selected-players h5 {
+            color: var(--cyan);
+            margin-bottom: 10px;
+        }
+
+        .selected-player-chip {
+            display: inline-block;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--yellow);
+            border-radius: 20px;
+            padding: 5px 15px;
+            margin: 5px;
+            font-size: 0.9em;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .confirm-button, .cancel-button {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .confirm-button {
+            background: var(--cyan);
+            color: #000;
+        }
+
+        .confirm-button:hover {
+            background: var(--yellow);
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255,255,0,0.5);
+        }
+
+        .cancel-button {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        .cancel-button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Challenge Type Buttons */
+        .challenge-type-selector {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .challenge-type-btn {
+            background: var(--glass);
+            border: 3px solid var(--cyan);
+            border-radius: 20px;
+            padding: 20px 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .challenge-type-btn:hover {
+            transform: scale(1.05);
+            background: rgba(0,255,255,0.2);
+            box-shadow: 0 10px 30px rgba(0,255,255,0.5);
+        }
+
+        .challenge-type-btn h3 {
+            color: var(--cyan);
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--cyan);
+        }
+
+        .challenge-type-btn p {
+            color: #ddd;
+            font-size: 0.9em;
+        }
+
+        /* Challenge Stakes Display */
+        .challenge-stakes {
+            background: rgba(255,0,0,0.1);
+            border: 2px solid var(--pink);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .challenge-stakes h4 {
+            color: var(--pink);
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            text-shadow: 0 0 10px var(--pink);
+        }
+
+        .challenge-stakes p {
+            color: #fff;
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+
+        /* Fighters Display */
+        .challenge-fighters {
+            background: rgba(138,43,226,0.1);
+            border: 2px solid var(--purple);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .challenge-fighters h4 {
+            color: var(--purple);
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.3em;
+            text-shadow: 0 0 10px var(--purple);
+        }
+
+        .fighters-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .team-fighters {
+            text-align: center;
+        }
+
+        .team-fighters h5 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .team-1 h5 {
+            color: var(--team1-color);
+        }
+
+        .team-2 h5 {
+            color: var(--team2-color);
+        }
+
+        .fighter-chip {
+            display: inline-block;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid var(--cyan);
+            border-radius: 20px;
+            padding: 8px 20px;
+            margin: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            color: var(--cyan);
+            text-shadow: 0 0 5px var(--cyan);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+                letter-spacing: 2px;
+            }
+            
+            .companies {
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .company {
+                padding: 15px 20px;
+            }
+            
+            .team-avatar {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .company h2 {
+                font-size: 1.2em;
+            }
+            
+            .valuation {
+                font-size: 1.5em;
+            }
+            
+            .boards-grid {
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+            
+            .board-card {
+                min-height: 250px;
+            }
+            
+            .board-image {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .wealth-ticker {
+                margin: 10px;
+            }
+            
+            .founder-wealth-item {
+                min-width: 150px;
+            }
+            
+            .challenge-modal {
+                padding: 20px;
+            }
+            
+            .challenge-modal h2 {
+                font-size: 1.8em;
+            }
+            
+            .team-selection-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background -->
+    <div class="board-room-bg"></div>
+    
+    <!-- Background Music -->
+    <audio id="bgMusic" loop>
+        <source src="assets/board-bg.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>🏢 B04RD R00M 🏢</h1>
+    </div>
+
+    <!-- Company Scores -->
+    <div class="companies">
+        <div class="company team-1">
+            <img src="../jeopardy/assets/founders/y2ket.png" alt="Y2Ket Team" class="team-avatar">
+            <div>
+                <h2>Y2KET CORP.</h2>
+                <div class="valuation" id="valuation1">$0</div>
+            </div>
+        </div>
+        <div class="company team-2">
+            <img src="../jeopardy/assets/founders/series-a.png" alt="Series-A Team" class="team-avatar">
+            <div>
+                <h2>SERIES A(POCALYPSE)</h2>
+                <div class="valuation" id="valuation2">$0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Founder Wealth Ticker -->
+    <div class="wealth-ticker">
+        <h3>💰 TOP FOUNDERS BY WEALTH 💰</h3>
+        <div class="wealth-list" id="wealthList">
+            <div class="loading">Loading founder wealth...</div>
+        </div>
+    </div>
+
+    <!-- Board Container -->
+    <div class="board-container">
+        <div class="boards-grid" id="boardsGrid">
+            <div class="loading">Preparing the board room...</div>
+        </div>
+    </div>
+
+    <!-- Challenge Modal -->
+    <div class="modal" id="challengeModal">
+        <div class="challenge-modal">
+            <h2 id="modalTitle">Board Challenges</h2>
+            
+            <div class="challenge-progress">
+                <div class="team-progress team-1">
+                    <h4>Y2KET CORP.</h4>
+                    <div class="progress-count" id="team1Progress">0</div>
+                </div>
+                <div style="font-size: 2em; color: var(--purple); align-self: center;">VS</div>
+                <div class="team-progress team-2">
+                    <h4>SERIES A</h4>
+                    <div class="progress-count" id="team2Progress">0</div>
+                </div>
+            </div>
+            
+            <div class="challenges-list" id="challengesList"></div>
+            <button class="close-button" onclick="closeChallengeModal()">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- Player Selection Modal -->
+    <div class="modal" id="selectionModal">
+        <div class="challenge-modal">
+            <h2>SELECT YOUR FIGHTERS</h2>
+            <div class="selection-type">
+                <h3 id="selectionTypeText">Challenge Type: </h3>
+                <div class="stakes-display">
+                    <div class="stake-item">
+                        <span class="stake-label">💰 Individual Stakes:</span>
+                        <span class="stake-value" id="individualStakes">25% of personal wealth</span>
+                    </div>
+                    <div class="stake-item">
+                        <span class="stake-label">🏢 Company Stakes:</span>
+                        <span class="stake-value" id="companyStakes">50% of company wealth</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="team-selection-container">
+                <div class="team-selection team-1-selection">
+                    <h4>Y2KET CORP. FIGHTERS</h4>
+                    <div class="player-grid" id="team1Players"></div>
+                    <div class="selected-players">
+                        <h5>Selected:</h5>
+                        <div id="team1Selected"></div>
+                    </div>
+                </div>
+                
+                <div class="team-selection team-2-selection">
+                    <h4>SERIES A FIGHTERS</h4>
+                    <div class="player-grid" id="team2Players"></div>
+                    <div class="selected-players">
+                        <h5>Selected:</h5>
+                        <div id="team2Selected"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="confirm-button" onclick="confirmSelection()">CONFIRM FIGHTERS</button>
+                <button class="cancel-button" onclick="cancelSelection()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnHE2Ay2wqZVC4Xf2PsHHppVoVfNPk0hI",
+            authDomain: "f0und3rzg4m3-b04rd.firebaseapp.com",
+            databaseURL: "https://f0und3rzg4m3-b04rd-default-rtdb.firebaseio.com",
+            projectId: "f0und3rzg4m3-b04rd",
+            storageBucket: "f0und3rzg4m3-b04rd.firebasestorage.app",
+            messagingSenderId: "484982613831",
+            appId: "1:484982613831:web:9b655b3d66d66b3b5e8e62",
+            measurementId: "G-MPN2LP1Q6X"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Board types
+        const boardTypes = [
+            { id: 'whiteboard', name: 'Whiteboard', image: 'whiteboard.png' },
+            { id: 'surfboard', name: 'Surfboard', image: 'surfboard.png' },
+            { id: 'soundboard', name: 'Soundboard', image: 'soundboard.png' },
+            { id: 'ouijaboard', name: 'Ouija Board', image: 'ouijaboard.png' },
+            { id: 'ironingboard', name: 'Ironing Board', image: 'ironingboard.png' },
+            { id: 'clipboard', name: 'Clipboard', image: 'clipboard.png' },
+            { id: 'chessboard', name: 'Chessboard', image: 'chessboard.png' },
+            { id: 'cheeseboard', name: 'Cheeseboard', image: 'cheeseboard.png' },
+            { id: 'cardboard', name: 'Cardboard', image: 'cardboard.png' }
+        ];
+
+        // Game state
+        let gameState = {
+            companies: {
+                1: { name: "Y2Ket Corp.", valuation: 0 },
+                2: { name: "Series A(pocalypse)", valuation: 0 }
+            },
+            founderWealth: {},
+            founders: {},
+            boards: {},
+            activeBoard: null,
+            myTeam: null,
+            currentChallenges: null,
+            selectedPlayers: {
+                1: [],
+                2: []
+            },
+            challengeType: null, // 'team' or '2v2'
+            currentRound: null,
+            eliminatedPlayers: []
+        };
+
+        // Initialize boards
+        function initializeBoards() {
+            const grid = document.getElementById('boardsGrid');
+            grid.innerHTML = '';
+
+            boardTypes.forEach(board => {
+                const boardCard = document.createElement('div');
+                boardCard.className = 'board-card';
+                boardCard.dataset.boardId = board.id;
+                boardCard.onclick = () => selectBoard(board.id);
+
+                const boardState = gameState.boards[board.id] || { completed: 0, total: 1 };
+                const progress = boardState.total > 0 ? (boardState.completed / boardState.total) * 100 : 0;
+
+                boardCard.innerHTML = `
+                    <img src="assets/${board.image}" alt="${board.name}" class="board-image">
+                    <div class="board-name">${board.name}</div>
+                    <div class="board-status">${boardState.completed ? 'Completed' : 'Available'}</div>
+                `;
+
+                if (boardState.completed) {
+                    boardCard.classList.add('completed');
+                }
+
+                if (gameState.activeBoard === board.id) {
+                    boardCard.classList.add('active');
+                }
+
+                grid.appendChild(boardCard);
+            });
+        }
+
+        // Select board
+        function selectBoard(boardId) {
+            // Check if board is completed
+            const boardState = gameState.boards[boardId];
+            if (boardState && boardState.completed) {
+                alert("This board has been completed!");
+                return;
+            }
+
+            // Check if it's this team's turn
+            if (gameState.currentTeam !== gameState.myTeam) {
+                alert("⏳ It's not your team's turn!");
+                return;
+            }
+
+            // Show challenge type selection first
+            showChallengeTypeSelection(boardId);
+        }
+
+        // Show challenge type selection
+        function showChallengeTypeSelection(boardId) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="challenge-modal">
+                    <h2>CHOOSE YOUR BATTLE</h2>
+                    <div class="challenge-type-selector">
+                        <div class="challenge-type-btn" onclick="selectChallengeType('${boardId}', '2v2')">
+                            <h3>2v2 DUEL</h3>
+                            <p>Risk 25% of personal wealth each</p>
+                            <p>Winners take losers' stakes → Company</p>
+                        </div>
+                        <div class="challenge-type-btn" onclick="selectChallengeType('${boardId}', 'team')">
+                            <h3>TEAM BATTLE</h3>
+                            <p>Risk 50% of company wealth</p>
+                            <p>Winner takes all → Company vault</p>
+                        </div>
+                    </div>
+                    <button class="cancel-button" onclick="this.closest('.modal').remove()">CANCEL</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Select challenge type
+        function selectChallengeType(boardId, type) {
+            // Remove the selection modal
+            document.querySelector('.modal').remove();
+            
+            // Store the challenge type
+            gameState.challengeType = type;
+            gameState.activeBoard = boardId;
+            
+            // Send to Firebase for moderator
+            database.ref('boardRoom/pendingSelection').set({
+                boardId: boardId,
+                challengeType: type,
+                team: gameState.myTeam,
+                timestamp: Date.now()
+            });
+
+            alert(`📨 ${type === 'team' ? 'Team Battle' : '2v2 Duel'} selection sent to moderator...`);
+        }
+
+        // Show player selection modal
+        function showPlayerSelection() {
+            const modal = document.getElementById('selectionModal');
+            const typeText = gameState.challengeType === 'team' ? 'TEAM BATTLE' : '2v2 DUEL';
+            
+            document.getElementById('selectionTypeText').textContent = `Challenge Type: ${typeText}`;
+            
+            // Update stakes display
+            if (gameState.challengeType === '2v2') {
+                document.getElementById('individualStakes').textContent = '25% of personal wealth';
+                document.getElementById('companyStakes').style.display = 'none';
+            } else {
+                document.getElementById('individualStakes').style.display = 'none';
+                document.getElementById('companyStakes').textContent = '50% of company wealth (min $5k)';
+            }
+            
+            // Reset selections
+            gameState.selectedPlayers = { 1: [], 2: [] };
+            
+            // Populate player lists
+            populatePlayerList(1);
+            populatePlayerList(2);
+            
+            modal.style.display = 'block';
+        }
+
+        // Populate player list for team
+        function populatePlayerList(team) {
+            const container = document.getElementById(`team${team}Players`);
+            const selectedContainer = document.getElementById(`team${team}Selected`);
+            
+            container.innerHTML = '';
+            selectedContainer.innerHTML = '';
+            
+            // Get team founders
+            const teamFounders = Object.entries(gameState.founders)
+                .filter(([id, founder]) => founder.team === team)
+                .map(([id, founder]) => ({ ...founder, id }));
+            
+            teamFounders.forEach(founder => {
+                const wealth = gameState.founderWealth[founder.id] || 0;
+                const isEliminated = wealth === 0 || gameState.eliminatedPlayers.includes(founder.id);
+                
+                const playerDiv = document.createElement('div');
+                playerDiv.className = `player-item ${isEliminated ? 'eliminated' : ''}`;
+                playerDiv.dataset.playerId = founder.id;
+                playerDiv.dataset.team = team;
+                
+                playerDiv.innerHTML = `
+                    <img src="../jeopardy/assets/founders/${founder.image}" 
+                         alt="${founder.name}" 
+                         class="player-avatar"
+                         onerror="this.src='../jeopardy/assets/founders/default.png'">
+                    <div class="player-name">${founder.name}</div>
+                    <div class="player-wealth">$${wealth.toLocaleString()}</div>
+                `;
+                
+                if (!isEliminated && team === gameState.myTeam) {
+                    playerDiv.onclick = () => togglePlayerSelection(founder.id, team);
+                }
+                
+                container.appendChild(playerDiv);
+            });
+        }
+
+        // Toggle player selection
+        function togglePlayerSelection(playerId, team) {
+            if (team !== gameState.myTeam) return;
+            
+            const maxSelection = 2;
+            const currentSelection = gameState.selectedPlayers[team];
+            const index = currentSelection.indexOf(playerId);
+            
+            if (index > -1) {
+                // Deselect
+                currentSelection.splice(index, 1);
+            } else if (currentSelection.length < maxSelection) {
+                // Select
+                currentSelection.push(playerId);
+            } else {
+                alert(`You can only select ${maxSelection} players!`);
+                return;
+            }
+            
+            // Update UI
+            updateSelectionUI(team);
+        }
+
+        // Update selection UI
+        function updateSelectionUI(team) {
+            const container = document.getElementById(`team${team}Selected`);
+            const playerItems = document.querySelectorAll(`#team${team}Players .player-item`);
+            
+            // Update selected state
+            playerItems.forEach(item => {
+                const playerId = item.dataset.playerId;
+                if (gameState.selectedPlayers[team].includes(playerId)) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+            
+            // Update selected list
+            container.innerHTML = gameState.selectedPlayers[team].map(playerId => {
+                const founder = gameState.founders[playerId];
+                return `<span class="selected-player-chip">${founder.name}</span>`;
+            }).join('');
+        }
+
+        // Confirm selection
+        function confirmSelection() {
+            const mySelection = gameState.selectedPlayers[gameState.myTeam];
+            
+            if (mySelection.length !== 2) {
+                alert('Please select exactly 2 players!');
+                return;
+            }
+            
+            // Send selection to Firebase
+            database.ref(`boardRoom/playerSelections/${gameState.myTeam}`).set({
+                players: mySelection,
+                timestamp: Date.now()
+            });
+            
+            alert('✅ Fighters selected! Waiting for opponent...');
+            document.getElementById('selectionModal').style.display = 'none';
+        }
+
+        // Cancel selection
+        function cancelSelection() {
+            document.getElementById('selectionModal').style.display = 'none';
+            gameState.selectedPlayers = { 1: [], 2: [] };
+        }
+
+        // Show challenge
+        function showChallenge(boardId, challenge) {
+            const board = boardTypes.find(b => b.id === boardId);
+            const modal = document.getElementById('challengeModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const challengesList = document.getElementById('challengesList');
+
+            gameState.currentChallenge = challenge;
+            gameState.activeBoard = boardId;
+
+            modalTitle.textContent = `${board.name} Challenge`;
+            
+            // Show single challenge with bet info
+            challengesList.innerHTML = `
+                <div class="challenge-item">
+                    <div class="challenge-header">
+                        <span class="challenge-number">${gameState.challengeType === 'team' ? 'TEAM BATTLE' : '2v2 DUEL'}</span>
+                        <span class="challenge-value">$${challenge.value}</span>
+                    </div>
+                    <div class="challenge-description">${challenge.description}</div>
+                    <div class="challenge-stakes">
+                        <h4>💰 STAKES:</h4>
+                        ${gameState.challengeType === '2v2' ? `
+                            <p>Each player risks 25% of their personal wealth</p>
+                            <p>Winners take losers' stakes → Company vault</p>
+                        ` : `
+                            <p>Each company risks 50% of total wealth (min $5k)</p>
+                            <p>Winner takes all → Company vault</p>
+                        `}
+                    </div>
+                    ${gameState.selectedPlayers[1].length > 0 ? `
+                        <div class="challenge-fighters">
+                            <h4>⚔️ FIGHTERS:</h4>
+                            <div class="fighters-display">
+                                <div class="team-fighters team-1">
+                                    <h5>Y2KET:</h5>
+                                    ${gameState.selectedPlayers[1].map(id => {
+                                        const f = gameState.founders[id];
+                                        return `<span class="fighter-chip">${f.name}</span>`;
+                                    }).join('')}
+                                </div>
+                                <div class="team-fighters team-2">
+                                    <h5>SERIES A:</h5>
+                                    ${gameState.selectedPlayers[2].map(id => {
+                                        const f = gameState.founders[id];
+                                        return `<span class="fighter-chip">${f.name}</span>`;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            modal.style.display = 'block';
+            updateBoardStates();
+        }
+
+        // Process challenge result
+        function processChallengeResult(winnerId, loserId) {
+            if (gameState.challengeType === '2v2') {
+                // Individual challenge - transfer 25% wealth
+                gameState.selectedPlayers[loserId].forEach(playerId => {
+                    const currentWealth = gameState.founderWealth[playerId] || 0;
+                    const loss = Math.floor(currentWealth * 0.25);
+                    
+                    // Update loser's wealth
+                    database.ref(`game/founderWealth/${playerId}`).set(currentWealth - loss);
+                    
+                    // Add to winner's company
+                    const winnerCompany = gameState.companies[winnerId].valuation;
+                    database.ref(`game/companies/${winnerId}/valuation`).set(winnerCompany + loss);
+                });
+            } else {
+                // Team challenge - transfer 50% company wealth
+                const loserWealth = gameState.companies[loserId].valuation;
+                const transfer = Math.max(Math.floor(loserWealth * 0.5), 5000);
+                
+                // Update companies
+                database.ref(`game/companies/${loserId}/valuation`).set(loserWealth - transfer);
+                database.ref(`game/companies/${winnerId}/valuation`).set(
+                    gameState.companies[winnerId].valuation + transfer
+                );
+            }
+        }
+
+        // Close challenge modal
+        function closeChallengeModal() {
+            document.getElementById('challengeModal').style.display = 'none';
+        }
+
+        // Update valuations
+        function updateValuations() {
+            document.getElementById('valuation1').textContent = 
+                `$${gameState.companies[1].valuation.toLocaleString()}`;
+            document.getElementById('valuation2').textContent = 
+                `$${gameState.companies[2].valuation.toLocaleString()}`;
+        }
+
+        // Update founder wealth ticker
+        function updateWealthTicker() {
+            const wealthList = document.getElementById('wealthList');
+            
+            // Get all founders with wealth
+            const wealthyFounders = [];
+            
+            Object.entries(gameState.founderWealth).forEach(([founderId, wealth]) => {
+                if (wealth > 0 && gameState.founders[founderId]) {
+                    wealthyFounders.push({
+                        id: founderId,
+                        wealth: wealth,
+                        ...gameState.founders[founderId]
+                    });
+                }
+            });
+
+            // Sort by wealth
+            wealthyFounders.sort((a, b) => b.wealth - a.wealth);
+            
+            // Take top 10
+            const topFounders = wealthyFounders.slice(0, 10);
+
+            if (topFounders.length === 0) {
+                wealthList.innerHTML = '<div style="color: #666; padding: 20px;">No wealth accumulated yet</div>';
+                return;
+            }
+
+            wealthList.innerHTML = topFounders.map(founder => {
+                const teamClass = founder.team === 1 ? 'team-1' : 'team-2';
+                return `
+                    <div class="founder-wealth-item ${teamClass}">
+                        <img src="../jeopardy/assets/founders/${founder.image}" 
+                             alt="${founder.name}" 
+                             class="founder-wealth-avatar"
+                             onerror="this.src='../jeopardy/assets/founders/default.png'">
+                        <div class="founder-wealth-info">
+                            <div class="founder-wealth-name">${founder.name}</div>
+                            <div class="founder-wealth-amount">$${founder.wealth.toLocaleString()}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update board states
+        function updateBoardStates() {
+            document.querySelectorAll('.board-card').forEach(card => {
+                card.classList.remove('active');
+                if (card.dataset.boardId === gameState.activeBoard) {
+                    card.classList.add('active');
+                }
+            });
+        }
+
+        // Setup Firebase listeners
+        function setupListeners() {
+            // Company valuations
+            database.ref('game/companies').on('value', (snapshot) => {
+                const companies = snapshot.val();
+                if (companies) {
+                    gameState.companies = companies;
+                    updateValuations();
+                }
+            });
+
+            // Current team
+            database.ref('game/currentTeam').on('value', (snapshot) => {
+                gameState.currentTeam = snapshot.val() || 1;
+            });
+
+            // Founder data
+            database.ref('game/founders').on('value', (snapshot) => {
+                const foundersData = snapshot.val() || {};
+                // Flatten the founders data
+                gameState.founders = {};
+                Object.values(foundersData).forEach(teamFounders => {
+                    if (Array.isArray(teamFounders)) {
+                        teamFounders.forEach(founder => {
+                            gameState.founders[founder.id] = founder;
+                        });
+                    }
+                });
+            });
+
+            // Founder wealth
+            database.ref('game/founderWealth').on('value', (snapshot) => {
+                const wealth = snapshot.val() || {};
+                gameState.founderWealth = wealth;
+                updateWealthTicker();
+            });
+
+            // Board states
+            database.ref('boardRoom/boards').on('value', (snapshot) => {
+                const boards = snapshot.val() || {};
+                gameState.boards = boards;
+                initializeBoards();
+            });
+
+            // Active challenge
+            database.ref('boardRoom/activeChallenge').on('value', (snapshot) => {
+                const active = snapshot.val();
+                if (active && active.challenge) {
+                    gameState.challengeType = active.challengeType;
+                    showChallenge(active.boardId, active.challenge);
+                } else {
+                    gameState.activeBoard = null;
+                    closeChallengeModal();
+                    updateBoardStates();
+                }
+            });
+
+            // Player selection phase
+            database.ref('boardRoom/selectionPhase').on('value', (snapshot) => {
+                const phase = snapshot.val();
+                if (phase && phase.active) {
+                    gameState.challengeType = phase.challengeType;
+                    gameState.activeBoard = phase.boardId;
+                    showPlayerSelection();
+                }
+            });
+
+            // Selected players
+            database.ref('boardRoom/playerSelections').on('value', (snapshot) => {
+                const selections = snapshot.val() || {};
+                Object.entries(selections).forEach(([team, data]) => {
+                    if (data.players) {
+                        gameState.selectedPlayers[parseInt(team)] = data.players;
+                    }
+                });
+                
+                // Update UI if selection modal is open
+                if (document.getElementById('selectionModal').style.display === 'block') {
+                    updateSelectionUI(1);
+                    updateSelectionUI(2);
+                }
+            });
+
+            // Challenge results
+            database.ref('boardRoom/lastResult').on('value', (snapshot) => {
+                const result = snapshot.val();
+                if (result && result.processed === false) {
+                    processChallengeResult(result.winnerId, result.loserId);
+                    
+                    // Mark as processed
+                    database.ref('boardRoom/lastResult/processed').set(true);
+                }
+            });
+
+            // Eliminated players
+            database.ref('boardRoom/eliminatedPlayers').on('value', (snapshot) => {
+                gameState.eliminatedPlayers = snapshot.val() || [];
+            });
+        }
+
+        // Play background musi
+        function playBackgroundMusic() {
+    const music = document.getElementById('bgMusic');
+    music.volume = 0.3;
+    
+    // Try to play immediately since they're coming from another page
+    music.play().catch(e => {
+        console.log('Music autoplay prevented, waiting for user interaction');
+        // Fallback: play on first user interaction
+        document.addEventListener('click', function playOnce() {
+            music.play().catch(e => console.log('Music play failed'));
+            document.removeEventListener('click', playOnce);
+        });
+    });
+}
+
+        // Initialize
+        window.onload = () => {
+            // Check team from URL or ask
+            const urlParams = new URLSearchParams(window.location.search);
+            const teamParam = urlParams.get('team');
+            
+            if (teamParam === '1' || teamParam === '2') {
+                gameState.myTeam = parseInt(teamParam);
+            } else {
+                const team = prompt('Which team are you? Enter 1 for Y2KET CORP or 2 for SERIES A(POCALYPSE)');
+                gameState.myTeam = parseInt(team) || 1;
+            }
+
+            setupListeners();
+            initializeBoards();
+            updateValuations();
+            updateWealthTicker();
+            playBackgroundMusic();
+
+            // Initialize Firebase structure if needed
+            database.ref('boardRoom').once('value', (snapshot) => {
+                if (!snapshot.exists()) {
+                    database.ref('boardRoom').set({
+                        boards: {},
+                        currentTeam: 1
+                    });
+                }
+            });
+        };
+
+        // Handle modal close on outside click
+        window.onclick = (event) => {
+            const modal = document.getElementById('challengeModal');
+            if (event.target === modal) {
+                closeChallengeModal();
+            }
+        };
+    </script>
+</body>
+</html>
