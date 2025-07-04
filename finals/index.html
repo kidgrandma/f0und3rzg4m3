@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1N4L5 - The Last Stand</title>
+    <style>
+        :root {
+            --purple: #8A2BE2;
+            --cyan: #00FFFF;
+            --yellow: #FFFF00;
+            --pink: #FF69B4;
+            --green: #00FF00;
+            --red: #FF0000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #backgroundImage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: -1;
+        }
+
+        /* Player Selection Modal */
+        #playerModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: rgba(138,43,226,0.2);
+            border: 3px solid var(--purple);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            animation: modalPulse 2s ease-in-out infinite;
+            max-width: 90%;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                padding: 20px;
+            }
+        }
+
+        @keyframes modalPulse {
+            0%, 100% { box-shadow: 0 0 20px var(--purple); }
+            50% { box-shadow: 0 0 40px var(--cyan); }
+        }
+
+        .modal-content h1 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px var(--cyan);
+            animation: glitch 2s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content h1 {
+                font-size: 2em;
+                margin-bottom: 20px;
+            }
+        }
+
+        @keyframes glitch {
+            0%, 100% { text-shadow: 0 0 20px var(--cyan); }
+            25% { text-shadow: -2px 0 var(--pink), 2px 0 var(--yellow); }
+            50% { text-shadow: 2px 0 var(--pink), -2px 0 var(--cyan); }
+            75% { text-shadow: 0 0 20px var(--yellow); }
+        }
+
+        #playerSelect {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px;
+            font-size: 1.2em;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            border: 2px solid var(--cyan);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            #playerSelect {
+                font-size: 1em;
+                padding: 12px;
+            }
+        }
+
+        #playerSelect option {
+            background: #000;
+            color: white;
+        }
+
+        #enterGame {
+            padding: 15px 40px;
+            font-size: 1.5em;
+            background: var(--cyan);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        #enterGame:hover:not(:disabled) {
+            background: var(--yellow);
+            transform: scale(1.1);
+            box-shadow: 0 0 30px var(--yellow);
+        }
+
+        #enterGame:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Main Game Container */
+        #gameContainer {
+            display: none;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            z-index: 100;
+            border-bottom: 3px solid var(--purple);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 10px;
+            }
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            text-shadow: 0 0 20px var(--cyan);
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+                margin-bottom: 5px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+        }
+
+        .round-info {
+            font-size: 1.2em;
+            color: var(--yellow);
+        }
+
+        /* Phone Grid */
+        #phoneGrid {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 1200px;
+            height: 60vh;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            #phoneGrid {
+                width: 95%;
+                height: 50vh;
+                grid-template-columns: repeat(4, 1fr);
+                grid-template-rows: repeat(5, 1fr);
+                gap: 10px;
+                padding: 10px;
+                top: 45%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #phoneGrid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                padding: 5px;
+            }
+        }
+
+        .phone {
+            width: 100px;
+            height: 150px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+            animation-delay: calc(var(--i) * 0.1s);
+            /* Fallback background in case images don't load */
+            background: linear-gradient(145deg, #333, #555);
+            border: 2px solid var(--cyan);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .phone {
+                width: 70px;
+                height: 105px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .phone {
+                width: 60px;
+                height: 90px;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .phone:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 20px var(--cyan));
+        }
+
+        .phone.dragging {
+            cursor: grabbing;
+            opacity: 0.8;
+            z-index: 1000;
+            animation: none !important;
+        }
+
+        .phone.taken {
+            opacity: 0.3;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+            animation: none;
+        }
+
+        .phone img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Vortex */
+        #vortex {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, 
+                transparent 30%,
+                var(--purple) 35%,
+                var(--cyan) 40%,
+                var(--purple) 45%,
+                #000 60%
+            );
+            animation: spin 3s linear infinite;
+            box-shadow: 0 0 50px var(--purple), inset 0 0 50px rgba(138,43,226,0.5);
+        }
+
+        @media (max-width: 768px) {
+            #vortex {
+                width: 80px;
+                height: 80px;
+                bottom: 10px;
+            }
+        }
+
+        @keyframes spin {
+            from { transform: translateX(-50%) rotate(0deg); }
+            to { transform: translateX(-50%) rotate(360deg); }
+        }
+
+        #vortex.hover {
+            box-shadow: 0 0 80px var(--purple), inset 0 0 80px rgba(138,43,226,0.8);
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        /* Selection Gallery */
+        #selectionGallery {
+            position: fixed;
+            right: 20px;
+            top: 150px;
+            background: rgba(0,0,0,0.8);
+            border: 2px solid var(--cyan);
+            border-radius: 15px;
+            padding: 20px;
+            width: 250px;
+            max-height: 70vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        @media (max-width: 768px) {
+            #selectionGallery {
+                position: fixed;
+                bottom: 120px;
+                right: 10px;
+                left: 10px;
+                top: auto;
+                width: auto;
+                max-height: 150px;
+                padding: 10px;
+            }
+        }
+
+        #selectionGallery h3 {
+            color: var(--yellow);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .player-selection {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { 
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            to { 
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .player-name {
+            flex: 1;
+            font-size: 0.9em;
+        }
+
+        .player-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 10px var(--green);
+        }
+
+        /* Waiting Screen */
+        #waitingScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 500;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .waiting-text {
+            font-size: 2em;
+            color: var(--yellow);
+            margin-bottom: 30px;
+            text-align: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @media (max-width: 768px) {
+            .waiting-text {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Results Screen */
+        #resultsScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 600;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .result-container {
+            text-align: center;
+            animation: zoomIn 0.5s ease-out;
+        }
+
+        .result-container.revealing {
+            animation: revealPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes revealPulse {
+            0%, 100% { 
+                transform: scale(1);
+                filter: brightness(1);
+            }
+            50% { 
+                transform: scale(1.05);
+                filter: brightness(1.3) drop-shadow(0 0 30px var(--yellow));
+            }
+        }
+
+        @keyframes zoomIn {
+            from { 
+                transform: scale(0);
+                opacity: 0;
+            }
+            to { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .result-title {
+            font-size: 4em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 30px currentColor;
+        }
+
+        @media (max-width: 768px) {
+            .result-title {
+                font-size: 2.5em;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .result-title {
+                font-size: 2em;
+            }
+        }
+
+        .result-title.safe {
+            color: var(--green);
+        }
+
+        .result-title.danger {
+            color: var(--red);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .opt-out-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,0,0,0.2);
+            border: 2px solid var(--red);
+            border-radius: 15px;
+        }
+
+        .opt-out-button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background: var(--yellow);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .opt-out-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--yellow);
+        }
+
+        .opt-out-button.danger {
+            background: var(--red);
+            color: white;
+        }
+
+        /* Fight Screen */
+        #fightScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 700;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .fight-status-summary {
+            background: rgba(255,0,0,0.1);
+            border: 2px solid var(--red);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .status-section {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .status-section h4 {
+            color: var(--cyan);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .status-player {
+            padding: 5px;
+            margin: 3px 0;
+            font-size: 0.9em;
+        }
+
+        .status-player.safe {
+            color: var(--green);
+        }
+
+        .status-player.danger {
+            color: var(--red);
+            font-weight: bold;
+        }
+
+        .fight-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .fight-header h1 {
+            color: var(--red);
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px var(--red);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @media (max-width: 768px) {
+            .fight-header h1 {
+                font-size: 2em;
+            }
+        }
+
+        .challenge-reveal {
+            background: rgba(255,255,0,0.1);
+            border: 3px solid var(--yellow);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            animation: challengeReveal 1s ease-out;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        @keyframes challengeReveal {
+            from {
+                transform: scale(0) rotate(180deg);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .challenge-text {
+            font-size: 1.8em;
+            color: var(--yellow);
+            text-align: center;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .challenge-text {
+                font-size: 1.3em;
+            }
+        }
+
+        .battle-matchup {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .battle-matchup {
+                gap: 20px;
+                flex-direction: column;
+            }
+        }
+
+        .versus-text {
+            font-size: 3em;
+            color: var(--red);
+            font-weight: bold;
+            text-shadow: 0 0 20px var(--red);
+        }
+
+        @media (max-width: 768px) {
+            .versus-text {
+                font-size: 2em;
+            }
+        }
+
+        .battle-team {
+            background: rgba(138,43,226,0.2);
+            border: 3px solid var(--purple);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            min-width: 300px;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        @media (max-width: 768px) {
+            .battle-team {
+                min-width: 250px;
+                padding: 20px;
+                width: 100%;
+                max-width: none;
+            }
+        }
+
+        .battle-team h2 {
+            color: var(--cyan);
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px var(--cyan);
+        }
+
+        @media (max-width: 768px) {
+            .battle-team h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        .team-fighter {
+            font-size: 1.5em;
+            color: var(--red);
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255,0,0,0.1);
+            border-radius: 10px;
+            border: 2px solid var(--red);
+        }
+
+        @media (max-width: 768px) {
+            .team-fighter {
+                font-size: 1.2em;
+                padding: 10px;
+            }
+        }
+
+        .team-helpers {
+            margin-top: 15px;
+        }
+
+        .team-helpers h4 {
+            color: var(--yellow);
+            margin-bottom: 10px;
+        }
+
+        .helper-name {
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        /* Matchup container for multiple battles */
+        .all-matchups {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .single-matchup {
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            background: rgba(255,0,0,0.05);
+            border: 2px solid var(--red);
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+
+        .matchup-title {
+            color: var(--yellow);
+            font-size: 1.5em;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <img id="backgroundImage" src="assets/finals-bg.jpg" alt="Background">
+    
+    <!-- Player Selection Modal -->
+    <div id="playerModal">
+        <div class="modal-content">
+            <h1>WELCOME TO F1N4L5</h1>
+            <p style="margin-bottom: 20px; color: var(--cyan);">Select your founder identity:</p>
+            <select id="playerSelect">
+                <option value="">Choose your founder...</option>
+            </select>
+            <button id="enterGame" disabled>ENTER THE ARENA</button>
+        </div>
+    </div>
+
+    <!-- Main Game Container -->
+    <div id="gameContainer">
+        <div class="header">
+            <h1>F1N4L5: THE LAST STAND</h1>
+            <div class="round-info">Round <span id="roundNumber">1</span></div>
+        </div>
+
+        <!-- Phone Grid -->
+        <div id="phoneGrid"></div>
+
+        <!-- Vortex -->
+        <div id="vortex"></div>
+
+        <!-- Selection Gallery -->
+        <div id="selectionGallery">
+            <h3>Players Selected</h3>
+            <div id="selectionList"></div>
+        </div>
+
+        <!-- Waiting Screen -->
+        <div id="waitingScreen">
+            <div class="waiting-text">Waiting for all players to select...</div>
+            <div id="waitingList"></div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen">
+            <div class="result-container">
+                <div class="result-title" id="resultTitle"></div>
+                <div class="result-message" id="resultMessage"></div>
+                <div class="opt-out-container" id="optOutContainer" style="display: none;">
+                    <p>You've been selected for elimination!</p>
+                    <p>Your current wealth: $<span id="currentWealth">0</span></p>
+                    <button class="opt-out-button" onclick="payToSurvive()">Pay $5,000 to Survive</button>
+                    <button class="opt-out-button danger" onclick="acceptFight()">Fight for Your Life</button>
+                </div>
+                <div id="waitingForFight" style="display: none; margin-top: 30px; color: var(--yellow); font-size: 1.2em;">
+                    Waiting for Death Match to begin...
+                </div>
+            </div>
+        </div>
+
+        <!-- Fight Screen -->
+        <div id="fightScreen">
+            <div class="fight-header">
+                <h1>⚔️ DEATH MATCH ⚔️</h1>
+            </div>
+            
+            <div class="fight-status-summary">
+                <h3 style="color: var(--yellow); text-align: center; margin-bottom: 20px;">ROUND STATUS</h3>
+                <div class="status-grid" id="statusGrid">
+                    <!-- Status will be populated here -->
+                </div>
+            </div>
+            
+            <div class="challenge-reveal" id="challengeReveal" style="display: none;">
+                <div class="challenge-text" id="challengeText">Waiting for challenge...</div>
+            </div>
+            
+            <div class="all-matchups" id="allMatchups">
+                <!-- All battle matchups will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnHE2Ay2wqZVC4Xf2PsHHppVoVfNPk0hI",
+            authDomain: "f0und3rzg4m3-b04rd.firebaseapp.com",
+            databaseURL: "https://f0und3rzg4m3-b04rd-default-rtdb.firebaseio.com",
+            projectId: "f0und3rzg4m3-b04rd",
+            storageBucket: "f0und3rzg4m3-b04rd.firebasestorage.app",
+            messagingSenderId: "484982613831",
+            appId: "1:484982613831:web:9b655b3d66d66b3b5e8e62",
+            measurementId: "G-MPN2LP1Q6X"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Eligible founders (those without status: 'dead')
+        const eligibleFounders = [
+            { id: '45_sean_rad', name: 'Sean Rad', team: 1, image: '45_sean_rad.png' },
+            { id: '35_tom_anderson', name: 'Tom Anderson', team: 1, image: '35_tom_anderson.png' },
+            { id: '17_sam_altman', name: 'Sam Altman', team: 1, image: '17_sam_altman.png' },
+            { id: '11_google_founders', name: 'Larry Page & Sergey Brin', team: 1, image: '11_google_founders.png' },
+            { id: '28_adam_neumann', name: 'Adam Neumann', team: 2, image: '28_adam_neumann.png' },
+            { id: '51_zhang_yiming', name: 'Zhang Yiming', team: 2, image: '51_zhang_yiming.png' },
+            { id: '48_sam_bankman_fried', name: 'Sam Bankman-Fried', team: 2, image: '48_sam_bankman-fried.png' },
+            { id: '24_larry_ellison', name: 'Larry Ellison', team: 2, image: '24_larry_ellison.png' },
+            { id: '21_jimmy_wales', name: 'Jimmy Wales', team: 2, image: '21_jimmy_wales.png' },
+            { id: '46_dread_pirate', name: 'Ross Ulbricht', team: 2, image: '46_dread_pirate.png' },
+            { id: '27_travis_kalanick', name: 'Travis Kalanick', team: 2, image: '27_travis_kalanick.png' },
+            { id: '37_steve_wozniak', name: 'Steve Wozniak', team: 2, image: '37_steve_wozniak.png' },
+            { id: '53_youtube', name: 'YouTube Founders', team: 2, image: '53_youtube.png' },
+            { id: '36_alexis_ohanian', name: 'Alexis Ohanian', team: 2, image: '36_alexis_ohanian.png' },
+            { id: '43_sophia_amoruso', name: 'Sophia Amoruso', team: 2, image: '43_sophia_amoruso.png' },
+            { id: '33_martin_shkreli', name: 'Martin Shkreli', team: 2, image: '33_martin_shkreli.png' },
+            // Test players (no images)
+            { id: 'test_player_1', name: 'Test Player 1', team: 1, image: null },
+            { id: 'test_player_2', name: 'Test Player 2', team: 2, image: null }
+        ];
+
+        // Game state
+        let gameState = {
+            playerId: null,
+            playerData: null,
+            selectedPhone: null,
+            currentPhase: 'waiting',
+            currentRound: 1,
+            myWealth: 0,
+            playerSelections: {},
+            revealResults: {},
+            optedOut: {},
+            fightingPlayers: [],
+            battleMatchups: {},
+            resultsShown: false
+        };
+
+        // Audio elements
+        let bgMusic = null;
+        let currentSounds = {};
+
+        // Initialize audio
+        function initAudio() {
+            bgMusic = new Audio('assets/finals-bg.mp3');
+            bgMusic.loop = true;
+            bgMusic.volume = 0.3;
+            
+            // Preload sounds
+            const soundsToPreload = [
+                'finals-select.mp3',
+                'reveal.mp3'
+            ];
+            
+            soundsToPreload.forEach(sound => {
+                const audio = new Audio(`assets/${sound}`);
+                currentSounds[sound] = audio;
+            });
+        }
+
+        // Play sound effect
+        function playSound(soundName) {
+            if (currentSounds[soundName]) {
+                currentSounds[soundName].currentTime = 0;
+                currentSounds[soundName].play();
+            } else {
+                const audio = new Audio(`assets/${soundName}`);
+                audio.play();
+            }
+        }
+
+        // Populate player selector
+        function populatePlayerSelector() {
+            const select = document.getElementById('playerSelect');
+            
+            // Load custom players first
+            database.ref('finals/customPlayers').once('value', (snapshot) => {
+                const customPlayers = snapshot.val() || {};
+                
+                // Add custom players to eligible founders
+                Object.values(customPlayers).forEach(player => {
+                    if (!eligibleFounders.find(f => f.id === player.id)) {
+                        eligibleFounders.push(player);
+                    }
+                });
+                
+                // Clear and rebuild selector
+                select.innerHTML = '<option value="">Choose your founder...</option>';
+                
+                // Group by team
+                const team1 = eligibleFounders.filter(f => f.team === 1);
+                const team2 = eligibleFounders.filter(f => f.team === 2);
+                
+                // Add Team 1
+                const team1Group = document.createElement('optgroup');
+                team1Group.label = 'Y2KET CORP. (Team 1)';
+                team1.forEach(founder => {
+                    const option = document.createElement('option');
+                    option.value = founder.id;
+                    option.textContent = founder.name;
+                    team1Group.appendChild(option);
+                });
+                select.appendChild(team1Group);
+                
+                // Add Team 2
+                const team2Group = document.createElement('optgroup');
+                team2Group.label = 'SERIES A(POCALYPSE) (Team 2)';
+                team2.forEach(founder => {
+                    const option = document.createElement('option');
+                    option.value = founder.id;
+                    option.textContent = founder.name;
+                    team2Group.appendChild(option);
+                });
+                select.appendChild(team2Group);
+            });
+        }
+
+        // Handle player selection
+        document.getElementById('playerSelect').addEventListener('change', (e) => {
+            const enterButton = document.getElementById('enterGame');
+            enterButton.disabled = !e.target.value;
+        });
+
+        // Enter game
+        document.getElementById('enterGame').addEventListener('click', () => {
+            const playerId = document.getElementById('playerSelect').value;
+            if (!playerId) return;
+            
+            gameState.playerId = playerId;
+            gameState.playerData = eligibleFounders.find(f => f.id === playerId);
+            
+            // Join the game
+            database.ref(`finals/activePlayers/${playerId}`).set({
+                name: gameState.playerData.name,
+                team: gameState.playerData.team,
+                joinedAt: Date.now()
+            });
+            
+            // Get wealth
+            database.ref(`game/founderWealth/${playerId}`).once('value', (snapshot) => {
+                gameState.myWealth = snapshot.val() || 0;
+            });
+            
+            // Hide modal, show game
+            document.getElementById('playerModal').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'block';
+            
+            // Start background music
+            if (bgMusic) {
+                bgMusic.play();
+            }
+            
+            // Initialize game
+            initializeGame();
+        });
+
+        // Initialize game
+        function initializeGame() {
+            setupPhones();
+            setupListeners();
+        }
+
+        // Setup phones
+        function setupPhones() {
+            const grid = document.getElementById('phoneGrid');
+            grid.innerHTML = '';
+            
+            for (let i = 1; i <= 20; i++) {
+                const phoneWrapper = document.createElement('div');
+                phoneWrapper.className = 'phone';
+                phoneWrapper.id = `phone_${i}`;
+                phoneWrapper.style.setProperty('--i', i);
+                phoneWrapper.draggable = true;
+                
+                const img = document.createElement('img');
+                img.src = `assets/phone_${i}.png`;
+                img.alt = `Phone ${i}`;
+                
+                phoneWrapper.appendChild(img);
+                
+                // Drag events
+                phoneWrapper.addEventListener('dragstart', handleDragStart);
+                
+                grid.appendChild(phoneWrapper);
+            }
+            
+            // Setup global drag events
+            document.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                
+                // Check if over vortex
+                const vortex = document.getElementById('vortex');
+                const rect = vortex.getBoundingClientRect();
+                
+                if (e.clientX >= rect.left && e.clientX <= rect.right &&
+                    e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                    vortex.classList.add('hover');
+                } else {
+                    vortex.classList.remove('hover');
+                }
+            });
+            
+            document.addEventListener('drop', handleGlobalDrop);
+            document.addEventListener('dragend', () => {
+                document.getElementById('vortex').classList.remove('hover');
+            });
+        }
+
+        // Drag handlers
+        let draggedPhone = null;
+
+        function handleDragStart(e) {
+            if (this.classList.contains('taken')) {
+                e.preventDefault();
+                return;
+            }
+            
+            draggedPhone = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleGlobalDrop(e) {
+            e.preventDefault();
+            
+            if (!draggedPhone || gameState.selectedPhone) return;
+            
+            // Check if dropped on vortex
+            const vortex = document.getElementById('vortex');
+            const rect = vortex.getBoundingClientRect();
+            
+            if (e.clientX >= rect.left && e.clientX <= rect.right &&
+                e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                
+                // Dropped on vortex
+                const phoneId = draggedPhone.id;
+                
+                // Remove dragging class
+                draggedPhone.classList.remove('dragging');
+                
+                // Check if phone is already taken
+                database.ref(`finals/currentRound/phoneStatus/${phoneId}`).once('value', (snapshot) => {
+                    if (snapshot.val()?.taken) {
+                        alert('This phone has already been selected!');
+                        draggedPhone = null;
+                        return;
+                    }
+                    
+                    // Mark phone as taken
+                    database.ref(`finals/currentRound/phoneStatus/${phoneId}`).set({
+                        taken: true,
+                        selectedBy: gameState.playerId,
+                        timestamp: Date.now()
+                    });
+                    
+                    // Record player selection
+                    database.ref(`finals/currentRound/playerSelections/${gameState.playerId}`).set({
+                        phoneId: phoneId,
+                        timestamp: Date.now()
+                    });
+                    
+                    gameState.selectedPhone = phoneId;
+                    playSound('finals-select.mp3');
+                    
+                    // Show waiting screen
+                    showWaitingScreen();
+                    
+                    draggedPhone = null;
+                });
+            } else {
+                // Not dropped on vortex
+                if (draggedPhone) {
+                    draggedPhone.classList.remove('dragging');
+                }
+                draggedPhone = null;
+            }
+            
+            vortex.classList.remove('hover');
+        }
+
+        // Show waiting screen
+        function showWaitingScreen() {
+            document.getElementById('waitingScreen').style.display = 'flex';
+        }
+
+        // Setup listeners
+        function setupListeners() {
+            // Phone status updates
+            database.ref('finals/currentRound/phoneStatus').on('value', (snapshot) => {
+                const phoneStatus = snapshot.val() || {};
+                
+                // Reset all phones first
+                document.querySelectorAll('.phone').forEach(phone => {
+                    phone.classList.remove('taken');
+                    phone.draggable = true;
+                });
+                
+                // Then mark taken phones
+                Object.entries(phoneStatus).forEach(([phoneId, status]) => {
+                    const phoneElement = document.getElementById(phoneId);
+                    if (phoneElement && status.taken) {
+                        phoneElement.classList.add('taken');
+                        phoneElement.draggable = false;
+                    }
+                });
+            });
+            
+            // Player selections
+            database.ref('finals/currentRound/playerSelections').on('value', (snapshot) => {
+                const selections = snapshot.val() || {};
+                gameState.playerSelections = selections;
+                updateSelectionGallery(selections);
+            });
+            
+            // Game phase
+            database.ref('finals/gameState/phase').on('value', (snapshot) => {
+                const phase = snapshot.val() || 'waiting';
+                gameState.currentPhase = phase;
+                console.log('Phase changed to:', phase);
+                handlePhaseChange(phase);
+            });
+            
+            // Round number
+            database.ref('finals/gameState/round').on('value', (snapshot) => {
+                const newRound = snapshot.val() || 1;
+                
+                // Check if we're starting a new round
+                if (newRound !== gameState.currentRound) {
+                    gameState.currentRound = newRound;
+                    document.getElementById('roundNumber').textContent = gameState.currentRound;
+                    
+                    // Reset for new round
+                    gameState.selectedPhone = null;
+                    gameState.resultsShown = false;
+                }
+            });
+            
+            // Reveal results
+            database.ref('finals/currentRound/revealResults').on('value', (snapshot) => {
+                const results = snapshot.val();
+                gameState.revealResults = results;
+                
+                // Show results if we have them for this player and haven't shown them yet
+                if (results && results[gameState.playerId] && !gameState.resultsShown) {
+                    gameState.resultsShown = true;
+                    showResults(results[gameState.playerId]);
+                }
+            });
+            
+            // Opted out players
+            database.ref('finals/currentRound/optedOut').on('value', (snapshot) => {
+                gameState.optedOut = snapshot.val() || {};
+                console.log('Opted out updated:', gameState.optedOut);
+                // Update fight status if in fighting phase
+                if (gameState.currentPhase === 'fighting') {
+                    updateFightStatus();
+                }
+            });
+            
+            // Fighting players - listen to the list from the moderator
+            database.ref('finals/currentRound/fightingPlayers').on('value', (snapshot) => {
+                const fightingList = snapshot.val();
+                console.log('Fighting players updated:', fightingList);
+                
+                if (Array.isArray(fightingList)) {
+                    gameState.fightingPlayers = fightingList;
+                } else if (fightingList && typeof fightingList === 'object') {
+                    // If it's an object, convert to array
+                    gameState.fightingPlayers = Object.keys(fightingList);
+                } else {
+                    gameState.fightingPlayers = [];
+                }
+                
+                // Update fight status if in fighting phase
+                if (gameState.currentPhase === 'fighting') {
+                    updateFightStatus();
+                }
+            });
+            
+            // Battle matchups
+            database.ref('finals/currentRound/battleMatchups').on('value', (snapshot) => {
+                const matchups = snapshot.val();
+                console.log('Battle matchups received:', matchups, 'Current phase:', gameState.currentPhase);
+                gameState.battleMatchups = matchups || {};
+                
+                // Show matchups if in fighting phase and we have matchups
+                if (matchups && gameState.currentPhase === 'fighting') {
+                    showBattleMatchups(matchups);
+                }
+            });
+            
+            // Active challenge
+            database.ref('finals/currentRound/activeChallenge').on('value', (snapshot) => {
+                const challenge = snapshot.val();
+                console.log('Challenge updated:', challenge, 'Current phase:', gameState.currentPhase);
+                if (challenge && gameState.currentPhase === 'fighting') {
+                    document.getElementById('challengeText').textContent = challenge.description;
+                    document.getElementById('challengeReveal').style.display = 'block';
+                } else {
+                    document.getElementById('challengeReveal').style.display = 'none';
+                }
+            });
+            
+            // Wealth updates
+            database.ref(`game/founderWealth/${gameState.playerId}`).on('value', (snapshot) => {
+                gameState.myWealth = snapshot.val() || 0;
+            });
+        }
+
+        // Update selection gallery
+        function updateSelectionGallery(selections) {
+            const list = document.getElementById('selectionList');
+            list.innerHTML = '';
+            
+            Object.entries(selections).forEach(([playerId, data]) => {
+                const founder = eligibleFounders.find(f => f.id === playerId);
+                if (!founder) return;
+                
+                const div = document.createElement('div');
+                div.className = 'player-selection';
+                
+                if (founder.image && !founder.id.includes('test_player')) {
+                    div.innerHTML = `
+                        <img src="../jeopardy/assets/founders/${founder.image}" class="player-avatar" 
+                             onerror="this.src='../jeopardy/assets/founders/default.png'">
+                        <div class="player-name">${founder.name}</div>
+                        <div class="player-status"></div>
+                    `;
+                } else {
+                    // No avatar for test players or custom players without images
+                    div.innerHTML = `
+                        <div style="width: 40px; height: 40px; display: inline-block;"></div>
+                        <div class="player-name">${founder.name}</div>
+                        <div class="player-status"></div>
+                    `;
+                }
+                
+                list.appendChild(div);
+            });
+        }
+
+        // Handle phase changes
+        function handlePhaseChange(phase) {
+            console.log('Handling phase change to:', phase);
+            switch(phase) {
+                case 'waiting':
+                    document.getElementById('waitingScreen').style.display = 'none';
+                    document.getElementById('resultsScreen').style.display = 'none';
+                    document.getElementById('fightScreen').style.display = 'none';
+                    // Reset phone grid
+                    setupPhones();
+                    break;
+                case 'selecting':
+                    document.getElementById('waitingScreen').style.display = 'none';
+                    document.getElementById('resultsScreen').style.display = 'none';
+                    document.getElementById('fightScreen').style.display = 'none';
+                    break;
+                case 'revealing':
+                    // Moderator is revealing results
+                    break;
+                case 'fighting':
+                    console.log('Switching to fight screen');
+                    document.getElementById('resultsScreen').style.display = 'none';
+                    document.getElementById('fightScreen').style.display = 'flex';
+                    
+                    // Update fight status immediately
+                    updateFightStatus();
+                    
+                    // Show matchups if we have them
+                    if (gameState.battleMatchups && Object.keys(gameState.battleMatchups).length > 0) {
+                        showBattleMatchups(gameState.battleMatchups);
+                    }
+                    break;
+            }
+        }
+
+        // Show results
+        function showResults(result) {
+            document.getElementById('waitingScreen').style.display = 'none';
+            document.getElementById('resultsScreen').style.display = 'flex';
+            
+            const titleEl = document.getElementById('resultTitle');
+            const messageEl = document.getElementById('resultMessage');
+            const optOutEl = document.getElementById('optOutContainer');
+            const container = document.querySelector('.result-container');
+            const waitingEl = document.getElementById('waitingForFight');
+            
+            // Initial revealing state
+            container.classList.add('revealing');
+            titleEl.textContent = 'REVEALING FATE...';
+            titleEl.className = 'result-title';
+            messageEl.textContent = 'The phones speak their truth...';
+            optOutEl.style.display = 'none';
+            waitingEl.style.display = 'none';
+            
+            // Play reveal sound first
+            const revealAudio = new Audio('assets/reveal.mp3');
+            revealAudio.play();
+            
+            // Wait for reveal sound to finish + 2 seconds
+            revealAudio.addEventListener('ended', () => {
+                setTimeout(() => {
+                    container.classList.remove('revealing');
+                    
+                    // Play the assigned sound
+                    const audio = new Audio(`assets/${result.sound}.mp3`);
+                    audio.play();
+                    
+                    if (result.type === 'spice') {
+                        titleEl.textContent = 'YOU SURVIVED!';
+                        titleEl.className = 'result-title safe';
+                        messageEl.textContent = 'Spice up your life! You live to see another round.';
+                        optOutEl.style.display = 'none';
+                        waitingEl.style.display = 'block';
+                        waitingEl.textContent = 'Waiting for next round...';
+                    } else {
+                        titleEl.textContent = 'ELIMINATED!';
+                        titleEl.className = 'result-title danger';
+                        messageEl.textContent = 'Ed Sheeran has sealed your fate...';
+                        document.getElementById('currentWealth').textContent = gameState.myWealth.toLocaleString();
+                        optOutEl.style.display = gameState.myWealth >= 5000 ? 'block' : 'none';
+                        
+                        if (gameState.myWealth < 5000) {
+                            messageEl.textContent += '\nInsufficient funds to opt out. You must fight!';
+                            setTimeout(() => acceptFight(), 3000);
+                        }
+                    }
+                }, 2000); // 2 second delay after reveal sound
+            });
+        }
+
+        // Pay to survive
+        function payToSurvive() {
+            if (gameState.myWealth < 5000) {
+                alert('Insufficient funds!');
+                return;
+            }
+            
+            // Deduct wealth
+            database.ref(`game/founderWealth/${gameState.playerId}`).transaction(current => {
+                return (current || 0) - 5000;
+            });
+            
+            // Mark as opted out
+            database.ref(`finals/currentRound/optedOut/${gameState.playerId}`).set(true);
+            
+            // Update UI
+            document.getElementById('optOutContainer').style.display = 'none';
+            document.getElementById('waitingForFight').style.display = 'block';
+            document.getElementById('waitingForFight').textContent = 'You paid $5,000 to survive! Waiting for Death Match...';
+        }
+
+        // Accept fight
+        function acceptFight() {
+            // Don't add to fighting players here - the moderator handles that
+            // Just update UI
+            document.getElementById('optOutContainer').style.display = 'none';
+            document.getElementById('waitingForFight').style.display = 'block';
+            document.getElementById('waitingForFight').textContent = 'Preparing for Death Match...';
+        }
+
+        // Update fight status display
+        function updateFightStatus() {
+            const statusGrid = document.getElementById('statusGrid');
+            if (!statusGrid) return;
+            
+            console.log('Updating fight status. Game state:', {
+                playerSelections: gameState.playerSelections,
+                revealResults: gameState.revealResults,
+                optedOut: gameState.optedOut,
+                fightingPlayers: gameState.fightingPlayers
+            });
+            
+            statusGrid.innerHTML = '';
+            
+            // Get all players who selected phones
+            const selections = gameState.playerSelections || {};
+            const results = gameState.revealResults || {};
+            const optedOut = gameState.optedOut || {};
+            const fightingPlayers = gameState.fightingPlayers || [];
+            
+            const survived = [];
+            const eliminated = [];
+            const fighting = [];
+            const paidToSurvive = [];
+            
+            Object.entries(selections).forEach(([playerId, data]) => {
+                const founder = eligibleFounders.find(f => f.id === playerId);
+                if (!founder) return;
+                
+                const result = results[playerId];
+                if (!result) return;
+                
+                if (result.type === 'spice') {
+                    survived.push(founder.name);
+                } else {
+                    // For eliminated players, check their status
+                    if (optedOut[playerId]) {
+                        paidToSurvive.push(founder.name);
+                    } else if (fightingPlayers.includes(playerId)) {
+                        fighting.push(founder.name);
+                    } else {
+                        // They might be fighting but not yet confirmed
+                        fighting.push(founder.name);
+                    }
+                }
+            });
+            
+            // Survived section
+            if (survived.length > 0) {
+                const section = document.createElement('div');
+                section.className = 'status-section';
+                section.innerHTML = '<h4>✅ SURVIVED</h4>';
+                survived.forEach(name => {
+                    const player = document.createElement('div');
+                    player.className = 'status-player safe';
+                    player.textContent = name;
+                    section.appendChild(player);
+                });
+                statusGrid.appendChild(section);
+            }
+            
+            // Fighting section
+            if (fighting.length > 0) {
+                const section = document.createElement('div');
+                section.className = 'status-section';
+                section.innerHTML = '<h4>⚔️ FIGHTING</h4>';
+                fighting.forEach(name => {
+                    const player = document.createElement('div');
+                    player.className = 'status-player danger';
+                    player.textContent = name;
+                    section.appendChild(player);
+                });
+                statusGrid.appendChild(section);
+            }
+            
+            // Paid to survive section
+            if (paidToSurvive.length > 0) {
+                const section = document.createElement('div');
+                section.className = 'status-section';
+                section.innerHTML = '<h4>💰 PAID $5K</h4>';
+                paidToSurvive.forEach(name => {
+                    const player = document.createElement('div');
+                    player.className = 'status-player';
+                    player.style.color = 'var(--yellow)';
+                    player.textContent = name;
+                    section.appendChild(player);
+                });
+                statusGrid.appendChild(section);
+            }
+        }
+
+        // Show battle matchups
+        function showBattleMatchups(matchups) {
+            console.log('Displaying battle matchups:', matchups);
+            const container = document.getElementById('allMatchups');
+            if (!container) {
+                console.error('All matchups container not found!');
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            // Create each matchup
+            Object.entries(matchups).forEach(([matchId, teams], index) => {
+                console.log(`Creating matchup ${matchId}:`, teams);
+                
+                const matchupDiv = document.createElement('div');
+                matchupDiv.className = 'single-matchup';
+                
+                // Matchup title
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'matchup-title';
+                titleDiv.textContent = `BATTLE ${index + 1}`;
+                matchupDiv.appendChild(titleDiv);
+                
+                // Battle container
+                const battleDiv = document.createElement('div');
+                battleDiv.className = 'battle-matchup';
+                
+                // Team A
+                const teamADiv = createBattleTeam('A', teams.teamA);
+                battleDiv.appendChild(teamADiv);
+                
+                // VS text (only if there's a Team B)
+                if (teams.teamB && teams.teamB.length > 0) {
+                    const vsDiv = document.createElement('div');
+                    vsDiv.className = 'versus-text';
+                    vsDiv.textContent = 'VS';
+                    battleDiv.appendChild(vsDiv);
+                    
+                    // Team B
+                    const teamBDiv = createBattleTeam('B', teams.teamB);
+                    battleDiv.appendChild(teamBDiv);
+                } else {
+                    // Solo fight
+                    const soloDiv = document.createElement('div');
+                    soloDiv.className = 'versus-text';
+                    soloDiv.textContent = 'SOLO FIGHT!';
+                    soloDiv.style.color = 'var(--yellow)';
+                    battleDiv.appendChild(soloDiv);
+                }
+                
+                matchupDiv.appendChild(battleDiv);
+                container.appendChild(matchupDiv);
+            });
+        }
+
+        // Create battle team display
+        function createBattleTeam(letter, teamData) {
+            console.log(`Creating team ${letter}:`, teamData);
+            
+            const teamDiv = document.createElement('div');
+            teamDiv.className = 'battle-team';
+            
+            const titleDiv = document.createElement('h2');
+            titleDiv.textContent = `TEAM ${letter}`;
+            teamDiv.appendChild(titleDiv);
+            
+            // Fighter (first member)
+            if (teamData && teamData.length > 0) {
+                const fighter = eligibleFounders.find(f => f.id === teamData[0]);
+                if (fighter) {
+                    const fighterDiv = document.createElement('div');
+                    fighterDiv.className = 'team-fighter';
+                    fighterDiv.textContent = `💀 ${fighter.name} 💀`;
+                    teamDiv.appendChild(fighterDiv);
+                }
+                
+                // Helpers
+                if (teamData.length > 1) {
+                    const helpersDiv = document.createElement('div');
+                    helpersDiv.className = 'team-helpers';
+                    
+                    const helpersTitle = document.createElement('h4');
+                    helpersTitle.textContent = 'HELPERS:';
+                    helpersDiv.appendChild(helpersTitle);
+                    
+                    teamData.slice(1).forEach(helperId => {
+                        const helper = eligibleFounders.find(f => f.id === helperId);
+                        if (helper) {
+                            const helperDiv = document.createElement('div');
+                            helperDiv.className = 'helper-name';
+                            helperDiv.textContent = helper.name;
+                            helpersDiv.appendChild(helperDiv);
+                        }
+                    });
+                    
+                    teamDiv.appendChild(helpersDiv);
+                }
+            } else {
+                // Empty team
+                const emptyDiv = document.createElement('div');
+                emptyDiv.style.color = '#666';
+                emptyDiv.textContent = 'Empty Team';
+                teamDiv.appendChild(emptyDiv);
+            }
+            
+            return teamDiv;
+        }
+
+        // Initialize
+        window.onload = () => {
+            initAudio();
+            populatePlayerSelector();
+        };
+    </script>
+</body>
+</html>
