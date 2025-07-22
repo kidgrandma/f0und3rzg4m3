@@ -1400,7 +1400,7 @@
             
             // Initial revealing state
             container.classList.add('revealing');
-            titleEl.textContent = 'REVEALING FATE...';
+            titleEl.textContent = 'RUH ROH WSUP...';
             titleEl.className = 'result-title';
             messageEl.textContent = 'The phones speak their truth...';
             optOutEl.style.display = 'none';
@@ -1422,14 +1422,14 @@
                     if (result.type === 'spice') {
                         titleEl.textContent = 'YOU SURVIVED!';
                         titleEl.className = 'result-title safe';
-                        messageEl.textContent = 'Spice up your life! You live to see another round.';
+                        messageEl.textContent = 'Spice is sooOOOo n1ce! ur not dedded!!!!';
                         optOutEl.style.display = 'none';
                         waitingEl.style.display = 'block';
                         waitingEl.textContent = 'Waiting for next round...';
                     } else {
                         titleEl.textContent = 'ELIMINATED!';
                         titleEl.className = 'result-title danger';
-                        messageEl.textContent = 'Ed Sheeran has sealed your fate...';
+                        messageEl.textContent = 'DAMN... u got sheeraned...';
                         document.getElementById('currentWealth').textContent = gameState.myWealth.toLocaleString();
                         optOutEl.style.display = gameState.myWealth >= 5000 ? 'block' : 'none';
                         
